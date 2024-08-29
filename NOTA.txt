@@ -1,0 +1,9 @@
+Descripción de las relaciones:
+CLIENTE - PROMO: Relación uno a muchos (un cliente puede tener muchas promociones).
+Clave foránea ID_Cliente en la tabla PROMO que referencia a CLIENTE.
+PROMO - PRECIO: Relación muchos a uno (muchas promociones pueden tener un precio asociado).
+Clave foránea ID_Precio en la tabla PROMO que referencia a PRECIO.
+CLIENTE - VISITA: Relación uno a muchos (un cliente puede tener muchas visitas).
+Clave foránea ID_Cliente en la tabla VISITA que referencia a CLIENTE.
+CLIENTE - REGISTRO PAGO: Relación uno a muchos (un cliente puede tener muchos registros de pago).
+Clave foránea ID_Cliente en la tabla REGISTRO_PAGO que referencia a CLIENTE.
