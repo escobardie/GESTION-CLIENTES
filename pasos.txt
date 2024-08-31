@@ -1,0 +1,39 @@
+** instalamo entorno virtual: 
+virtualenv venv
+python -m venv entorno
+ 
+** activamos entorno virtula: 
+.\venv\Scripts\activate
+
+** desactivamos el entorno: 
+deactivate
+
+** realizamos instalaciones:
+pip install *nombre del programa*
+** (ejemplo:  pip install mysql-connector-python )
+
+** realizamos desinstalacion:
+pip uninstall *nombre programa*
+(ejemplo: pip uninstall python-dotenv)
+
+** para cargar las librerias en un txt
+pip freeze > requirements.txt
+
+** instalamos las librerias que estan dentro de requirements.txt: 
+pip install -r .\requirements.txt
+
+** lista de lo instalado en pip: 
+pip list
+pip freeze
+
+
+** TRABAJANDO CON Django:
+
+** django-admin startproject "donde estara todo el proyecto" "directorio del proyecto"
+** ejemplo:
+django-admin startproject core Control_Clientes_distri
+
+
+** cremos en superUsuario:  
+py manage.py createsuperuser
+

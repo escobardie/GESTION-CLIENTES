@@ -1,0 +1,66 @@
+CREACION DE PROYECTO:
+django-admin startproject name_proyect
+
+instalamo entorno virtual: virtualenv venv 
+ 
+** activamos entorno virtula: 
+.\venv\Scripts\activate
+** desactivamos el entorno: 
+deactivate
+
+** instalamos las librerias que estan dentro
+** de requirements.txt: 
+pip install -r .\requirements.txt
+
+** creamos la migracion: 
+python manage.py makemigrations
+
+** realizamos las migraciones:  
+py manage.py migrate
+
+
+** cremos en superUsuario:  
+py manage.py createsuperuser
+
+** corremos el servidor: 
+py manage.py runserver
+
+** lista de lo instalado en pip: 
+pip list
+
+** realizamos una intalacion desde un archivo txt: 
+pip install -r .\requirements.txt
+
+** realizamos instalaciones:
+pip install *nombre del programa*
+** (ejemplo:  pip install mysql-connector-python )
+
+** realizamos desinstalacion:
+pip uninstall *nombre programa*
+(ejemplo: pip uninstall python-dotenv)
+
+
+django-admin startapp posts
+django-admin startproject blog
+django-admin startproject core .
+
+** solucion para el conflico de scrip en windows **
+Get-ExecutionPolicy -List
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser 
+** solucion para el conflico de scrip en windows **
+
+pip install virtualenv
+pip install python-dotenv
+pip install decouple
+pip install python-decouple
+pip install python-dotenv mysql-connector-python
+pip install Django
+pip install distlib
+pip install -r .\requirements.txt
+python manage.py makemigrations
+python manage.py migrate
+py manage.py runserver
+
+################ pythonanywhere.com ################
+git pull  (para bajar los cambio del repo)
+workon venv (activa el entorno virtual)
