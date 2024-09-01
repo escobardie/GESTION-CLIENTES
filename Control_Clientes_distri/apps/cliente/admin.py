@@ -8,31 +8,31 @@ admin.site.site_title = 'Cliente'
 
 
 class ClientesAdmin(admin.ModelAdmin):
-    readonly_fields = ('nombre','apellido')
-    list_display = ('nombre','apellido')
+    readonly_fields = ('nombre','apellido', 'direccion', 'telefono', 'fecha_alta', 'tipo_promo','fecha_cobro')
+    list_display = ('nombre','apellido', 'direccion', 'tipo_promo','fecha_cobro')
 
 admin.site.register(models.Cliente, ClientesAdmin)
 
 class PromoAdmin(admin.ModelAdmin):
-    readonly_fields = ('nombre_promo','valor_promo')
-    list_display = ('nombre_promo','valor_promo')
+    readonly_fields = ('cant_bidones','nombre_promo')
+    list_display = ('nombre_promo','cant_bidones','valor_promo')
 
 admin.site.register(models.Promo, PromoAdmin)
 
 class PromoPorClienteAdmin(admin.ModelAdmin):
-    readonly_fields = ('cliente_id','promo_id')
-    list_display = ('cliente_id','promo_id')
+    readonly_fields = ('cliente','promo','inicio_promo','codigo_dispenser')
+    list_display = ('cliente','promo','inicio_promo','estado')
 
 admin.site.register(models.PromoPorCliente, PromoPorClienteAdmin)
 
 class VisitaAdmin(admin.ModelAdmin):
-    readonly_fields = ('cliente_id','fecha_visita')
-    list_display = ('cliente_id','fecha_visita')
+    readonly_fields = ('cliente','fecha_visita','nota')
+    list_display = ('fecha_visita', 'cliente')
 
 admin.site.register(models.Visita, VisitaAdmin)
 
 class RegsitroPagosAdmin(admin.ModelAdmin):
-    readonly_fields = ('fecha','cliente_id','monto')
-    list_display = ('fecha','cliente_id','monto')
+    readonly_fields = ('cliente','fecha','monto', 'comprobante', 'nota')
+    list_display = ('fecha', 'cliente','monto')
 
 admin.site.register(models.RegistroPago, RegsitroPagosAdmin)
