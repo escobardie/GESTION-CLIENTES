@@ -14,7 +14,7 @@ FLUSH PRIVILEGES;
 
 DROP USER 'usuario_agua'@'localhost';
 
-SELECT * FROM  cliente_cliente;
+SELECT * FROM cliente_cliente;
 SELECT * FROM cliente_promo;
 SELECT * FROM cliente_promoporcliente;
 SELECT * FROM cliente_visita;

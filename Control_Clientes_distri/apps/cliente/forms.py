@@ -1,6 +1,7 @@
 from django import forms
 from .models import Cliente,Visita,Promo,PromoPorCliente,RegistroPago
 
+
 class AddClienteForm(forms.ModelForm):
 
     class Meta:
@@ -29,6 +30,10 @@ class AddVisitaForm(forms.ModelForm):
             #'fecha_visita': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'nota': forms.Textarea(attrs={'class': 'form-control'}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Deshabilitar el campo cliente para que no sea editable
+        self.fields['cliente'].disabled = True
 
 # class AddPromoForm(forms.ModelForm):
 #     class Meta:
@@ -41,26 +46,32 @@ class AddVisitaForm(forms.ModelForm):
 #             'valor_promo': forms.NumberInput(attrs={'class': 'form-control'}),
 #             'cant_bidones': forms.NumberInput(attrs={'class': 'form-control'}),
 #             'vencimiento_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-#             'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}, initial=True),  # Valor predeterminado en el formulario
+#             #'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}, initial=True),  # Valor predeterminado en el formulario
 #             'nota': forms.Textarea(attrs={'class': 'form-control'}),
 #         }
 
-# class AddPromoPorClienteForm(forms.ModelForm):
-#     class Meta:
-#         model = PromoPorCliente
-#         fields = ['cliente', 'promo', 'inicio_promo', 'fin_promo',
-#                 'bidones_disponibles', 'codigo_dispenser', 'estado', 'nota']
+class AddPromoPorClienteForm(forms.ModelForm):
+    class Meta:
+        model = PromoPorCliente
+        fields = ['cliente', 'promo', 'inicio_promo', 'fin_promo',
+                'bidones_disponibles', 'codigo_dispenser', 'estado', 'nota']
 
-#         widgets = {
-#             'cliente': forms.Select(attrs={'class': 'form-control'}),
-#             'promo': forms.Select(attrs={'class': 'form-control'}),
-#             'inicio_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-#             'fin_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-#             'bidones_disponibles': forms.NumberInput(attrs={'class': 'form-control'}),
-#             'codigo_dispenser': forms.TextInput(attrs={'class': 'form-control'}),
-#             'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}, initial=True),  # Valor predeterminado en el formulario
-#             'nota': forms.Textarea(attrs={'class': 'form-control'}),
-#         }
+        widgets = {
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            # 'cliente': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'promo': forms.Select(attrs={'class': 'form-control'}),
+            'inicio_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fin_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'bidones_disponibles': forms.NumberInput(attrs={'class': 'form-control'}),
+            'codigo_dispenser': forms.TextInput(attrs={'class': 'form-control'}),
+            #'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}, initial=True),  # Valor predeterminado en el formulario
+            'nota': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Deshabilitar el campo cliente para que no sea editable
+        self.fields['cliente'].disabled = True
+        self.fields['inicio_promo'].disabled = True
 
 # class AddRegistroPagoForm(forms.ModelForm):
 #     class Meta:

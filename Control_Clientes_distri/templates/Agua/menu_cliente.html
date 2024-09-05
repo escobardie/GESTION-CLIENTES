@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Cliente</title>
+    <link href={% static 'cliente_plantilla/css/styles.css' %} rel="stylesheet">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">LOGO</div>
+            <div class="hamburger" onclick="toggleMenu()">
+                &#9776;
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="lista_clientes.html">Lista Clientes</a></li>
+                <li><a href="visitas.html">Visitas</a></li>
+                <li><a href="cobros.html">Cobros</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Detalle del Cliente</h1>
+        
+        <div class="client-info">
+            <p><strong>Nombre:</strong>  {{ cliente.nombre }}</p>
+            <p><strong>Apellido:</strong> {{ cliente.apellido }}</p>
+            <p><strong>Dirección:</strong> {{ cliente.direccion }}</p>
+            <section>
+                <!-- Mostrar las promociones relacionadas -->
+                {% if tipo_promocion.exists %}
+                        {% for promo in tipo_promocion %}
+                                <strong>Promoción:</strong> {{ promo }} <br>
+                        {% endfor %}
+                {% else %}
+                    <p>No hay promociones disponibles para este cliente.</p>
+                {% endif %}
+            </section>
+            
+        </div>
+        
+        <div class="buttons">
+            <a href="{% url 'cargar_visita' id=cliente.id %}"class="dropdown-item" >Cargar Visita</a>
+            <a href="{% url 'promo_por_cliente' id=cliente.id promo_id=cliente.tipo_promo_id %}"class="dropdown-item" >Cargar Nueva Promoción</a>
+            <a href="{% url 'cargar_cliente' %}"class="dropdown-item" >Pagos Realizados</a>
+            <a href="{% url 'cargar_cliente' %}"class="dropdown-item" >Realizar Nuevo Pago</a>
+        </div>
+
+        <div class="view-data-button">
+            <button>Ver Datos Cliente</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

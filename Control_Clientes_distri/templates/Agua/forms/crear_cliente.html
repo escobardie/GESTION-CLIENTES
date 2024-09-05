@@ -11,6 +11,9 @@
         <h2>Agregar Cliente</h2>
         <form method="POST">
             {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Enviar</button>
+            <!--
             <div class="form-group">
                 <label for="id_nombre">Nombre</label>
                 {{ form.nombre }}
@@ -36,6 +39,7 @@
                 {{ form.tipo_promo }}
             </div>
             <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+            -->
         </form>
     </div>
 </body>

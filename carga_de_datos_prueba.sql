@@ -6,7 +6,7 @@ SELECT * FROM cliente_registropago;
 
 
 INSERT INTO cliente_promo ( Nombre_Promo, Valor_Promo, Cant_bidones, Alta_promo, Vencimiento_promo, Estado, Nota)
-VALUES ( 'Promo Dispenser con 6 bidones', 21000.00, 6, '2024-09-01', '2025-12-31', TRUE, 'Promoción válida para nuevos clientes.');
+VALUES ( 'Dispenser (SIN BIDONES)', 21000.00, 0, '2024-09-01', '2025-12-31', TRUE, 'Promoción válida para nuevos clientes.');
 
 INSERT INTO cliente_cliente (Tipo_Promo_id, Nombre, Apellido, Telefono, Direccion, Fecha_alta, Fecha_Cobro, Estado)
 VALUES (2, 'Diego', 'Escobar', '154078790', 'Corrientes 2080', '2024-09-01', '2024-09-29', TRUE);
