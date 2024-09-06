@@ -25,30 +25,31 @@
     </nav>
 
     <div class="container">
-        <div class="buttons">
-            <!-- AQUI SE DEBE DE CAMBIAR A BOTONES-->
-            <a href="{% url 'listar_clientes' %}"class="dropdown-item" >Listar Cliente</a>
-            <a href="{% url 'cargar_cliente' %}"class="dropdown-item" >Cargar Cliente</a>
-        </div>
+       
 
-        <h1>Lista de Clientes Próximos a Cobrar</h1>
+        <h1>Lista de Visitas </h1>
         
         <div class="client-list">
-            {% for cliente in lista_clientes %}
-                <a href={% url 'menu_cliente'  id=cliente.id %} class="client">
-                    <p><strong>Nombre:</strong> {{ cliente.nombre }}</p>
-                    <p><strong>Apellido:</strong> {{ cliente.apellido }}</p>
-                    <p><strong>Dirección:</strong> {{ cliente.direccion }}</p>
-                    <p><strong>Fecha de Cobro:</strong> {{ cliente.fecha_cobro }}</p>
-                    {% if cliente in clientes_con_fecha_vencida %}
-                        <div class="alert alert-warning">
-                            ¡Atención! La fecha de cobro para este cliente ha vencido.
-                        </div>
-                    {% endif %}
+            {% for visita in lista_vistas %}
+                <a href="" class="client">
+                    <p><strong>Nombre y Apellido:</strong> {{ visita.cliente }}</p>
+                    <p><strong>Fecha Visita:</strong> {{ visita.fecha_visita }}</p>
+                    <p><strong>Nota:</strong> {{ visita.nota }}</p>
                 </a>
                 {% empty %}
                     <h4>No hay registros</h4>
             {% endfor %}
+        </div>
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+            {% endif %}
+
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+            {% endif %}
         </div>
         
         

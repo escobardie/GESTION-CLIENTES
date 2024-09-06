@@ -40,6 +40,30 @@ class InicioView(ListView):
         context['clientes_con_fecha_vencida'] = clientes_con_fecha_vencida
         return context
 
+class ListarClientesView(ListView):
+    model = models.Cliente
+    template_name = "Agua/listar_clientes.html"
+    context_object_name = 'lista_clientes'
+    paginate_by = 5
+    queryset = models.Cliente.objects.filter(estado=True)
+
+class ListarVisitasView(ListView):
+    model = models.Visita
+    template_name = "Agua/listar_vistas.html"
+    context_object_name = 'lista_vistas'
+    paginate_by = 5
+    # queryset = models.Visita.objects.filter(estado=True)
+    def get_cliente_data(self):
+        cliente_id = self.kwargs['id']
+        cliente = get_object_or_404(models.Cliente, id=cliente_id)
+        return cliente
+    
+    def get_queryset(self):
+        cliente = self.get_cliente_data()
+        return models.Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')
+
+
+
 class MenuClienteDetailView(DetailView):
     model = models.Cliente
     template_name = "Agua/menu_cliente.html"

@@ -6,6 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Cliente</title>
     <link href={% static 'cliente_plantilla/css/styles.css' %} rel="stylesheet">
+    <style>
+        /* Estilos adicionales para los botones */
+        .client-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .client-actions button {
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .client-actions button:hover {
+            background-color: #0056b3;
+        }
+
+        .view-data-button {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .view-data-button button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-data-button button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
     <nav>
@@ -44,11 +86,12 @@
             
         </div>
         
-        <div class="buttons">
-            <a href="{% url 'cargar_visita' id=cliente.id %}"class="dropdown-item" >Cargar Visita</a>
-            <a href="{% url 'promo_por_cliente' id=cliente.id promo_id=cliente.tipo_promo_id %}"class="dropdown-item" >Cargar Nueva Promoción</a>
-            <a href="{% url 'cargar_cliente' %}"class="dropdown-item" >Pagos Realizados</a>
-            <a href="{% url 'cargar_cliente' %}"class="dropdown-item" >Realizar Nuevo Pago</a>
+        <div class="client-actions">
+            <button onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Visitas</button>
+            <button onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Cargar Visita</button>
+            <button onclick="location.href='{% url 'promo_por_cliente' id=cliente.id promo_id=cliente.tipo_promo_id %}'">Nueva Promoción</button>
+            <button onclick="location.href='{% url 'cargar_cliente' %}'">Pagos Realizados</button>
+            <button onclick="location.href='{% url 'cargar_cliente' %}'">Nuevo Pago</button>
         </div>
 
         <div class="view-data-button">
