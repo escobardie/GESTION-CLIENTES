@@ -54,7 +54,12 @@ class PromoPorCliente(models.Model):
     promo = models.ForeignKey(Promo, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Promoción')
     inicio_promo = models.DateField(verbose_name='Inicio de Promo')
     fin_promo = models.DateField(verbose_name='Fin de Promo')
+    ########## control de bidones ##########
     bidones_disponibles = models.IntegerField(verbose_name='Bidones Disponibles')
+    entrega_bidones = models.IntegerField(default=0, verbose_name='Entrega de Bidones')
+    retorno_bidones = models.IntegerField(default=0, verbose_name='Retorno de Bidones')
+    bidones_acumulados = models.IntegerField(default=0, verbose_name='Bidones Acumulados')
+    ########## control de bidones ##########
     codigo_dispenser = models.CharField(max_length=20, verbose_name='Código Dispenser')
     estado = models.BooleanField(default=True, verbose_name='Estado')
     nota = models.TextField(verbose_name='Nota')

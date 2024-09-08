@@ -11,15 +11,15 @@
         <h2>Agregar Visita</h2>
         <form method="POST">
             {% csrf_token %}
-            <div class="form-group">
+            {% comment %} <div class="form-group">
                 <label>Bidones Disponibles:</label>
                 <p>{{ bidones_disponibles }}</p>  
-            </div>
+            </div> {% endcomment %}
             {{ form.as_p }}
-            <p>
+            {% comment %} <p>
                 <label >Entrega de Bidones:</label>
                 <input type="number" name="bidones_disponibles" value="0" class="form-control" required="" id="id_bidones_Retirados">
-            </p>
+            </p> {% endcomment %}
             <button type="submit">Enviar</button>
             <!--
             <div class="form-group">

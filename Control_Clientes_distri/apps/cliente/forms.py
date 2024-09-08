@@ -73,6 +73,53 @@ class AddPromoPorClienteForm(forms.ModelForm):
         self.fields['cliente'].disabled = True
         self.fields['inicio_promo'].disabled = True
 
+class ServisVisitaClienteForm(forms.ModelForm):
+    class Meta:
+        model = PromoPorCliente
+        fields = ['cliente', 'promo','bidones_disponibles',
+        'entrega_bidones', 'retorno_bidones', 'bidones_acumulados',
+        'codigo_dispenser', 'nota']
+
+        widgets = {
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            # 'cliente': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'promo': forms.Select(attrs={'class': 'form-control'}),
+            
+            'bidones_disponibles': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'entrega_bidones': forms.NumberInput(attrs={'class': 'form-control'}),
+            'retorno_bidones': forms.NumberInput(attrs={'class': 'form-control'}),
+            'bidones_acumulados': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
+            'codigo_dispenser': forms.TextInput(attrs={'class': 'form-control'}),
+            #'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}, initial=True),  # Valor predeterminado en el formulario
+            'nota': forms.Textarea(attrs={'class': 'form-control'}),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Deshabilitar el campo cliente para que no sea editable
+        self.fields['cliente'].disabled = True
+        # self.fields['bidones_disponibles'].disabled = True
+        # self.fields['bidones_acumulados'].disabled = True
+        self.fields['codigo_dispenser'].disabled = True
+        self.fields['promo'].disabled = True
+
+    # def clean(self):
+    #     cleaned_data = super().clean()
+    #     bidones_disponibles = cleaned_data.get('bidones_disponibles')
+    #     entrega_bidones = cleaned_data.get('entrega_bidones')
+        
+
+    #     if bidones_disponibles is not None and entrega_bidones is not None:
+    #         new_bidones_disponibles = bidones_disponibles - entrega_bidones
+    #         cleaned_data['bidones_disponibles'] = new_bidones_disponibles
+       
+    #     ##################################
+    #     bidones_acumulados = cleaned_data.get('bidones_acumulados')
+    #     retorno_bidones = cleaned_data.get('retorno_bidones')
+    #     cleaned_data['bidones_acumulados'] = bidones_acumulados + entrega_bidones - retorno_bidones
+    #     ##################################
+
+    #     return cleaned_data
+
 # class AddRegistroPagoForm(forms.ModelForm):
 #     class Meta:
 #         model = RegistroPago
@@ -88,3 +135,4 @@ class AddPromoPorClienteForm(forms.ModelForm):
 
 ## Clases CSS: Se usó class='form-control' para aplicar estilos de Bootstrap a los campos, 
 ## y class='form-check-input' para los campos de tipo checkbox (como estado).
+

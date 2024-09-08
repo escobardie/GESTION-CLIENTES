@@ -82,9 +82,35 @@ class MenuClienteDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         cliente = self.get_object()  # Obtén el cliente
 
-        # Filtrar promociones relacionadas con el cliente
-        context['tipo_promocion'] = models.Promo.objects.filter(cliente=cliente)
         
+        try:
+            promoXcliente = models.PromoPorCliente.objects.get(cliente=cliente)
+            context['tipo_promocion'] = promoXcliente.promo.nombre_promo
+            context['bidones_disponibles'] = promoXcliente.bidones_disponibles
+            context['entrega_bidones'] = promoXcliente.entrega_bidones
+            context['retorno_bidones'] = promoXcliente.retorno_bidones
+            context['bidones_acumulados'] = promoXcliente.bidones_acumulados
+            
+        except models.PromoPorCliente.MultipleObjectsReturned:
+            # Manejar el caso donde se devuelven múltiples objetos
+            promoXcliente = models.PromoPorCliente.objects.filter(cliente=cliente)
+            # Seleccionar el primero, por ejemplo
+            promoXcliente = promoXcliente.first()
+            # se retorna el nombre de la promocion
+            context['tipo_promocion'] = promoXcliente.promo.nombre_promo
+            context['bidones_disponibles'] = promoXcliente.bidones_disponibles
+            context['entrega_bidones'] = promoXcliente.entrega_bidones
+            context['retorno_bidones'] = promoXcliente.retorno_bidones
+            context['bidones_acumulados'] = promoXcliente.bidones_acumulados
+
+        except models.PromoPorCliente.DoesNotExist:
+            context['tipo_promocion'] = "No hay promociones disponibles para este cliente."
+            context['bidones_disponibles'] = 0
+            context['entrega_bidones'] = 0
+            context['retorno_bidones'] = 0
+            context['bidones_acumulados'] = 0
+
+                
         return context
 
 ################# CRUD ####################
@@ -97,9 +123,11 @@ class ClienteCreateView(CreateView):
     form_class = forms.AddClienteForm
     success_url = reverse_lazy('inicio')
     
+   
     def form_valid(self, form):
-        form.instance.autor = self.request.user
+        form.save()  # Guardar el formulario
         return super().form_valid(form)
+    
 
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
@@ -112,17 +140,28 @@ class VisitaCreateView(CreateView):
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
         return cliente
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        cliente = self.get_cliente_data()
-        ##############
-        promoXcliente = get_object_or_404(models.PromoPorCliente, cliente_id=cliente)
-        # Acceder al campo `cant_bidones` de la instancia de `promo`
-        bidones_disponibles = promoXcliente.bidones_disponibles
-        ##############
-        context['nombre_cliente'] = cliente  # Obtener el nombre del cliente
-        context['bidones_disponibles'] = bidones_disponibles
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     cliente = self.get_cliente_data()
+    #     ##############
+    #     #promoXcliente = get_object_or_404(models.PromoPorCliente, cliente_id=cliente)
+    #     try:
+    #         promoXcliente = models.PromoPorCliente.objects.get(cliente=cliente, estado=True)
+    #          # Acceder al campo `cant_bidones` de la instancia de `promo`
+    #         bidones_disponibles = promoXcliente.bidones_disponibles
+    #         ##############
+    #         context['nombre_cliente'] = cliente  # Obtener el nombre del cliente
+    #         context['bidones_disponibles'] = bidones_disponibles
+
+    #     except models.PromoPorCliente.DoesNotExist:
+    #         context['nombre_cliente'] = cliente  # Obtener el nombre del cliente
+    #         context['bidones_disponibles'] = "NO TIENE PROMOCIONES"
+    #     # # Acceder al campo `cant_bidones` de la instancia de `promo`
+    #     # bidones_disponibles = promoXcliente.bidones_disponibles
+    #     # ##############
+    #     # context['nombre_cliente'] = cliente  # Obtener el nombre del cliente
+    #     # context['bidones_disponibles'] = bidones_disponibles
+    #     return context
 
     def get_initial(self):
         # Obtener el cliente específico
@@ -130,40 +169,40 @@ class VisitaCreateView(CreateView):
         # Retornar los valores iniciales del formulario
         return {'cliente': cliente}
 
-    # def form_valid(self, form): ## original
-    #     # # Obtener el cliente específico desde los kwargs
-    #     # cliente = self.get_cliente_data()
-    #     # # Asignar el cliente al formulario antes de guardarlo
-    #     # visita = form.save(commit=False)
-    #     # visita.cliente = cliente
-    #     form.save()  # Guardar el formulario
-    #     return super().form_valid(form)
-    def form_valid(self, form):
-        cliente = self.get_cliente_data()
-        # Capturar el valor del input "bidones_disponibles"
-        # bidones_entregados = self.request.POST.get('bidones_disponibles') # original
-        bidones_entregados = int(self.request.POST.get('bidones_disponibles'))
-        
-         # Actualizar los campos en el modelo Visita
-        visita = form.save(commit=False)
-        visita.cliente = cliente
-        visita.save()  # Guardar la instancia de Visita
-        
-        # Actualizar los bidones disponibles en PromoPorCliente
-        promoXcliente = get_object_or_404(models.PromoPorCliente, cliente=cliente)
-        promoXcliente.bidones_disponibles -= bidones_entregados
-        promoXcliente.save()  # Guardar la instancia de PromoPorCliente
-
+    def form_valid(self, form): ## original
+        # # Obtener el cliente específico desde los kwargs
+        # cliente = self.get_cliente_data()
+        # # Asignar el cliente al formulario antes de guardarlo
+        # visita = form.save(commit=False)
+        # visita.cliente = cliente
+        form.save()  # Guardar el formulario
         return super().form_valid(form)
+    # def form_valid(self, form):
+    #     cliente = self.get_cliente_data()
+    #     # Capturar el valor del input "bidones_disponibles"
+    #     # bidones_entregados = self.request.POST.get('bidones_disponibles') # original
+    #     bidones_entregados = int(self.request.POST.get('bidones_disponibles'))
+        
+    #      # Actualizar los campos en el modelo Visita
+    #     visita = form.save(commit=False)
+    #     visita.cliente = cliente
+    #     visita.save()  # Guardar la instancia de Visita
+        
+    #     # Actualizar los bidones disponibles en PromoPorCliente
+    #     promoXcliente = get_object_or_404(models.PromoPorCliente, cliente=cliente)
+    #     promoXcliente.bidones_disponibles -= bidones_entregados
+    #     promoXcliente.save()  # Guardar la instancia de PromoPorCliente
 
-        # # Realizar cualquier lógica con `bidones_entregados`
-        # # Por ejemplo, podrías guardarlo en el modelo Visita
-        # promoPorCliente = form.save(commit=False)
-        # promoPorCliente.cliente = cliente
-        # promoPorCliente.bidones_disponibles = bidones_entregados  
-        # promoPorCliente.save()
-        # visita.form.save()  # Guardar el formulario
-        # return super().form_valid(form)
+    #     return super().form_valid(form)
+
+    #     # # Realizar cualquier lógica con `bidones_entregados`
+    #     # # Por ejemplo, podrías guardarlo en el modelo Visita
+    #     # promoPorCliente = form.save(commit=False)
+    #     # promoPorCliente.cliente = cliente
+    #     # promoPorCliente.bidones_disponibles = bidones_entregados  
+    #     # promoPorCliente.save()
+    #     # visita.form.save()  # Guardar el formulario
+    #     # return super().form_valid(form)
 
     def get_success_url(self):
         # Obtiene el ID del cliente desde los kwargs
@@ -207,5 +246,57 @@ class PromoPorClienteCreateView(CreateView):
     def get_success_url(self):
         # Obtiene el ID del cliente desde los kwargs
         cliente_id = self.kwargs.get('id')
+        # Genera la URL para la vista 'menu_cliente' usando el ID del cliente
+        return reverse('menu_cliente', kwargs={'id': cliente_id})
+
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ServisVisitaUpdateView(UpdateView):
+    model = models.PromoPorCliente
+    template_name = 'Agua/forms/servis_visita_cliente.html'
+    form_class = forms.ServisVisitaClienteForm
+    slug_field = 'slug'
+    slug_url_kwarg = 'pk'
+
+    def get_object(self):
+        cliente_id = self.kwargs.get('pk')
+        # Busca el objeto usando cliente_id
+        return get_object_or_404(models.PromoPorCliente, cliente_id=cliente_id)
+    
+    def get_cliente_data(self):
+        # Obtén el cliente_id de los argumentos de la URL
+        cliente_id = self.kwargs['pk']
+        cliente = get_object_or_404(models.Cliente, id=cliente_id)
+        return cliente
+
+
+    def form_valid(self, form):
+        cliente = self.get_cliente_data()
+        bidones_disponibles = self.request.POST.get('bidones_disponibles')
+        entrega_bidones = int(self.request.POST.get('entrega_bidones'))
+        retorno_bidones = int(self.request.POST.get('retorno_bidones'))
+        bidones_acumulados = self.request.POST.get('bidones_acumulados')
+        
+        # Actualizar los bidones disponibles en PromoPorCliente
+        PromoPorCliente = form.save(commit=False)
+        PromoPorCliente.entrega_bidones = 0 
+        PromoPorCliente.retorno_bidones = 0
+        PromoPorCliente.save()  # Guardar la instancia 
+
+        # Crear una nueva instancia de Visita y guardar
+        visita = models.Visita.objects.create(
+            cliente=cliente,
+            nota="SE REALIZA VISITA, DATOS DE LA VISITA: \n"+
+                f"BIDONES DISPONIBLES: {bidones_disponibles}  \n"+
+                f"BIDONES ENTREGADOS AL CLIENTE: {entrega_bidones}  \n"+
+                f"BIDONES RETIRADOS DEL DOMICILIO: {retorno_bidones}  \n"+
+                f"BIDONES EN PODER DEL CLIENTE: {bidones_acumulados}  \n"
+        )
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # Obtiene el ID del cliente desde los kwargs
+        cliente_id = self.kwargs.get('pk')
         # Genera la URL para la vista 'menu_cliente' usando el ID del cliente
         return reverse('menu_cliente', kwargs={'id': cliente_id})
