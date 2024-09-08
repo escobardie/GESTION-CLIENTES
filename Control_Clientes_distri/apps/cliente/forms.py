@@ -53,14 +53,14 @@ class AddVisitaForm(forms.ModelForm):
 class AddPromoPorClienteForm(forms.ModelForm):
     class Meta:
         model = PromoPorCliente
-        fields = ['cliente', 'promo', 'inicio_promo', 'fin_promo',
+        fields = ['cliente', 'promo', 'fin_promo',
                 'bidones_disponibles', 'codigo_dispenser', 'estado', 'nota']
 
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             # 'cliente': forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
             'promo': forms.Select(attrs={'class': 'form-control'}),
-            'inicio_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            #'inicio_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fin_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'bidones_disponibles': forms.NumberInput(attrs={'class': 'form-control'}),
             'codigo_dispenser': forms.TextInput(attrs={'class': 'form-control'}),
@@ -71,8 +71,7 @@ class AddPromoPorClienteForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Deshabilitar el campo cliente para que no sea editable
         self.fields['cliente'].disabled = True
-        self.fields['inicio_promo'].disabled = True
-
+        
 class ServisVisitaClienteForm(forms.ModelForm):
     class Meta:
         model = PromoPorCliente

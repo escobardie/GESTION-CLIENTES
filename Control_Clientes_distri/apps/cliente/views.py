@@ -48,7 +48,7 @@ class ListarClientesView(ListView):
     template_name = "Agua/listar_clientes.html"
     context_object_name = 'lista_clientes'
     paginate_by = 5
-    queryset = models.Cliente.objects.filter(estado=True)
+    queryset = models.Cliente.objects.filter(estado=True).order_by('-fecha_alta')
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarVisitasView(ListView):
@@ -90,6 +90,7 @@ class MenuClienteDetailView(DetailView):
             context['entrega_bidones'] = promoXcliente.entrega_bidones
             context['retorno_bidones'] = promoXcliente.retorno_bidones
             context['bidones_acumulados'] = promoXcliente.bidones_acumulados
+            context['promo_asignado'] = True
             
         except models.PromoPorCliente.MultipleObjectsReturned:
             # Manejar el caso donde se devuelven múltiples objetos
@@ -102,9 +103,11 @@ class MenuClienteDetailView(DetailView):
             context['entrega_bidones'] = promoXcliente.entrega_bidones
             context['retorno_bidones'] = promoXcliente.retorno_bidones
             context['bidones_acumulados'] = promoXcliente.bidones_acumulados
+            context['promo_asignado'] = True
 
         except models.PromoPorCliente.DoesNotExist:
-            context['tipo_promocion'] = "No hay promociones disponibles para este cliente."
+            context['tipo_promocion'] = "No se cargo PROMOCION para este cliente."
+            context['promo_asignado'] = False
             context['bidones_disponibles'] = 0
             context['entrega_bidones'] = 0
             context['retorno_bidones'] = 0

@@ -52,7 +52,8 @@ class Cliente(models.Model):
 class PromoPorCliente(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente')
     promo = models.ForeignKey(Promo, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Promoción')
-    inicio_promo = models.DateField(verbose_name='Inicio de Promo')
+    inicio_promo = models.DateTimeField(auto_now_add=True, verbose_name='Inicio de Promo')
+    # inicio_promo = models.DateField(verbose_name='Inicio de Promo')
     fin_promo = models.DateField(verbose_name='Fin de Promo')
     ########## control de bidones ##########
     bidones_disponibles = models.IntegerField(verbose_name='Bidones Disponibles')
@@ -80,7 +81,8 @@ class PromoPorCliente(models.Model):
 ###########################
 class Visita(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente')
-    fecha_visita = models.DateField(auto_now_add=True, verbose_name='Fecha de Visita')
+    # fecha_visita = models.DateField(auto_now_add=True, verbose_name='Fecha de Visita')
+    fecha_visita = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Visita')
     nota = models.TextField(verbose_name='Nota')
 
     class Meta:
@@ -89,7 +91,8 @@ class Visita(models.Model):
         ordering = ['fecha_visita']
     
     def __str__(self):
-        return f"Visita a {self.cliente} el {self.fecha_visita}"
+        return f"Visita a {self.cliente} el {self.fecha_visita.strftime('%d/%m/%Y %H:%M')}"
+
 
 
 
@@ -98,7 +101,8 @@ class Visita(models.Model):
 ###########################
 class RegistroPago(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente')
-    fecha = models.DateField(verbose_name='Fecha de Pago')
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Pago')
+    # fecha = models.DateField(verbose_name='Fecha de Pago')
     monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Monto')
     comprobante = models.FileField(upload_to='comprobantes/registro_pagos/clientes', null=True, blank=True, verbose_name='Comprobante')
     nota = models.TextField(verbose_name='Nota')
