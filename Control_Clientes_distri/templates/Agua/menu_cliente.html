@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detalle del Cliente</title>
-    <link href={% static 'cliente_plantilla/css/styles.css' %} rel="stylesheet">
+    <link href="{% static 'cliente_plantilla/css/styles.css' %}" rel="stylesheet">
     <style>
         /* Estilos adicionales para los botones */
         .client-actions {
@@ -64,11 +64,11 @@
                 &#9776;
             </div>
             <ul class="nav-links">
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="lista_clientes.html">Lista Clientes</a></li>
-                <li><a href="visitas.html">Visitas</a></li>
-                <li><a href="cobros.html">Cobros</a></li>
-                <li><a href="promociones.html">Promociones</a></li>
+                <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                <li><a href="{% url 'listar_clientes' %}">Lista Clientes</a></li>
+                <li><a href="{% url 'listar_visitas' id=cliente.id %}">Visitas</a></li>
+                <li><a href="#">Cobros</a></li> <!-- Reemplaza con URL adecuada -->
+                <li><a href="#">Promociones</a></li> <!-- Reemplaza con URL adecuada -->
             </ul>
         </div>
     </nav>
@@ -77,10 +77,35 @@
         <h1>Detalle del Cliente</h1>
         
         <div class="client-info">
-            <p><strong>Cliente:</strong>  {{ cliente.nombre }} {{ cliente.apellido }}</p>
+            <p><strong>Cliente:</strong> {{ cliente.nombre }} {{ cliente.apellido }}</p>
             <p><strong>Dirección:</strong> {{ cliente.direccion }}</p>
             <p><strong>Fecha de Alta:</strong> {{ cliente.fecha_alta }}</p>
-            <p><strong>Promoción:</strong> {{ tipo_promocion }}</p>           
+
+            <!-- Tabla con radio buttons para seleccionar una promoción -->
+            <div style="display: flex; justify-content: center; align-items: center;">
+                <table border="1" cellpadding="10" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Nombre de la Promoción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for promo in promociones %}
+                        <tr>
+                            <td>
+                                <input type="radio" name="promo_seleccionada" value="{{ promo.id }}" onchange="updateUrlAndButtons('{{ promo.id }}')">
+                            </td>
+                            <td>{{ promo.promo.nombre_promo }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2">No hay promociones disponibles</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             <div style="display: flex; justify-content: center; align-items: center;">
                 <table border="1" cellpadding="10" cellspacing="0">
@@ -100,38 +125,31 @@
                         <td><strong>Bidones Retirados:</strong></td>
                         <td>{{ retorno_bidones }}</td>
                     </tr>
-                    
                     <tr>
                         <td><strong>Bidones en Domicilio:</strong></td>
-                        <td>{{  bidones_acumulados}}</td>
+                        <td>{{ bidones_acumulados }}</td>
                     </tr>
-                    
                 </table>
             </div>
-            
-            
         </div>
         
         <div class="client-actions">
-            <button onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Visitas</button>
-            <button onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Cargar Visita</button>
+            <button id="ver-visitas-btn" onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Visitas</button>
+            <button id="cargar-visita-btn" onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Cargar Visita</button>
             <button 
-                onclick="location.href='{% url 'servis_visita' pk=cliente.id %}'"
+                id="servis-visita-btn"
                 class="servis-visita-button"
-                {% if not promo_asignado %} disabled {% endif %}>
+                disabled>
                 Servis Visita
             </button>
             <button 
-                onclick="location.href='{% url 'promo_por_cliente' id=cliente.id promo_id=cliente.tipo_promo_id %}'"
-                class="servis-visita-button"
-                {% if promo_asignado %} disabled {% endif %}>
+                {% comment %} id="cargar-promocion-btn" {% endcomment %}
+                onclick="location.href='{% url 'promo_por_cliente' id=cliente.id %}'"
+                class="servis-visita-button">
                 Cargar Promoción
             </button>
-            {% comment %} <button onclick="location.href='{% url 'promo_por_cliente' id=cliente.id promo_id=cliente.tipo_promo_id %}'">Cargar Promoción</button> {% endcomment %}
             <button onclick="location.href='{% url 'cargar_cliente' %}'">Pagos Realizados</button>
             <button onclick="location.href='{% url 'cargar_cliente' %}'">Nuevo Pago</button>
-            
-            
         </div>
 
         <div class="view-data-button">
@@ -144,6 +162,28 @@
             const navLinks = document.querySelector('.nav-links');
             navLinks.classList.toggle('active');
         }
+
+        function updateUrlAndButtons(promoId) {
+            const servisVisitaBtn = document.getElementById('servis-visita-btn');
+            {% comment %} const cargarPromocionBtn = document.getElementById('cargar-promocion-btn'); {% endcomment %}
+
+            if (promoId) {
+                servisVisitaBtn.removeAttribute('disabled');
+                servisVisitaBtn.setAttribute('onclick', `location.href='{% url 'servis_visita' pk=cliente.id %}?id_promo=${promoId}'`);
+            } else {
+                servisVisitaBtn.setAttribute('disabled', 'disabled');
+            }
+        }
+
+        // Reiniciar la selección de promociones y actualizar botones en cada carga de página
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Deseleccionar todos los radio buttons
+            const radios = document.querySelectorAll('input[name="promo_seleccionada"]');
+            radios.forEach(radio => radio.checked = false);
+            
+            // Actualizar el botón Servis Visita como deshabilitado
+            updateUrlAndButtons(null);
+        });
     </script>
 </body>
 </html>

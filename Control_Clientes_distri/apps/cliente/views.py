@@ -82,39 +82,76 @@ class MenuClienteDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         cliente = self.get_object()  # Obtén el cliente
 
-        
-        try:
-            promoXcliente = models.PromoPorCliente.objects.get(cliente=cliente)
-            context['tipo_promocion'] = promoXcliente.promo.nombre_promo
-            context['bidones_disponibles'] = promoXcliente.bidones_disponibles
-            context['entrega_bidones'] = promoXcliente.entrega_bidones
-            context['retorno_bidones'] = promoXcliente.retorno_bidones
-            context['bidones_acumulados'] = promoXcliente.bidones_acumulados
-            context['promo_asignado'] = True
-            
-        except models.PromoPorCliente.MultipleObjectsReturned:
-            # Manejar el caso donde se devuelven múltiples objetos
-            promoXcliente = models.PromoPorCliente.objects.filter(cliente=cliente)
-            # Seleccionar el primero, por ejemplo
-            promoXcliente = promoXcliente.first()
-            # se retorna el nombre de la promocion
-            context['tipo_promocion'] = promoXcliente.promo.nombre_promo
-            context['bidones_disponibles'] = promoXcliente.bidones_disponibles
-            context['entrega_bidones'] = promoXcliente.entrega_bidones
-            context['retorno_bidones'] = promoXcliente.retorno_bidones
-            context['bidones_acumulados'] = promoXcliente.bidones_acumulados
-            context['promo_asignado'] = True
+        # Obtén todas las promociones relacionadas con el cliente
+        promociones = models.PromoPorCliente.objects.filter(cliente=cliente,estado=True)
 
-        except models.PromoPorCliente.DoesNotExist:
-            context['tipo_promocion'] = "No se cargo PROMOCION para este cliente."
-            context['promo_asignado'] = False
-            context['bidones_disponibles'] = 0
-            context['entrega_bidones'] = 0
-            context['retorno_bidones'] = 0
-            context['bidones_acumulados'] = 0
+        # Crear listas para los datos que se mostrarán
+        bidones_disponibles = []
+        entrega_bidones = []
+        retorno_bidones = []
+        bidones_acumulados = []
+
+        for promo in promociones:
+            bidones_disponibles.append(promo.bidones_disponibles)
+            entrega_bidones.append(promo.entrega_bidones)
+            retorno_bidones.append(promo.retorno_bidones)
+            bidones_acumulados.append(promo.bidones_acumulados)
+
+        # Agregar la información al contexto
+        context['promociones'] = promociones
+        context['bidones_disponibles'] = bidones_disponibles
+        context['entrega_bidones'] = entrega_bidones
+        context['retorno_bidones'] = retorno_bidones
+        context['bidones_acumulados'] = bidones_acumulados
+        context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
+
+        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     cliente = self.get_object()  # Obtén el cliente
+
+    #     # Obtén todas las promociones relacionadas con el cliente
+    #     promociones = models.PromoPorCliente.objects.filter(cliente=cliente)
+
+        
+    #     try:
+    #         #promoXcliente = models.PromoPorCliente.objects.get(cliente=cliente)
+    #         promoXcliente = models.PromoPorCliente.objects.filter(cliente=cliente)
+    #         # context['tipo_promocion'] = cliente.promociones.all() #promoXcliente.promo.nombre_promo
+            
+    #         context['promociones'] = promoXcliente
+    #         # context['bidones_disponibles'] = promoXcliente.bidones_disponibles
+    #         # context['entrega_bidones'] = promoXcliente.entrega_bidones
+    #         # context['retorno_bidones'] = promoXcliente.retorno_bidones
+    #         # context['bidones_acumulados'] = promoXcliente.bidones_acumulados
+    #         context['promo_asignado'] = True
+            
+    #     except models.PromoPorCliente.MultipleObjectsReturned:
+    #         # Manejar el caso donde se devuelven múltiples objetos
+    #         promoXcliente = models.PromoPorCliente.objects.filter(cliente=cliente)
+    #         # Seleccionar el primero, por ejemplo
+    #         promoXcliente = promoXcliente.first()
+            
+    #         # se retorna el nombre de la promocion
+    #         # context['tipo_promocion'] = cliente.promociones.all() #promoXcliente.promo.nombre_promo
+    #         context['promociones'] = promoXcliente
+    #         context['bidones_disponibles'] = promoXcliente.bidones_disponibles
+    #         context['entrega_bidones'] = promoXcliente.entrega_bidones
+    #         context['retorno_bidones'] = promoXcliente.retorno_bidones
+    #         context['bidones_acumulados'] = promoXcliente.bidones_acumulados
+    #         context['promo_asignado'] = True
+
+    #     except models.PromoPorCliente.DoesNotExist:
+    #         #context['tipo_promocion'] = "No se cargo PROMOCION para este cliente."
+    #         context['promociones'] = promociones
+    #         context['promo_asignado'] = False
+    #         context['bidones_disponibles'] = 0
+    #         context['entrega_bidones'] = 0
+    #         context['retorno_bidones'] = 0
+    #         context['bidones_acumulados'] = 0
 
                 
-        return context
+    #     return context
 
 ################# CRUD ####################
 
@@ -219,27 +256,22 @@ class PromoPorClienteCreateView(CreateView):
     template_name = 'Agua/forms/promo_x_cliente.html'
     form_class = forms.AddPromoPorClienteForm
 
-    # def get_cliente_data(self):
-    #     cliente_id = self.kwargs['id']
-    #     cliente = get_object_or_404(models.Cliente, id=cliente_id)
-    #     return cliente
-
     def get_initial(self):
         # Obtener el cliente específico
         cliente_id = self.kwargs['id']
-        promo_id = self.kwargs['promo_id']
+        # promo_id = self.kwargs['promo_id']
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
-        promo = get_object_or_404(models.Promo, id=promo_id)
+        # promo = get_object_or_404(models.Promo, id=promo_id)
         fecha_actual = datetime.now().date().isoformat()  # 'YYYY-MM-DD'  # Obtiene solo la fecha actual
         # Acceder al campo `cant_bidones` de la instancia de `promo`
-        bidones_disponibles = promo.cant_bidones
+        # bidones_disponibles = promo.cant_bidones
         # Retornar los valores iniciales del formulario
         # return {'cliente': cliente, 'promo':promo} # ORIGINAL
         return {
             'cliente': cliente, 
-            'promo': promo, 
+            # 'promo': promo, 
             'inicio_promo': fecha_actual, 
-            'bidones_disponibles': bidones_disponibles
+            #'bidones_disponibles': bidones_disponibles
         }
 
     def form_valid(self, form):
@@ -261,10 +293,15 @@ class ServisVisitaUpdateView(UpdateView):
     slug_field = 'slug'
     slug_url_kwarg = 'pk'
 
+    # def get_object(self):
+    #     cliente_id = self.kwargs.get('pk')
+    #     # Busca el objeto usando cliente_id
+    #     return get_object_or_404(models.PromoPorCliente, cliente_id=cliente_id)
     def get_object(self):
         cliente_id = self.kwargs.get('pk')
-        # Busca el objeto usando cliente_id
-        return get_object_or_404(models.PromoPorCliente, cliente_id=cliente_id)
+        id_promo = self.request.GET.get('id_promo')  # Obtén el id de la promo de los parámetros GET
+        # Busca el objeto usando cliente_id y id_promo
+        return get_object_or_404(models.PromoPorCliente, cliente_id=cliente_id, id=id_promo)
     
     def get_cliente_data(self):
         # Obtén el cliente_id de los argumentos de la URL

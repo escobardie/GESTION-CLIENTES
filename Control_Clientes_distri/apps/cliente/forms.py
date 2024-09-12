@@ -7,7 +7,7 @@ class AddClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
         fields = ['nombre', 'apellido', 'telefono',
-                  'direccion', 'fecha_cobro','tipo_promo']
+                  'direccion', 'fecha_cobro']
 
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
@@ -15,10 +15,11 @@ class AddClienteForm(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
             'fecha_cobro': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'tipo_promo': forms.Select(attrs={'class': 'form-control'}),
+            # 'tipo_promo': forms.Select(attrs={'class': 'form-control'}),
             # tipo_promo es una relación de clave foránea (ForeignKey) y solo se puede 
             # seleccionar una promoción, se debería usar forms.Select. 
         }
+        
 
 class AddVisitaForm(forms.ModelForm):
     class Meta:

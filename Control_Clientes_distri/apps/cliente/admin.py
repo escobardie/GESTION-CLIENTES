@@ -1,17 +1,33 @@
 from django.contrib import admin
 from . import models    
-
+from django.utils.html import format_html
 
 admin.site.site_header = 'Administración Clientes'
 admin.site.index_title = 'Panel de Control'
 admin.site.site_title = 'Cliente'
 
 
+
+
 class ClientesAdmin(admin.ModelAdmin):
-    readonly_fields = ('nombre','apellido', 'direccion', 'telefono', 'fecha_alta', 'tipo_promo','fecha_cobro')
-    list_display = ('nombre','apellido', 'direccion', 'tipo_promo','fecha_cobro')
+    readonly_fields = ('nombre', 'apellido', 'direccion', 'telefono', 'fecha_alta', 'fecha_cobro')
+    list_display = ('nombre', 'apellido', 'direccion', 'fecha_cobro', 'listar_promociones')
+
+    def listar_promociones(self, obj):
+        promociones = obj.promociones.all()  # 'promociones' es el related_name que usamos en PromoPorCliente
+        if promociones:
+            return format_html(", ".join([str(promo.promo) for promo in promociones]))
+        return "No tiene promociones"
+    
+    listar_promociones.short_description = 'Promociones'
 
 admin.site.register(models.Cliente, ClientesAdmin)
+
+# class ClientesAdmin(admin.ModelAdmin): # ORIGINAL
+#     readonly_fields = ('nombre','apellido', 'direccion', 'telefono', 'fecha_alta','fecha_cobro')
+#     list_display = ('nombre','apellido', 'direccion','fecha_cobro')
+
+# admin.site.register(models.Cliente, ClientesAdmin)
 
 class PromoAdmin(admin.ModelAdmin):
     readonly_fields = ('cant_bidones','nombre_promo')
