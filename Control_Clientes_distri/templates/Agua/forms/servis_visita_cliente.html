@@ -13,6 +13,10 @@
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
+                <label for="">Promocion:</label>
+                {{ form.promo }}
+            </div>
+            <div class="form-group">
                 <label for="id_bidones_disponibles">Bidones Disponibles:</label>
                 {{ form.bidones_disponibles }}
             </div>

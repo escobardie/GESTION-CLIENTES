@@ -6,6 +6,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lista de Clientes Próximos a Vencer</title>
     <link href="{% static 'cliente_plantilla/css/styles.css' %}" rel="stylesheet">
+    <style>
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            font-family: Arial, sans-serif;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .client-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .client {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .client-name {
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        .visit-date {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .visit-note {
+            font-weight: bold;
+            background-color: #e9f7ef;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .pagination span {
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+    </style>
 
 </head>
 <body>
@@ -26,21 +83,27 @@
     </nav>
 
     <div class="container">
-       
 
         <h1>Lista de Visitas </h1>
-        
-        <div class="client-list">
-            {% for visita in lista_vistas %}
-                <a class="client">
-                    <p><strong>Nombre y Apellido:</strong> {{ visita.cliente }}</p>
-                    <p><strong>Fecha Visita:</strong> {{ visita.fecha_visita }}</p>
-                    <p><strong>Nota:</strong> {{ visita.nota }}</p>
-                </a>
-                {% empty %}
+
+            <div class="client-list">
+                {% for visita in lista_vistas %}
+                    <a class="client">
+                        <p class="client-name"><strong>Nombre y Apellido:</strong>{{ visita.cliente }}</p>
+                        <p class="visit-date"><strong>Fecha Visita:</strong> {{ visita.fecha_visita }}</p>
+                        <div class="visit-note">
+                            <strong>Nota:</strong>
+                            {{ visita.nota|safe }}
+                        </div>
+                    </a>
+                    {% empty %}
                     <h4>No hay registros</h4>
-            {% endfor %}
-        </div>
+                
+                {% endfor %}
+
+            </div>        
+
+
         <div class="pagination">
             {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>

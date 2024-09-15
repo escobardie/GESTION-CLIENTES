@@ -105,6 +105,9 @@ class MenuClienteDetailView(DetailView):
         context['bidones_acumulados'] = bidones_acumulados
         context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
 
+
+        
+
         return context
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
@@ -210,11 +213,7 @@ class VisitaCreateView(CreateView):
         return {'cliente': cliente}
 
     def form_valid(self, form): ## original
-        # # Obtener el cliente específico desde los kwargs
-        # cliente = self.get_cliente_data()
-        # # Asignar el cliente al formulario antes de guardarlo
-        # visita = form.save(commit=False)
-        # visita.cliente = cliente
+        
         form.save()  # Guardar el formulario
         return super().form_valid(form)
     # def form_valid(self, form):
@@ -293,10 +292,7 @@ class ServisVisitaUpdateView(UpdateView):
     slug_field = 'slug'
     slug_url_kwarg = 'pk'
 
-    # def get_object(self):
-    #     cliente_id = self.kwargs.get('pk')
-    #     # Busca el objeto usando cliente_id
-    #     return get_object_or_404(models.PromoPorCliente, cliente_id=cliente_id)
+
     def get_object(self):
         cliente_id = self.kwargs.get('pk')
         id_promo = self.request.GET.get('id_promo')  # Obtén el id de la promo de los parámetros GET
@@ -312,6 +308,9 @@ class ServisVisitaUpdateView(UpdateView):
 
     def form_valid(self, form):
         cliente = self.get_cliente_data()
+        
+        promo_id = self.request.GET.get('id_promo')  # Obtén el id de la promo de los parámetros GET
+        
         bidones_disponibles = self.request.POST.get('bidones_disponibles')
         entrega_bidones = int(self.request.POST.get('entrega_bidones'))
         retorno_bidones = int(self.request.POST.get('retorno_bidones'))
@@ -323,14 +322,20 @@ class ServisVisitaUpdateView(UpdateView):
         PromoPorCliente.retorno_bidones = 0
         PromoPorCliente.save()  # Guardar la instancia 
 
+
+        # Obtener la promoción usando promo_id
+        promo = get_object_or_404(models.PromoPorCliente, id=promo_id)
+
         # Crear una nueva instancia de Visita y guardar
         visita = models.Visita.objects.create(
             cliente=cliente,
-            nota="SE REALIZA VISITA, DATOS DE LA VISITA: \n"+
-                f"BIDONES DISPONIBLES: {bidones_disponibles}  \n"+
-                f"BIDONES ENTREGADOS AL CLIENTE: {entrega_bidones}  \n"+
-                f"BIDONES RETIRADOS DEL DOMICILIO: {retorno_bidones}  \n"+
-                f"BIDONES EN PODER DEL CLIENTE: {bidones_acumulados}  \n"
+            nota="<ul>"+
+                    f"<li>PROMOCION:  {promo.promo.nombre_promo}</li>"+
+                    f"<li>BIDONES DISPONIBLES:  {bidones_disponibles}</li>"+
+                    f"<li>BIDONES ENTREGADOS AL CLIENTE: {entrega_bidones} </li>"+
+                    f"<li>BIDONES RETIRADOS DEL DOMICILIO:{retorno_bidones}</li>"+
+                    f"<li>BIDONES EN PODER DEL CLIENTE: {bidones_acumulados}</li>"+
+                "</ul>"
         )
 
         return super().form_valid(form)
