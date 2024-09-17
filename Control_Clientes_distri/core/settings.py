@@ -38,6 +38,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.DatabaseRouterMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -64,18 +65,33 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+DATABASE_ROUTERS = ['core.routers.CustomDatabaseRouter']
 DATABASES = {
-    "default":
-        {
-            "ENGINE": 'django.db.backends.mysql',
-            "NAME": config('DB_NAME'),
-            "USER": config('DB_USER'),
-            "PASSWORD": config('DB_PASSWORD'),
-            "HOST": config('DB_HOST'),
-            "PORT": config('DB_PORT'),
-        }
+    "default": {
+        "ENGINE": 'django.db.backends.mysql',
+        "NAME": config('DB_NAME'),
+        "USER": config('DB_USER'),
+        "PASSWORD": config('DB_PASSWORD'),
+        "HOST": config('DB_HOST'),
+        "PORT": config('DB_PORT'),
+    },
+    "db_usuario1": {
+        "ENGINE": 'django.db.backends.mysql',
+        "NAME": config('DB1_NAME'),
+        "USER": config('DB1_USER'),
+        "PASSWORD": config('DB1_PASSWORD'),
+        "HOST": config('DB1_HOST'),
+        "PORT": config('DB1_PORT'),
+    },
+    "db_usuario2": {
+        "ENGINE": 'django.db.backends.mysql',
+        "NAME": config('DB2_NAME'),
+        "USER": config('DB2_USER'),
+        "PASSWORD": config('DB2_PASSWORD'),
+        "HOST": config('DB2_HOST'),
+        "PORT": config('DB2_PORT'),
+    },
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

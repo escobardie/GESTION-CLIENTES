@@ -101,19 +101,88 @@ class Visita(models.Model):
 ###########################
 ## Modelo REGISTRO PAGOS ##
 ###########################
-class RegistroPago(models.Model):
+# class RegistroPago(models.Model):
+#     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente')
+#     fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Pago')
+#     # fecha = models.DateField(verbose_name='Fecha de Pago')
+#     monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Monto')
+#     comprobante = models.FileField(upload_to='comprobantes/registro_pagos/clientes', null=True, blank=True, verbose_name='Comprobante')
+#     nota = models.TextField(verbose_name='Nota')
+
+#     class Meta:
+#         verbose_name = 'Registro de Pago'
+#         verbose_name_plural = 'Registros de Pago'
+#         ordering = ['fecha']
+    
+#     def __str__(self):
+#         return f"Pago de {self.cliente} el {self.fecha}"
+
+
+##########################
+###### Modelo VENTA ######
+##########################
+class Venta(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente')
-    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Pago')
-    # fecha = models.DateField(verbose_name='Fecha de Pago')
-    monto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Monto')
-    comprobante = models.FileField(upload_to='comprobantes/registro_pagos/clientes', null=True, blank=True, verbose_name='Comprobante')
-    nota = models.TextField(verbose_name='Nota')
+    fecha_venta = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Venta')
 
     class Meta:
-        verbose_name = 'Registro de Pago'
-        verbose_name_plural = 'Registros de Pago'
-        ordering = ['fecha']
-    
-    def __str__(self):
-        return f"Pago de {self.cliente} el {self.fecha}"
+        verbose_name = 'Venta'
+        verbose_name_plural = 'Ventas'
+        ordering = ['fecha_venta']
 
+    def __str__(self):
+        return f"Venta {self.id} - {self.fecha_venta}"
+
+
+###########################
+##### Modelo PRODUCTO #####
+###########################
+class Producto(models.Model):
+    nombre_producto = models.CharField(max_length=250, verbose_name='Nombre Producto')
+    precio_producto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio')
+    alta_producto = models.DateField(auto_now_add=True, verbose_name='Fecha Alta Producto')
+    proveedor = models.CharField(max_length=100, null=True, blank=True, verbose_name='Nombre Proveedor')
+    stock = models.PositiveIntegerField(default=0, verbose_name='Stock')
+    imagen_url = models.FileField(upload_to='productos/img', null=True, blank=True, verbose_name='Imagen URL')
+    # FileField: Propósito: Se usa para subir y almacenar archivos en el servidor.
+    descripcion_producto = models.TextField(null=True, blank=True, verbose_name='Descripcion')
+    estado = models.BooleanField(default=True, verbose_name='Estado')
+
+    class Meta:
+        verbose_name='Producto'
+        verbose_name_plural='Productos'
+        ordering = ['nombre_producto']
+
+    def __str__(self):
+        return f"Producto {self.nombre_producto} ${self.precio_producto}"
+
+
+
+
+#################################
+##### Modelo VENTA PRODUCTO #####
+#################################
+class VentaProducto(models.Model):
+    fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha Venta Producto')
+    venta = models.ForeignKey(Venta, on_delete=models.CASCADE, verbose_name='Venta')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, verbose_name='Producto')
+    cantidad = models.PositiveIntegerField(verbose_name='Cantidad')
+    descuento = models.PositiveIntegerField(default=0, verbose_name='Descuento')
+    precio_venta = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name='Precio Venta')
+    # precio_venta: almacenan el precio de venta individual del producto.
+    # tambien puede estar alacenando el precio ya con el descuento aplicado
+    # precio_total_venta = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name='Precio Total Venta')
+
+    # Se calcula el total, no es necesario almacenar un campo derivado
+    @property
+    def precio_total_venta(self):
+        return (self.precio_venta * self.cantidad) - self.descuento
+
+    class Meta:
+        unique_together = ('venta', 'producto')
+        verbose_name='Venta'
+        verbose_name_plural='Ventas'
+        ordering = ['id']
+
+    def __str__(self):
+        return f"{self.producto.nombre_producto} - {self.precio_venta} - {self.cantidad} unidades - Total: {self.precio_total_venta:.2f}"
