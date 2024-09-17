@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente,Visita,Promo,PromoPorCliente,RegistroPago
+from .models import Cliente,Visita,Promo,PromoPorCliente,Venta,Producto,VentaProducto
 
 
 class AddClienteForm(forms.ModelForm):

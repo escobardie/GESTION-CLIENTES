@@ -47,8 +47,20 @@ class VisitaAdmin(admin.ModelAdmin):
 
 admin.site.register(models.Visita, VisitaAdmin)
 
-class RegsitroPagosAdmin(admin.ModelAdmin):
-    readonly_fields = ('cliente','fecha','monto', 'comprobante', 'nota')
-    list_display = ('fecha', 'cliente','monto')
+class VentaAdmin(admin.ModelAdmin):
+    readonly_fields = ('cliente', 'fecha_venta')
+    list_display = ('cliente', 'fecha_venta')
 
-admin.site.register(models.RegistroPago, RegsitroPagosAdmin)
+admin.site.register(models.Venta, VentaAdmin)
+
+class ProductoAdmin(admin.ModelAdmin):
+    readonly_fields = ('nombre_producto', 'precio_producto', 'stock', 'estado')
+    list_display = ('nombre_producto', 'precio_producto', 'stock', 'estado')
+
+admin.site.register(models.Producto, ProductoAdmin)
+
+class VentaProductoAdmin(admin.ModelAdmin):
+    readonly_fields = ('id', 'fecha', 'producto', 'cantidad','precio_total_venta')
+    list_display = ('id', 'fecha', 'producto', 'cantidad','precio_total_venta')
+
+admin.site.register(models.VentaProducto, VentaProductoAdmin)
