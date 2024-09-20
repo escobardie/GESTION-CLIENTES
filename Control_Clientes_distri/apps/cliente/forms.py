@@ -36,21 +36,6 @@ class AddVisitaForm(forms.ModelForm):
         # Deshabilitar el campo cliente para que no sea editable
         self.fields['cliente'].disabled = True
 
-# class AddPromoForm(forms.ModelForm):
-#     class Meta:
-#         model = Promo
-#         fields = ['nombre_promo', 'valor_promo', 'cant_bidones',
-#                 'vencimiento_promo', 'estado', 'nota']
-
-#         widgets = {
-#             'nombre_promo': forms.TextInput(attrs={'class': 'form-control'}),
-#             'valor_promo': forms.NumberInput(attrs={'class': 'form-control'}),
-#             'cant_bidones': forms.NumberInput(attrs={'class': 'form-control'}),
-#             'vencimiento_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-#             #'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}, initial=True),  # Valor predeterminado en el formulario
-#             'nota': forms.Textarea(attrs={'class': 'form-control'}),
-#         }
-
 class AddPromoPorClienteForm(forms.ModelForm):
     class Meta:
         model = PromoPorCliente
@@ -120,19 +105,39 @@ class ServisVisitaClienteForm(forms.ModelForm):
 
     #     return cleaned_data
 
-# class AddRegistroPagoForm(forms.ModelForm):
-#     class Meta:
-#         model = RegistroPago
-#         fields = ['cliente', 'fecha', 'monto', 'comprobante', 'nota']
+class ProductoForm(forms.ModelForm):
 
-#         widgets = {
-#             'cliente': forms.Select(attrs={'class': 'form-control'}),
-#             'fecha': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-#             'monto': forms.NumberInput(attrs={'class': 'form-control'}),
-#             'comprobante': forms.FileInput(attrs={'class': 'form-control'}),
-#             'nota': forms.Textarea(attrs={'class': 'form-control'}),
-#         }
+    class Meta:
+        model = Producto
+        fields = ['nombre_producto', 'precio_producto',
+                  'proveedor', 'stock','imagen_url','descripcion_producto']
 
-## Clases CSS: Se usó class='form-control' para aplicar estilos de Bootstrap a los campos, 
-## y class='form-check-input' para los campos de tipo checkbox (como estado).
+        widgets = {
+            'nombre_producto': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Producto'}),
+            'precio_producto': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio del Producto'}),
+            'proveedor': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Proveedor'}),
+            'stock': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad en stock'}),
+            'imagen_url': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'descripcion_producto': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripción del Producto'}),
+            #'estado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
 
+class VentaProductoForm(forms.ModelForm):
+    class Meta:
+        model = VentaProducto
+        fields = ['venta', 'producto', 'cantidad', 'descuento', 'precio_unidad_venta']
+        widgets = {
+            'venta': forms.Select(attrs={'class': 'form-control'}),
+            'producto': forms.Select(attrs={'class': 'form-control'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad', 'min': 1}),
+            'descuento': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Descuento', 'min': 0}),
+            'precio_unidad_venta': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Precio por Unidad'}),
+        }
+
+class VentaForm(forms.ModelForm):
+    class Meta:
+        model = Venta
+        fields = ['cliente']
+        widgets = {
+           'cliente': forms.Select(attrs={'class': 'form-control'}),
+        }

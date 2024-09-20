@@ -122,7 +122,8 @@ class Producto(models.Model):
     alta_producto = models.DateField(auto_now_add=True, verbose_name='Fecha Alta Producto')
     proveedor = models.CharField(max_length=100, null=True, blank=True, verbose_name='Nombre Proveedor')
     stock = models.PositiveIntegerField(default=0, verbose_name='Stock')
-    imagen_url = models.FileField(upload_to='productos/img', null=True, blank=True, verbose_name='Imagen URL')
+    imagen_url = models.ImageField(upload_to='productos/img', null=True, blank=True, verbose_name='Imagen URL', default='../static/post_default.png')
+    # imagen_url = models.FileField(upload_to='productos/img', null=True, blank=True, verbose_name='Imagen URL')
     # FileField: Propósito: Se usa para subir y almacenar archivos en el servidor.
     descripcion_producto = models.TextField(null=True, blank=True, verbose_name='Descripcion')
     estado = models.BooleanField(default=True, verbose_name='Estado')
@@ -164,4 +165,4 @@ class VentaProducto(models.Model):
         ordering = ['id']
 
     def __str__(self):
-        return f"{self.producto.nombre_producto} - {self.precio_venta} - {self.cantidad} unidades - Total: {self.precio_total_venta:.2f}"
+        return f"{self.producto.nombre_producto} - {self.producto.precio_producto} - {self.cantidad} unidades - Total: {self.precio_total_venta:.2f}"

@@ -345,3 +345,43 @@ class ServisVisitaUpdateView(UpdateView):
         cliente_id = self.kwargs.get('pk')
         # Genera la URL para la vista 'menu_cliente' usando el ID del cliente
         return reverse('menu_cliente', kwargs={'id': cliente_id})
+
+
+################# GESTION DE LAS VENTAS ####################
+## se agrega capa de seguridad para la carga de datos
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ProductoCreateView(CreateView):
+    model = models.Producto
+    template_name = 'Agua/forms/crear_producto.html'
+    form_class = forms.ProductoForm
+    success_url = reverse_lazy('inicio')
+    
+   
+    def form_valid(self, form):
+        form.save()  # Guardar el formulario
+        return super().form_valid(form)
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class VentaCreateView(CreateView):
+    model = models.Venta
+    template_name = 'Agua/forms/crear_venta.html'
+    form_class = forms.VentaForm
+    success_url = reverse_lazy('inicio')
+    
+   
+    def form_valid(self, form):
+        form.save()  # Guardar el formulario
+        return super().form_valid(form)
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class VentaProductoCreateView(CreateView):
+    model = models.VentaProducto
+    template_name = 'Agua/forms/crear_venta_producto.html'
+    form_class = forms.VentaProductoForm
+    success_url = reverse_lazy('inicio')
+    
+   
+    def form_valid(self, form):
+        form.save()  # Guardar el formulario
+        return super().form_valid(form)
+################# GESTION DE LAS VENTAS ####################

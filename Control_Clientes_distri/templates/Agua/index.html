@@ -15,11 +15,12 @@
                 &#9776;
             </div>
             <ul class="nav-links">
-                <li><a href="index.html">Inicio</a></li>
-                <li><a href="lista_clientes.html">Lista Clientes</a></li>
-                <li><a href="visitas.html">Visitas</a></li>
-                <li><a href="cobros.html">Cobros</a></li>
-                <li><a href="promociones.html">Promociones</a></li>
+                <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                <li><a href="{% url 'cargar_cliente' %}">Crear Cliente</a></li>
+                <li><a href="{% url 'listar_clientes' %}">Lista Clientes</a></li>
+                <li><a href="{% url 'crear_producto' %}">Crear Producto</a></li>
+                <li><a href="{% url 'crear_venta' %}">Crear Venta</a></li>
+                <li><a href="{% url 'crear_venta_producto' %}">Venta Producto</a></li>
             </ul>
         </div>
     </nav>
