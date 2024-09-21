@@ -384,4 +384,20 @@ class VentaProductoCreateView(CreateView):
     def form_valid(self, form):
         form.save()  # Guardar el formulario
         return super().form_valid(form)
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class GestioVentaView(CreateView):
+    model = models.VentaProducto
+    template_name = 'Agua/forms/gestion_venta.html'
+    form_class = forms.VentaProductoForm
+    success_url = reverse_lazy('inicio')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['precio_unidad_venta'] = 100
+        return context
+        
+    def form_valid(self, form):
+        form.save()  # Guardar el formulario
+        return super().form_valid(form)
 ################# GESTION DE LAS VENTAS ####################

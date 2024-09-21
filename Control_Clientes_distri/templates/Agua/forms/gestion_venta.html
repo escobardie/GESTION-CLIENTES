@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Ventas</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    
+    <div class="container mt-5">
+        <h2>Gestión de Ventas</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_venta">Venta:</label>
+                {{ form.venta }}
+            </div>
+            <div class="form-group">
+                <label for="id_producto">Producto:</label>
+                {{ form.producto }}
+            </div>
+            <div class="form-group">
+                <label for="id_cantidad">Cantidad:</label>
+                {{ form.cantidad }}
+            </div>
+            <div class="form-group">
+                <label for="id_descuento">Descuento %:</label>
+                {{ form.descuento }}
+            </div>
+            <div class="form-group">
+                <label for="id_precio_unidad_venta">Precio por Unidad:</label>
+                
+                <input type="number" id="id_precio_unidad_venta" class="form-control" value="{{ precio_unidad_venta }}" step="0.01">
+            </div>
+            <div class="form-group">
+                <label for="id_precio_total_venta">Costo Total:</label>
+                {{ form.precio_total_venta }}
+            </div>
+            <input type="submit" class="btn btn-primary" value="Guardar">
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const CantProductosInput = document.getElementById('id_cantidad');
+            const DescuentoInput = document.getElementById('id_descuento');
+            const PrecioUnidadInput = document.getElementById('id_precio_unidad_venta');
+            const TotalVentaInput = document.getElementById('id_precio_total_venta');
+
+            // Función para actualizar la venta
+            function updateVenta() {
+                const cantProductos = parseInt(CantProductosInput.value) || 0;
+                const descuento = parseFloat(DescuentoInput.value) || 0;
+                const precioUnidad = parseFloat(PrecioUnidadInput.value) || 0;
+
+                // Calcula el precio por unidad con descuento
+                const precioConDescuento = precioUnidad - (precioUnidad * (descuento / 100));
+                
+                // Calcula el precio total (cantidad * precio con descuento)
+                const totalVenta = precioConDescuento * cantProductos;
+
+                // Actualiza el campo de costo total
+                TotalVentaInput.value = totalVenta.toFixed(2);
+            }
+
+            // Escucha los cambios en los campos cantidad, descuento y precio por unidad
+            CantProductosInput.addEventListener('input', updateVenta);
+            DescuentoInput.addEventListener('input', updateVenta);
+            PrecioUnidadInput.addEventListener('input', updateVenta);
+
+            // Actualiza los campos al cargar la página
+            updateVenta();
+        });
+    </script>
+</body>
+</html>
