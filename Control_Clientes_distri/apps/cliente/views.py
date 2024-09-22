@@ -392,12 +392,26 @@ class GestioVentaView(CreateView):
     form_class = forms.VentaProductoForm
     success_url = reverse_lazy('inicio')
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['precio_unidad_venta'] = 100
-        return context
+    def form_invalid(self, form): ## NO BORRAR
+        print("Formulario inválido:", form.errors)
+        return super().form_invalid(form)
+
+    def get_cliente_data(self):
+        # Intenta obtener el cliente_id de los argumentos de la URL
+        cliente_id = self.kwargs.get('id')
+        if cliente_id is not None:
+            return get_object_or_404(models.Cliente, id=cliente_id)
+        return None  # Devuelve None si no hay cliente_id
         
     def form_valid(self, form):
-        form.save()  # Guardar el formulario
+        cliente = self.get_cliente_data()
+        # Crear una nueva instancia de Venta y guardar
+        venta = models.Venta.objects.create(cliente=cliente)
+        # Ahora guarda la instancia de VentaProducto asociándola a la venta creada
+        venta_producto = form.save(commit=False)
+        venta_producto.venta = venta  # Asocia la venta a VentaProducto
+        venta_producto.save()  # Ahora guarda el VentaProducto
+
+        # form.save()  # Guardar el formulario
         return super().form_valid(form)
 ################# GESTION DE LAS VENTAS ####################

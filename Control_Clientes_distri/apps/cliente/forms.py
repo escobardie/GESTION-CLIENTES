@@ -125,9 +125,9 @@ class ProductoForm(forms.ModelForm):
 class VentaProductoForm(forms.ModelForm):
     class Meta:
         model = VentaProducto
-        fields = ['venta', 'producto', 'cantidad', 'descuento', 'precio_unidad_venta', 'precio_total_venta']
+        fields = ['producto', 'cantidad', 'descuento', 'precio_unidad_venta', 'precio_total_venta']
         widgets = {
-            'venta': forms.Select(attrs={'class': 'form-control'}),
+            #'venta': forms.Select(attrs={'class': 'form-control'}),
             'producto': forms.Select(attrs={'class': 'form-control'}),
             'cantidad': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Cantidad', 'min': 1}),
             'descuento': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Descuento', 'min': 0}),

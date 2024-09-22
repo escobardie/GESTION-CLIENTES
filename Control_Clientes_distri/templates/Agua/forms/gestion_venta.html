@@ -12,10 +12,16 @@
         <h2>Gestión de Ventas</h2>
         <form method="post">
             {% csrf_token %}
-            <div class="form-group">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            {% comment %} <div class="form-group">
                 <label for="id_venta">Venta:</label>
                 {{ form.venta }}
-            </div>
+            </div> {% endcomment %}
             <div class="form-group">
                 <label for="id_producto">Producto:</label>
                 {{ form.producto }}
@@ -30,8 +36,7 @@
             </div>
             <div class="form-group">
                 <label for="id_precio_unidad_venta">Precio por Unidad:</label>
-                
-                <input type="number" id="id_precio_unidad_venta" class="form-control" value="{{ precio_unidad_venta }}" step="0.01">
+                {{ form.precio_unidad_venta }}
             </div>
             <div class="form-group">
                 <label for="id_precio_total_venta">Costo Total:</label>
@@ -40,6 +45,7 @@
             <input type="submit" class="btn btn-primary" value="Guardar">
         </form>
     </div>
+    
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
