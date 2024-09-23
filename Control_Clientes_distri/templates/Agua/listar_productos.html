@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <link href={% static 'cliente_plantilla/css/styles.css' %} rel="stylesheet">
+    <style>
+        .client {
+            display: flex; /* Usar flexbox para alinear elementos */
+            align-items: center; /* Centrar verticalmente */
+            margin-bottom: 20px; /* Espacio entre productos */
+            border: 1px solid #ccc; /* Borde opcional */
+            padding: 10px; /* Relleno opcional */
+        }
+
+        .client img {
+            margin-right: 20px; /* Espacio entre imagen y texto */
+            width: 200px; /* Ancho fijo */
+            height: 200px; /* Altura fija */
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">LOGO</div>
+            <div class="hamburger" onclick="toggleMenu()">
+                &#9776;
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="lista_clientes.html">Lista Clientes</a></li>
+                <li><a href="visitas.html">Visitas</a></li>
+                <li><a href="cobros.html">Cobros</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <h1>Lista de Productos</h1>
+        
+        <div class="client-list">
+            {% for producto in lista_productos %}
+                <a class="client">
+                    <img class="img-fluid" src="{{ producto.imagen_url.url }}" alt="">
+                    <div>
+                        <p><strong>Nombre:</strong> {{ producto.nombre_producto }}</p>
+                        <p><strong>Precio:</strong> ${{ producto.precio_producto }}</p>
+                        <p><strong>Stock:</strong> {{ producto.stock }}</p>
+                    </div>
+                </a>
+                {% empty %}
+                    <h4>No hay registros</h4>
+            {% endfor %}
+        </div>
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+            {% endif %}
+
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+            {% endif %}
+        </div>
+        
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

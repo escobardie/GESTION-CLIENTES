@@ -6,11 +6,11 @@ urlpatterns = [
     path('', views.InicioView.as_view(), name='inicio'), # ORIGINAL
     path('listar_clientes/', views.ListarClientesView.as_view(), name='listar_clientes'),
     path('listar_visitas/<int:id>', views.ListarVisitasView.as_view(), name='listar_visitas'),
-
+    path('listar_productos/', views.ListarProductosView.as_view(), name='listar_productos'),
+    # GESTION VENTAS
     path('crear_producto/', views.ProductoCreateView.as_view(), name='crear_producto'),
     path('crear_venta/', views.VentaCreateView.as_view(), name='crear_venta'),
     path('crear_venta_producto/', views.VentaProductoCreateView.as_view(), name='crear_venta_producto'),
-    
     # SE GESTIONA LA POSIBILDIAD DE ENVIAR UN CLIENTE O NO
     path('gestion_ventas/', views.GestioVentaView.as_view(), name='gestion_ventas'),  # Sin cliente
     path('gestion_ventas/<int:id>/', views.GestioVentaView.as_view(), name='gestion_ventas_cliente'),  # Con cliente

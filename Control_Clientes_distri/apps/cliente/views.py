@@ -43,6 +43,14 @@ class InicioView(ListView):
         return context
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarProductosView(ListView):
+    model = models.Producto
+    template_name = "Agua/listar_productos.html"
+    context_object_name = 'lista_productos'
+    paginate_by = 5
+    queryset = models.Producto.objects.filter(estado=True).order_by('nombre_producto')
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarClientesView(ListView):
     model = models.Cliente
     template_name = "Agua/listar_clientes.html"
