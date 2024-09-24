@@ -107,7 +107,7 @@ class Venta(models.Model):
     class Meta:
         verbose_name = 'Venta'
         verbose_name_plural = 'Ventas'
-        ordering = ['fecha_venta']
+        ordering = ['-fecha_venta']
 
     def __str__(self):
         return f"Venta {self.id} - {self.fecha_venta}"
@@ -162,7 +162,7 @@ class VentaProducto(models.Model):
         unique_together = ('venta', 'producto')
         verbose_name='Venta por Producto'
         verbose_name_plural='Ventas por Producto'
-        ordering = ['id']
+        ordering = ['-id']
 
     def __str__(self):
         return f"{self.producto.nombre_producto} - {self.producto.precio_producto} - {self.cantidad} unidades - Total: {self.precio_total_venta:.2f}"
