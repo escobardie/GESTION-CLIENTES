@@ -415,6 +415,23 @@ class GestioVentaView(CreateView):
         cliente = self.get_cliente_data()
         # Crear una nueva instancia de Venta y guardar
         venta = models.Venta.objects.create(cliente=cliente)
+        ##################
+         # Procesar productos
+        producto_list = self.request.POST.getlist('producto')
+        producto=form.cleaned_data['producto']
+        cantidad_list = self.request.POST.getlist('cantidad')
+        descuento_list = self.request.POST.getlist('descuento')
+        precio_list = self.request.POST.getlist('precio_unidad_venta')
+        precio_total_venta_list = self.request.POST.getlist('precio_total_venta')
+        print("PROBANDO 1")
+        print(producto_list)
+        print(producto)
+        print("PROBANDO 2")
+        print(cantidad_list)
+        print(descuento_list)
+        print(precio_list)
+        print(precio_total_venta_list)
+        ##################
         # Ahora guarda la instancia de VentaProducto asociándola a la venta creada
         venta_producto = form.save(commit=False)
         venta_producto.venta = venta  # Asocia la venta a VentaProducto

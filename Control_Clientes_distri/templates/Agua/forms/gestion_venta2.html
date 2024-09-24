@@ -43,14 +43,14 @@
                 let totalVenta = 0;
 
                 items.forEach(item => {
-                    const cantProductos = parseInt(item.querySelector('[name="cantidad"]').value) || 0;
-                    const descuento = parseFloat(item.querySelector('[name="descuento"]').value) || 0;
-                    const precioUnidad = parseFloat(item.querySelector('[name="precio_unidad_venta"]').value) || 0;
+                    const cantProductos = parseInt(item.querySelector('[id="cantidad"]').value) || 0;
+                    const descuento = parseFloat(item.querySelector('[id="descuento"]').value) || 0;
+                    const precioUnidad = parseFloat(item.querySelector('[id="precio_unidad_venta"]').value) || 0;
 
                     const precioConDescuento = precioUnidad - (precioUnidad * (descuento / 100));
                     const totalProducto = precioConDescuento * cantProductos;
 
-                    const precioTotalProductoInput = item.querySelector('[name="precio_total_venta"]');
+                    const precioTotalProductoInput = item.querySelector('[id = "precio_total_venta"]');
                     precioTotalProductoInput.value = totalProducto.toFixed(2);
 
                     totalVenta += totalProducto;
@@ -70,19 +70,19 @@
                     </div>
                     <div class="form-group">
                         <label for="id_cantidad">Cantidad:</label>
-                        <input type="number" name="cantidad" class="form-control" placeholder="Cantidad" min="0" required>
+                        <input type="number" name="cantidad" id="cantidad" class="form-control" placeholder="Cantidad" min="0" required>
                     </div>
                     <div class="form-group">
                         <label for="id_descuento">Descuento %:</label>
-                        <input type="number" name="descuento" value="0" class="form-control" placeholder="Descuento" min="0" required>
+                        <input type="number" name="descuento" id="descuento" value="0" class="form-control" placeholder="Descuento" min="0" required>
                     </div>
                     <div class="form-group">
                         <label for="id_precio_unidad_venta">Precio por Unidad:</label>
-                        <input type="number" name="precio_unidad_venta" value="0" class="form-control" placeholder="Precio por Unidad" step="0.01" required>
+                        <input type="number" name="precio_unidad_venta" id="precio_unidad_venta" value="0" class="form-control" placeholder="Precio por Unidad" step="0.01" required>
                     </div>
                     <div class="form-group"> 
                         <label for="id_precio_total_venta">Costo total de Producto:</label>
-                        <input type="number" name="precio_total_venta" class="form-control" placeholder="Precio total" step="0.01" readonly>
+                        <input type="number" name="precio_total_venta" id = "precio_total_venta" = class="form-control" placeholder="Precio total" step="0.01" readonly>
                     </div>
                     <button type="button" class="btn btn-danger remove-item">Quitar</button>
                 `;
@@ -99,8 +99,8 @@
                     updateVenta();
                 });
 
-                ['cantidad', 'descuento', 'precio_unidad_venta'].forEach(name => {
-                    item.querySelector(`[name="${name}"]`).addEventListener('input', updateVenta);
+                ['cantidad', 'descuento', 'precio_unidad_venta'].forEach(id => {
+                    item.querySelector(`[id="${id}"]`).addEventListener('input', updateVenta);
                 });
             }
 
