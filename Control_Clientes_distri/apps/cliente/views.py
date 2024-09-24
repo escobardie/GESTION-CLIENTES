@@ -396,7 +396,7 @@ class VentaProductoCreateView(CreateView):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class GestioVentaView(CreateView):
     model = models.VentaProducto
-    template_name = 'Agua/forms/gestion_venta.html'
+    template_name = 'Agua/forms/gestion_venta2.html'
     form_class = forms.VentaProductoForm
     success_url = reverse_lazy('inicio')
     

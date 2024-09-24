@@ -18,33 +18,13 @@
                 </div>
             {% endif %}
 
-            <div id="items-container">
-                <div class="item mb-3">
-                    <div class="form-group">
-                        <label for="id_producto">Producto:</label>
-                        {{ form.producto }}
-                    </div>
-                    <div class="form-group">
-                        <label for="id_cantidad">Cantidad:</label>
-                        <input type="number" name="cantidad" class="form-control" placeholder="Cantidad" min="0" required id="id_cantidad">
-                    </div>
-                    <div class="form-group">
-                        <label for="id_descuento">Descuento %:</label>
-                        <input type="number" name="descuento" value="0" class="form-control" placeholder="Descuento" min="0" required id="id_descuento">
-                    </div>
-                    <div class="form-group">
-                        <label for="id_precio_unidad_venta">Precio por Unidad:</label>
-                        <input type="number" name="precio_unidad_venta" value="0" class="form-control" placeholder="Precio por Unidad" step="0.01" required id="id_precio_unidad_venta">
-                    </div>
-                    <button type="button" class="btn btn-danger remove-item">Quitar</button>
-                </div>
-            </div>
+            <div id="items-container"></div>
 
             <button type="button" class="btn btn-success" id="add-item">Agregar otro item</button>
 
             <div class="form-group">
-                <label for="id_precio_total_venta">Costo Total:</label>
-                <input type="text" name="precio_total_venta" class="form-control" id="id_precio_total_venta" value="0.00" readonly>
+                <label for="id_precio_total_todas_venta">Costo total de Todos los Productos:</label>
+                <input type="text" name="precio_total_todas_venta" class="form-control" id="id_precio_total_todas_venta" value="0.00" readonly>
             </div>
 
             <input type="submit" class="btn btn-primary" value="Guardar">
@@ -67,15 +47,16 @@
                     const descuento = parseFloat(item.querySelector('[name="descuento"]').value) || 0;
                     const precioUnidad = parseFloat(item.querySelector('[name="precio_unidad_venta"]').value) || 0;
 
-                    // Calcula el precio por unidad con descuento
                     const precioConDescuento = precioUnidad - (precioUnidad * (descuento / 100));
-                    
-                    // Calcula el total para el item
-                    totalVenta += precioConDescuento * cantProductos;
+                    const totalProducto = precioConDescuento * cantProductos;
+
+                    const precioTotalProductoInput = item.querySelector('[name="precio_total_venta"]');
+                    precioTotalProductoInput.value = totalProducto.toFixed(2);
+
+                    totalVenta += totalProducto;
                 });
 
-                // Actualiza el campo de costo total
-                document.getElementById('id_precio_total_venta').value = totalVenta.toFixed(2);
+                document.getElementById('id_precio_total_todas_venta').value = totalVenta.toFixed(2);
             }
 
             // Función para agregar un nuevo item
@@ -99,44 +80,29 @@
                         <label for="id_precio_unidad_venta">Precio por Unidad:</label>
                         <input type="number" name="precio_unidad_venta" value="0" class="form-control" placeholder="Precio por Unidad" step="0.01" required>
                     </div>
+                    <div class="form-group"> 
+                        <label for="id_precio_total_venta">Costo total de Producto:</label>
+                        <input type="number" name="precio_total_venta" class="form-control" placeholder="Precio total" step="0.01" readonly>
+                    </div>
                     <button type="button" class="btn btn-danger remove-item">Quitar</button>
                 `;
                 itemsContainer.appendChild(newItem);
 
-                // Añadir evento para quitar el item
-                newItem.querySelector('.remove-item').addEventListener('click', function() {
-                    itemsContainer.removeChild(newItem);
-                    updateVenta();  // Actualiza el total al quitar un item
-                });
-
-                // Escuchar cambios en los campos para actualizar el total
-                newItem.querySelector('[name="cantidad"]').addEventListener('input', updateVenta);
-                newItem.querySelector('[name="descuento"]').addEventListener('input', updateVenta);
-                newItem.querySelector('[name="precio_unidad_venta"]').addEventListener('input', updateVenta);
-
-                // Actualiza el total con el nuevo item
+                // Añadir eventos
+                attachItemListeners(newItem);
                 updateVenta();
             });
 
-            // Evento para quitar un item existente
-            document.querySelectorAll('.remove-item').forEach(button => {
-                button.addEventListener('click', function() {
-                    const item = button.closest('.item');
+            function attachItemListeners(item) {
+                item.querySelector('.remove-item').addEventListener('click', function() {
                     itemsContainer.removeChild(item);
-                    updateVenta();  // Actualiza el total al quitar un item
+                    updateVenta();
                 });
-            });
 
-            // Escuchar cambios en los campos de los items existentes
-            document.querySelectorAll('[name="cantidad"]').forEach(input => {
-                input.addEventListener('input', updateVenta);
-            });
-            document.querySelectorAll('[name="descuento"]').forEach(input => {
-                input.addEventListener('input', updateVenta);
-            });
-            document.querySelectorAll('[name="precio_unidad_venta"]').forEach(input => {
-                input.addEventListener('input', updateVenta);
-            });
+                ['cantidad', 'descuento', 'precio_unidad_venta'].forEach(name => {
+                    item.querySelector(`[name="${name}"]`).addEventListener('input', updateVenta);
+                });
+            }
 
             // Actualiza los campos al cargar la página
             updateVenta();
