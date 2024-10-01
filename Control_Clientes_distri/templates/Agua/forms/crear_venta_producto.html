@@ -9,12 +9,73 @@
 <body>
     <div class="container mt-5">
         <h2>Agregar Venta de Producto</h2>
-        <form method="POST">
+        <form id="form1" method="POST">
             {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Enviar</button>
+            <div id="formVentaProducto">
+                {{form.management_form}}
+                {% for f in form%}
+                    {{f}}
+                {% endfor %}
+            </div>
+            <button onclick="addInput()" class="btn btn-primary">Add</button>
+            <button onclick="deleteInput()" class="btn btn-primary">Delete</button>
+            <button type="submit" class="btn btn-primary">Enviar</button>            
             <a href="{% url 'listar_clientes' %}" class="btn btn-secondary">Volver a la Lista de Clientes</a>
         </form>
     </div>
+    <script>
+        function addInput() {
+            var forms = document.querySelector('#id_form-TOTAL_FORMS')
+            /*id_form-0-producto*/
+            var productoselect = document.querySelector('#id_form-0-producto').cloneNode( true );
+            productoselect.name = 'form-'+forms.value+'-producto';
+            productoselect.id = 'id_form-'+forms.value+'-producto';
+            /*form-0-cantidad*/
+            var cantidadinput = document.querySelector('#id_form-0-cantidad').cloneNode( true );
+            cantidadinput.name = 'form-'+forms.value+'-cantidad';
+            cantidadinput.id = 'id_form-'+forms.value+'-cantidad';
+            /*id_form-0-descuento*/
+            var descuentoinput = document.querySelector('#id_form-0-descuento').cloneNode( true );
+            descuentoinput.name = 'form-'+forms.value+'-descuento';
+            descuentoinput.id = 'id_form-'+forms.value+'-descuento';
+            /*id_form-0-precio_unidad_venta*/
+            var precio_unidad_ventainput = document.querySelector('#id_form-0-precio_unidad_venta').cloneNode( true );
+            precio_unidad_ventainput.name = 'form-'+forms.value+'-precio_unidad_venta';
+            precio_unidad_ventainput.id = 'id_form-'+forms.value+'-precio_unidad_venta';
+            /*id_form-0-precio_total_venta*/
+            var precio_total_ventainput = document.querySelector('#id_form-0-precio_total_venta').cloneNode( true );
+            precio_total_ventainput.name = 'form-'+forms.value+'-precio_total_venta';
+            precio_total_ventainput.id = 'id_form-'+forms.value+'-precio_total_venta';
+            /**/
+
+            
+            document.querySelector('#formVentaProducto').appendChild(productoselect);
+            document.querySelector('#formVentaProducto').appendChild(cantidadinput);
+            document.querySelector('#formVentaProducto').appendChild(descuentoinput);
+            document.querySelector('#formVentaProducto').appendChild(precio_unidad_ventainput);
+            document.querySelector('#formVentaProducto').appendChild(precio_total_ventainput);
+            //
+            var p = document.createElement("p");
+            document.querySelector('#formVentaProducto').appendChild(p);
+            //
+            forms.value = parseInt(forms.value) + 1;
+        }
+        function deleteInput() {
+            var forms = document.querySelector('#id_form-TOTAL_FORMS');
+            forms.value = parseInt(forms.value) - 1;
+            //
+            removeProductoSelect = '#id_form-'+forms.value+'-producto';
+            removeCantidadInput = '#id_form-'+forms.value+'-cantidad';
+            removeDescuentoInput = '#id_form-'+forms.value+'-descuento';
+            removePrecioUnidadVentaInput = '#id_form-'+forms.value+'-precio_unidad_venta';
+            removePrecioTotalVentaInput = '#id_form-'+forms.value+'-precio_total_venta';
+
+            document.querySelector(removeProductoSelect).remove();
+            document.querySelector(removeCantidadInput).remove();
+            document.querySelector(removeDescuentoInput).remove();
+            document.querySelector(removePrecioUnidadVentaInput).remove();
+            document.querySelector(removePrecioTotalVentaInput).remove();
+        }
+    </script>
 </body>
 </html>

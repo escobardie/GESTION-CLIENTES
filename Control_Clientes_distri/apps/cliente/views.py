@@ -1,7 +1,8 @@
 from django.shortcuts import render
-from django.views.generic import TemplateView, ListView, DetailView
-from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, ListView, DetailView 
+from django.views.generic.edit import CreateView, UpdateView, DeleteView, FormView
 from . import models, forms
+from django.forms import formset_factory
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
@@ -382,7 +383,7 @@ class VentaCreateView(CreateView):
         return super().form_valid(form)
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class VentaProductoCreateView(CreateView):
+class VentaProductoCreateView2(CreateView):
     model = models.VentaProducto
     template_name = 'Agua/forms/crear_venta_producto.html'
     form_class = forms.VentaProductoForm
@@ -438,5 +439,33 @@ class GestioVentaView(CreateView):
         venta_producto.save()  # Ahora guarda el VentaProducto
 
         # form.save()  # Guardar el formulario
+        return super().form_valid(form)
+
+class VentaProductoCreateView(FormView):
+    ## https://www.youtube.com/watch?v=fycZ_d2vDwM
+    ## https://github.com/neunapp/formsets-django/blob/master/djfomrsets/templates/alumno/add.html
+    model = models.VentaProducto
+    template_name = 'Agua/forms/gestion_venta2_fucion.html'
+    ## formset_factory = conjunto de formularios
+    form_class = formset_factory(forms.VentaProductoForm)
+    success_url = reverse_lazy('inicio')
+
+    def get_cliente_data(self):
+        # Intenta obtener el cliente_id de los argumentos de la URL
+        cliente_id = self.kwargs.get('id')
+        if cliente_id is not None:
+            return get_object_or_404(models.Cliente, id=cliente_id)
+        return None  # Devuelve None si no hay cliente_id
+
+    def form_valid(self, form):
+        cliente = self.get_cliente_data()
+        # Crear una nueva instancia de Venta y guardar
+        venta = models.Venta.objects.create(cliente=cliente)
+
+        for f in form:
+            # Ahora guarda la instancia de VentaProducto asociándola a la venta creada
+            f = f.save(commit=False)
+            f.venta = venta  # Asocia la venta a VentaProducto
+            f.save()  # Guardar el formulario
         return super().form_valid(form)
 ################# GESTION DE LAS VENTAS ####################
