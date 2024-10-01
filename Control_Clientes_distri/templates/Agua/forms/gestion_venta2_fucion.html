@@ -9,7 +9,7 @@
 <body>
     
     <div class="container mt-5">
-        <h2>Gestión de Ventas FUNCION</h2>
+        <h2>Gestión de Ventas</h2>
         <form method="post">
             {% csrf_token %}
             {% if form.non_field_errors %}
@@ -73,7 +73,7 @@
                     <div class="form-group">
                         <label for="id_form-${forms.value}-producto">Producto:</label>
                         <select name="form-${forms.value}-producto" class="form-control" id="id_form-${forms.value}-producto">
-                            {{ form.empty_form.fields.producto.label_tag }}
+                            <option value="">Seleccione un producto</option>
                             {% for option in form.empty_form.fields.producto.choices %}
                                 <option value="{{ option.0 }}">{{ option.1 }}</option>
                             {% endfor %}
@@ -134,8 +134,8 @@
                 forms.value = items.length; // Actualiza el valor de TOTAL_FORMS
             }
 
-            // Cargar el primer formulario dinámicamente al cargar la página
-            //addItemButton.click(); // Esto simula un clic para cargar el primer formulario
+            // Cargar el primer formulario dinámicamente al cargar la página (opcional)
+            // addItemButton.click(); // Esto simula un clic para cargar el primer formulario
 
             // Actualiza los campos al cargar la página (si es necesario)
             updateVenta();
