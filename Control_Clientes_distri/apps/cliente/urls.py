@@ -10,11 +10,16 @@ urlpatterns = [
     # GESTION VENTAS
     path('crear_producto/', views.ProductoCreateView.as_view(), name='crear_producto'),
     path('crear_venta/', views.VentaCreateView.as_view(), name='crear_venta'),
+
+    ## FUNCIONAL 
     path('crear_venta_producto/', views.VentaProductoCreateView.as_view(), name='crear_venta_producto'),
-    # SE GESTIONA LA POSIBILDIAD DE ENVIAR UN CLIENTE O NO
+    path('crear_venta_producto/<int:id>/', views.VentaProductoCreateView.as_view(), name='crear_venta_producto_cliente'),
+    ## FUNCIONAL
+
+    # YA NO SE USA
     path('gestion_ventas/', views.GestioVentaView.as_view(), name='gestion_ventas'),  # Sin cliente
     path('gestion_ventas/<int:id>/', views.GestioVentaView.as_view(), name='gestion_ventas_cliente'),  # Con cliente
-
+    # YA NO SE USA
 
     path('cargar_cliente/', views.ClienteCreateView.as_view(), name='cargar_cliente'),
     path('cargar_visita/<int:id>', views.VisitaCreateView.as_view(), name='cargar_visita'),
