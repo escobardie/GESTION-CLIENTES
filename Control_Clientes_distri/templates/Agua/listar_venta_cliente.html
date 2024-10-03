@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Ventas por cliente</title>
+    <link href="{% static 'cliente_plantilla/css/styles.css' %}" rel="stylesheet">
+    <style>
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            font-family: Arial, sans-serif;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .client-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .client {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .client-name {
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+        .visit-date {
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .visit-note {
+            font-weight: bold;
+            background-color: #e9f7ef;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .pagination span {
+            color: #007bff;
+            font-weight: bold;
+        }
+        
+    </style>
+
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">LOGO</div>
+            <div class="hamburger" onclick="toggleMenu()">
+                &#9776;
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="lista_clientes.html">Lista Clientes</a></li>
+                <li><a href="visitas.html">Visitas</a></li>
+                <li><a href="cobros.html">Cobros</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <h1>Lista de Ventas </h1>
+
+            <div class="client-list">
+                {% for venta in lista_venta_cliente %}
+                    <a href="{% url 'info_venta' venta.id %}" class="client">
+                        
+                        <p class="visit-date"><strong>Fecha Venta:</strong> {{ venta.fecha_venta }}</p>
+                        
+                    </a>
+                    {% empty %}
+                    <h4>No hay registros</h4>
+                
+                {% endfor %}
+
+            </div>        
+
+
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+            {% endif %}
+
+            <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+            {% endif %}
+        </div>
+        
+        
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

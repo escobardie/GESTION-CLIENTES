@@ -7,6 +7,12 @@ urlpatterns = [
     path('listar_clientes/', views.ListarClientesView.as_view(), name='listar_clientes'),
     path('listar_visitas/<int:id>', views.ListarVisitasView.as_view(), name='listar_visitas'),
     path('listar_productos/', views.ListarProductosView.as_view(), name='listar_productos'),
+    
+    path('listar_venta_cliente/', views.ListarVentaClienteView.as_view(), name='listar_ventas'),
+    path('listar_venta_cliente/<int:id>', views.ListarVentaClienteView.as_view(), name='listar_venta_cliente'),
+    path('info_venta/<int:id>', views.DetalleVentaListView.as_view(), name='info_venta'),
+
+
     # GESTION VENTAS
     path('crear_producto/', views.ProductoCreateView.as_view(), name='crear_producto'),
     path('crear_venta/', views.VentaCreateView.as_view(), name='crear_venta'),
@@ -28,6 +34,9 @@ urlpatterns = [
     path('promo_por_cliente/<int:id>', views.PromoPorClienteCreateView.as_view(), name='promo_por_cliente'),
     
     path('menu_cliente/<int:id>', views.MenuClienteDetailView.as_view(), name='menu_cliente'),
+    
+
+    
     
     path('servis_visita/<slug:pk>', views.ServisVisitaUpdateView.as_view(), name='servis_visita'),
     

@@ -76,6 +76,53 @@ class ListarVisitasView(ListView):
         return models.Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarVentaClienteView(ListView):
+    model = models.Venta
+    template_name = "Agua/listar_venta_cliente.html"
+    paginate_by = 10
+    context_object_name = 'lista_venta_cliente'
+    # queryset = models.Venta.objects.filter()
+
+    def get_cliente_data(self):
+        # Intenta obtener el cliente_id de los argumentos de la URL
+        cliente_id = self.kwargs.get('id')
+        if cliente_id is not None:
+            return get_object_or_404(models.Cliente, id=cliente_id)
+        return None  # Devuelve None si no hay cliente_id
+    
+    def get_queryset(self):
+        cliente = self.get_cliente_data()
+        return models.Venta.objects.filter(cliente=cliente)
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class DetalleVentaListView(ListView):
+    model = models.VentaProducto
+    template_name = "Agua/detalle_venta.html"
+    context_object_name = 'detalle_venta'
+
+    def get_venta_data(self):
+        # Obtiene el parámetro 'id' desde los argumentos de la URL.
+        # Este 'id' corresponde a una instancia de 'Venta'.
+        id_venta = self.kwargs['id']
+        
+        # Verifica si se proporcionó un 'id_venta'
+        if id_venta is not None:
+            # Intenta obtener la instancia de 'Venta' asociada con el 'id_venta'.
+            # Si no se encuentra, lanza un error 404.
+            return get_object_or_404(models.Venta, id=id_venta)
+        
+        # Si no se proporciona un 'id_venta', devuelve None.
+        return None
+
+    def get_queryset(self):
+        # Llama al método 'get_venta_data' para obtener la instancia de la 'Venta' correspondiente.
+        venta = self.get_venta_data()
+        
+        # Filtra los objetos 'VentaProducto' asociados con la venta obtenida.
+        # Esto devuelve un conjunto de resultados (QuerySet) de productos relacionados con esa venta.
+        return models.VentaProducto.objects.filter(venta=venta)
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class MenuClienteDetailView(DetailView):
     model = models.Cliente
     template_name = "Agua/menu_cliente.html"

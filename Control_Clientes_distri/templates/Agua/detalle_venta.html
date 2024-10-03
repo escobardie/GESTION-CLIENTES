@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Ventas por Cliente</title>
+    <link href="{% static 'cliente_plantilla/css/styles.css' %}" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .ventas-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .ventas-table th, .ventas-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .ventas-table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .ventas-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .ventas-table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .total-price {
+            text-align: right;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: #007bff;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #007bff;
+            transition: background-color 0.3s;
+        }
+
+        .pagination a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">LOGO</div>
+            <div class="hamburger" onclick="toggleMenu()">
+                &#9776;
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="lista_clientes.html">Lista Clientes</a></li>
+                <li><a href="visitas.html">Visitas</a></li>
+                <li><a href="cobros.html">Cobros</a></li>
+                <li><a href="promociones.html">Promociones</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>Lista de Ventas</h1>
+
+        <table class="ventas-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Fecha</th>
+                    <th>Cantidad</th>
+                    <th>Descuento (%)</th>
+                    <th>Precio Unidad</th>
+                    <th>Precio Total Venta</th>
+                </tr>
+            </thead>
+            <tbody id="ventas-body">
+                {% for venta in detalle_venta %}
+                    <tr>
+                        <td>{{ venta.producto }}</td>
+                        <td>{{ venta.fecha }}</td>
+                        <td>{{ venta.cantidad }}</td>
+                        <td>{{ venta.descuento }}</td>
+                        <td>{{ venta.precio_unidad_venta }}</td>
+                        <td class="precio-total">{{ venta.precio_total_venta }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">No hay registros</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-price" id="total-price">
+            Precio Total: $<span id="precio-total-sum">0</span>
+        </div>
+
+        
+    </div>
+
+    <script>
+        // Función para calcular el precio total de venta
+        function calcularPrecioTotal() {
+            const precios = document.querySelectorAll('.precio-total');
+            let total = 0;
+
+            // Recorre cada elemento con la clase 'precio-total' y suma sus valores
+            precios.forEach((precio) => {
+                total += parseFloat(precio.textContent) || 0;
+            });
+
+            // Muestra el total calculado
+            document.getElementById('precio-total-sum').textContent = total.toFixed(2);
+        }
+
+        // Ejecuta la función cuando la página esté cargada
+        window.onload = calcularPrecioTotal;
+    </script>
+</body>
+</html>
