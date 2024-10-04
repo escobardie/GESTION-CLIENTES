@@ -140,5 +140,7 @@ class VentaForm(forms.ModelForm):
         model = Venta
         fields = ['cliente']
         widgets = {
-           'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'total_venta': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Total Venta'}),
+            'nota': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Nota'}),
         }

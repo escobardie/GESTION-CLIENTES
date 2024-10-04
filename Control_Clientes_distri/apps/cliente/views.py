@@ -506,8 +506,16 @@ class VentaProductoCreateView(FormView):
 
     def form_valid(self, form):
         cliente = self.get_cliente_data()
+        # Captura el valor de precio_total_todas_venta
+        precio_total_todas_venta = self.request.POST.get('precio_total_todas_venta')
+        nota_venta = self.request.POST.get('nota_venta')
+        
         # Crear una nueva instancia de Venta y guardar
-        venta = models.Venta.objects.create(cliente=cliente)
+        venta = models.Venta.objects.create(
+            cliente=cliente,
+            nota= nota_venta,
+            total_venta=precio_total_todas_venta
+            )
 
         for f in form:
             # Ahora guarda la instancia de VentaProducto asociándola a la venta creada

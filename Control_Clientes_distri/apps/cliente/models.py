@@ -103,6 +103,8 @@ class Visita(models.Model):
 class Venta(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente')
     fecha_venta = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Venta')
+    total_venta = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name='Total Venta')
+    nota = models.TextField(null=True, blank=True, verbose_name='Nota')
 
     class Meta:
         verbose_name = 'Venta'

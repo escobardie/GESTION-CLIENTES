@@ -89,9 +89,9 @@
             <div class="client-list">
                 {% for venta in lista_venta_cliente %}
                     <a href="{% url 'info_venta' venta.id %}" class="client">
-                        
                         <p class="visit-date"><strong>Fecha Venta:</strong> {{ venta.fecha_venta }}</p>
-                        
+                        <p class="visit-date"><strong>Total Venta:</strong> {{ venta.total_venta }}</p>
+                        <p class="visit-date"><strong>Nota:</strong> {{ venta.nota }}</p>
                     </a>
                     {% empty %}
                     <h4>No hay registros</h4>
