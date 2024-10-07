@@ -287,7 +287,7 @@
             <button onclick="location.href='{% url 'crear_venta_producto_cliente' id=cliente.id %}'">Venta</button>
             <button onclick="location.href='{% url 'listar_venta_cliente' id=cliente.id %}'">Venta Realizadas</button>
             <button onclick="location.href='{% url 'crear_pago_cliente' id=cliente.id %}'">Nuevo Pago</button>
-            <button onclick="location.href='{% url 'cargar_cliente' %}'">Pagos Realizados</button>
+            <button onclick="location.href='{% url 'listar_pago_cliente' id=cliente.id %}'">Pagos Realizados</button>
             
         </div>
 

@@ -95,6 +95,25 @@ class ListarVentaClienteView(ListView):
         return models.Venta.objects.filter(cliente=cliente)
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarPagoClienteView(ListView):
+    model = models.Pagos
+    template_name = "Agua/listar_pagos_cliente.html"
+    paginate_by = 10
+    context_object_name = 'lista_pago_cliente'
+    # queryset = models.Venta.objects.filter()
+
+    def get_cliente_data(self):
+        # Intenta obtener el cliente_id de los argumentos de la URL
+        cliente_id = self.kwargs.get('id')
+        if cliente_id is not None:
+            return get_object_or_404(models.Cliente, id=cliente_id)
+        return None  # Devuelve None si no hay cliente_id
+    
+    def get_queryset(self):
+        cliente = self.get_cliente_data()
+        return models.Pagos.objects.filter(cliente=cliente)
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class DetalleVentaListView(ListView):
     model = models.VentaProducto
     template_name = "Agua/detalle_venta.html"
