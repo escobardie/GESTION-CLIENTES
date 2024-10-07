@@ -57,6 +57,7 @@ class PromoPorCliente(models.Model):
     inicio_promo = models.DateTimeField(auto_now_add=True, verbose_name='Inicio de Promo')
     # inicio_promo = models.DateField(verbose_name='Inicio de Promo')
     fin_promo = models.DateField(verbose_name='Fin de Promo')
+    fecha_pago_promo = models.DateField(null=True, blank=True, verbose_name='Fecha de Pago Promo')
     ########## control de bidones ##########
     bidones_disponibles = models.IntegerField(verbose_name='Bidones Disponibles')
     entrega_bidones = models.IntegerField(default=0, verbose_name='Entrega de Bidones')
@@ -90,7 +91,7 @@ class Visita(models.Model):
     class Meta:
         verbose_name = 'Visita'
         verbose_name_plural = 'Visitas'
-        ordering = ['fecha_visita']
+        ordering = ['-fecha_visita']
     
     def __str__(self):
         return f"Visita a {self.cliente} el {self.fecha_visita.strftime('%d/%m/%Y %H:%M')}"

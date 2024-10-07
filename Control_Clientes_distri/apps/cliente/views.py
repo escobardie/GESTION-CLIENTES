@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 
 from django.utils import timezone
@@ -584,9 +585,20 @@ class PagoClienteCreateView(CreateView):
     def form_valid(self, form):
         cliente = self.get_cliente_data()
         promo_pago_id = self.request.POST.get('promo_id') # Captura el promo__id
-        print(f'promo: {promo_pago_id}')
-        # Recupera la instancia de Promo usando el promo_id
         promo_instance = get_object_or_404(models.Promo, id=promo_pago_id)
+
+        # Obtener la instancia de PromoPorCliente asociada al cliente y promoción
+        promo_por_cliente = get_object_or_404(models.PromoPorCliente, cliente=cliente, promo=promo_instance)
+
+        ## Actualizar la fecha de pago
+        nueva_fecha_pago = (datetime.now() + relativedelta(months=1)).date().isoformat()  # Sumar 1 mes a la fecha actual
+        promo_por_cliente.fecha_pago_promo = nueva_fecha_pago
+        promo_por_cliente.bidones_disponibles = promo_instance.cant_bidones
+
+        # Guardar cambios en PromoPorCliente
+        promo_por_cliente.save()
+
+        
         
         pago = form.save(commit=False)
         pago.cliente = cliente
