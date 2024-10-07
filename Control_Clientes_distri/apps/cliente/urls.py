@@ -22,6 +22,12 @@ urlpatterns = [
     path('crear_venta_producto/<int:id>/', views.VentaProductoCreateView.as_view(), name='crear_venta_producto_cliente'),
     ## FUNCIONAL
 
+    # GESTION PAGOS
+    path('crear_pago/', views.PagoCreateView.as_view(), name='crear_pago'),
+    path('crear_pago_cliente/<int:id>/', views.PagoClienteCreateView.as_view(), name='crear_pago_cliente'),
+
+
+
     # YA NO SE USA
     path('gestion_ventas/', views.GestioVentaView.as_view(), name='gestion_ventas'),  # Sin cliente
     path('gestion_ventas/<int:id>/', views.GestioVentaView.as_view(), name='gestion_ventas_cliente'),  # Con cliente

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente,Visita,Promo,PromoPorCliente,Venta,Producto,VentaProducto
+from .models import Cliente,Visita,Promo,PromoPorCliente,Venta,Producto,VentaProducto, Pagos
 
 
 class AddClienteForm(forms.ModelForm):
@@ -143,4 +143,15 @@ class VentaForm(forms.ModelForm):
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             'total_venta': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Total Venta'}),
             'nota': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Nota'}),
+        }
+
+class PagoForm(forms.ModelForm):
+    class Meta:
+        model = Pagos
+        fields = [ 'monto','metodo_pago', 'descripcion']
+        widgets = {
+            #'cliente': forms.Select(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Monto'}),
+            'metodo_pago': forms.Select(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripcion'}),
         }

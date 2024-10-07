@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Pago</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Agregar Pago</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {% if promociones %}
+            <div class="form-group">
+                <label for="promocion">Seleccionar Promoción Activa:</label>
+                <select name="promocion" id="promocion" class="form-control">
+                    <option value="">--Selecciona una Promoción--</option>
+                    {% for promo in promociones %}
+                        <option value="{{ promo.promo__valor_promo }}" data-valor="{{ promo.promo__valor_promo }}" data-id="{{ promo.promo__id }}">
+                            {{ promo.promo__id }} - {{ promo.promo__nombre_promo }} - ${{ promo.promo__valor_promo }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <input type="hidden" name="promo_id" id="promo_id" value="">
+            <div class="form-group">
+                <label for="id_monto">{{ form.monto.label }} </label>
+                <input type="number" name="monto" value="{{ form.monto.value }}" class="form-control" placeholder="Monto" step="0.01" id="id_monto" readonly >
+            </div>
+            
+            <div class="form-group">
+                <label for="id_metodo_pago">{{ form.metodo_pago.label }}</label>
+                {{ form.metodo_pago }}
+            </div>
+            <div class="form-group">
+                <label for="id_descripcion">{{ form.descripcion.label }}</label>
+                {{ form.descripcion }}
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Enviar</button>
+            {% else %}
+            <p>Este cliente no tiene promociones activas.</p>
+            {% endif %}
+            
+            <a href="{% url 'listar_clientes' %}" class="btn btn-secondary">Volver a la Lista de Clientes</a>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectPromocion = document.getElementById('promocion');
+            const inputMonto = document.getElementById('id_monto');
+            const hiddenPromoId = document.getElementById('promo_id');
+            
+            function updateMonto() {
+                const valorPromocion = parseFloat(selectPromocion.value) || 0;
+                inputMonto.value = valorPromocion.toFixed(2);
+                // Captura el data-id del option seleccionado
+                const selectedOption = selectPromocion.options[selectPromocion.selectedIndex];
+                hiddenPromoId.value = selectedOption.getAttribute('data-id');
+            }
+            selectPromocion.addEventListener('change', updateMonto); 
+            updateMonto(); // Llama a la función para establecer el monto inicial
+        });
+    </script>
+</body>
+</html>
