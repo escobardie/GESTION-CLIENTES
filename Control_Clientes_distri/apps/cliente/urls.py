@@ -8,10 +8,12 @@ urlpatterns = [
     path('listar_visitas/<int:id>', views.ListarVisitasView.as_view(), name='listar_visitas'),
     path('listar_productos/', views.ListarProductosView.as_view(), name='listar_productos'),
     
+    path('listar_pago/', views.ListarPagoClienteView.as_view(), name='listar_pago'),
     path('listar_pago_cliente/<int:id>', views.ListarPagoClienteView.as_view(), name='listar_pago_cliente'),
 
     path('listar_venta_cliente/', views.ListarVentaClienteView.as_view(), name='listar_ventas'),
     path('listar_venta_cliente/<int:id>', views.ListarVentaClienteView.as_view(), name='listar_venta_cliente'),
+    
     path('info_venta/<int:id>', views.DetalleVentaListView.as_view(), name='info_venta'),
 
 

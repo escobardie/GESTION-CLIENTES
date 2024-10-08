@@ -22,26 +22,25 @@ def usuario_es_admin(user):
 #     context_object_name = "inicio_page"
 
 class InicioView(ListView):
-    ## TODO SE DEBNE DE AGREGAR EL ORDEN POR FECHA 
-    model: models.Cliente
+    model = models.PromoPorCliente
     template_name = "Agua/index.html"
-    context_object_name = "lista_clientes"
+    context_object_name = "listar_promos"
     paginate_by = 10
-    #queryset = models.Cliente.objects.filter(estado=True).order_by('fecha_cobro') ## ORIGINAL
-    #queryset = models.Cliente.objects.filter(estado=True).order_by('nombre')
+
     def get_queryset(self):
-        # Filtrar los clientes cuyo estado es True y ordenar por fecha de creación
-        queryset = models.Cliente.objects.filter(estado=True).order_by('fecha_cobro')
-        return queryset
+        # Filtrar las promociones cuyo estado es True y ordenar por fecha pago
+        return models.PromoPorCliente.objects.filter(estado=True).order_by('fecha_pago_promo')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Obtener el queryset filtrado
+        queryset = self.get_queryset()
         # Obtener la fecha actual
         fecha_actual = timezone.now().date()
-        # Filtrar clientes con fecha de cobro vencida
-        clientes_con_fecha_vencida = self.get_queryset().filter(fecha_cobro__lt=fecha_actual)
+        # Filtrar promociones con fecha de pago vencida
+        promo_con_fecha_vencida = queryset.filter(fecha_pago_promo__lt=fecha_actual)
         # Pasar esta información al contexto
-        context['clientes_con_fecha_vencida'] = clientes_con_fecha_vencida
+        context['promos_con_fecha_vencida'] = promo_con_fecha_vencida
         return context
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
@@ -58,7 +57,7 @@ class ListarClientesView(ListView):
     template_name = "Agua/listar_clientes.html"
     context_object_name = 'lista_clientes'
     paginate_by = 5
-    queryset = models.Cliente.objects.filter(estado=True).order_by('-fecha_alta')
+    queryset = models.Cliente.objects.filter(estado=True).order_by('apellido')
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarVisitasView(ListView):
@@ -66,8 +65,9 @@ class ListarVisitasView(ListView):
     template_name = "Agua/listar_vistas.html"
     context_object_name = 'lista_vistas'
     paginate_by = 5
-    # queryset = models.Visita.objects.filter(estado=True)
+    
     def get_cliente_data(self):
+        # ['id'] = Este acceso es más directo y espera que la clave 'id' exista en el diccionario kwargs
         cliente_id = self.kwargs['id']
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
         return cliente
@@ -82,7 +82,6 @@ class ListarVentaClienteView(ListView):
     template_name = "Agua/listar_venta_cliente.html"
     paginate_by = 10
     context_object_name = 'lista_venta_cliente'
-    # queryset = models.Venta.objects.filter()
 
     def get_cliente_data(self):
         # Intenta obtener el cliente_id de los argumentos de la URL
@@ -101,7 +100,6 @@ class ListarPagoClienteView(ListView):
     template_name = "Agua/listar_pagos_cliente.html"
     paginate_by = 10
     context_object_name = 'lista_pago_cliente'
-    # queryset = models.Venta.objects.filter()
 
     def get_cliente_data(self):
         # Intenta obtener el cliente_id de los argumentos de la URL
@@ -121,116 +119,95 @@ class DetalleVentaListView(ListView):
     context_object_name = 'detalle_venta'
 
     def get_venta_data(self):
+        ## NO PUEDE EXISTIR UN NONE COMO ID DE DETALLE VENTA
         # Obtiene el parámetro 'id' desde los argumentos de la URL.
-        # Este 'id' corresponde a una instancia de 'Venta'.
         id_venta = self.kwargs['id']
-        
-        # Verifica si se proporcionó un 'id_venta'
-        if id_venta is not None:
-            # Intenta obtener la instancia de 'Venta' asociada con el 'id_venta'.
-            # Si no se encuentra, lanza un error 404.
-            return get_object_or_404(models.Venta, id=id_venta)
-        
-        # Si no se proporciona un 'id_venta', devuelve None.
-        return None
+        venta = get_object_or_404(models.Venta, id=id_venta)
+        return venta
 
     def get_queryset(self):
         # Llama al método 'get_venta_data' para obtener la instancia de la 'Venta' correspondiente.
         venta = self.get_venta_data()
-        
         # Filtra los objetos 'VentaProducto' asociados con la venta obtenida.
         # Esto devuelve un conjunto de resultados (QuerySet) de productos relacionados con esa venta.
         return models.VentaProducto.objects.filter(venta=venta)
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class MenuClienteDetailView(DetailView):
+class MenuClienteDetailView(DetailView): ##TODO SE DEBE CAMBIAR EL ENFOQUE 
     model = models.Cliente
     template_name = "Agua/menu_cliente.html"
     context_object_name = 'cliente'
 
     def get_object(self):
+        ## NO PUEDE EXISTIR UN NONE COMO ID DE CLIENTE
         # Obtén el parámetro 'id' desde la URL
-        cliente_id = self.kwargs.get('id')
+        cliente_id = self.kwargs['id']
         # Busca el cliente por su 'id'. Si no se encuentra, arroja un error 404.
-        return get_object_or_404(models.Cliente, id=cliente_id)
+        cliente = get_object_or_404(models.Cliente, id=cliente_id)
+        return cliente
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        cliente = self.get_object()  # Obtén el cliente
-
-        # Obtén todas las promociones relacionadas con el cliente
-        promociones = models.PromoPorCliente.objects.filter(cliente=cliente,estado=True)
-
-        # Crear listas para los datos que se mostrarán
-        bidones_disponibles = []
-        entrega_bidones = []
-        retorno_bidones = []
-        bidones_acumulados = []
-
-        for promo in promociones:
-            bidones_disponibles.append(promo.bidones_disponibles)
-            entrega_bidones.append(promo.entrega_bidones)
-            retorno_bidones.append(promo.retorno_bidones)
-            bidones_acumulados.append(promo.bidones_acumulados)
-
-        # Agregar la información al contexto
-        context['promociones'] = promociones
-        context['bidones_disponibles'] = bidones_disponibles
-        context['entrega_bidones'] = entrega_bidones
-        context['retorno_bidones'] = retorno_bidones
-        context['bidones_acumulados'] = bidones_acumulados
-        context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
-
-
-        
-
-        return context
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
     #     cliente = self.get_object()  # Obtén el cliente
 
     #     # Obtén todas las promociones relacionadas con el cliente
-    #     promociones = models.PromoPorCliente.objects.filter(cliente=cliente)
+    #     promociones = models.PromoPorCliente.objects.filter(cliente=cliente,estado=True)
 
+    #     ### NUEVO ENFOQUE ###
+    #     # # Crear listas para los datos que se mostrarán
+    #     # lista_detalles_promo_cliente = []
         
-    #     try:
-    #         #promoXcliente = models.PromoPorCliente.objects.get(cliente=cliente)
-    #         promoXcliente = models.PromoPorCliente.objects.filter(cliente=cliente)
-    #         # context['tipo_promocion'] = cliente.promociones.all() #promoXcliente.promo.nombre_promo
-            
-    #         context['promociones'] = promoXcliente
-    #         # context['bidones_disponibles'] = promoXcliente.bidones_disponibles
-    #         # context['entrega_bidones'] = promoXcliente.entrega_bidones
-    #         # context['retorno_bidones'] = promoXcliente.retorno_bidones
-    #         # context['bidones_acumulados'] = promoXcliente.bidones_acumulados
-    #         context['promo_asignado'] = True
-            
-    #     except models.PromoPorCliente.MultipleObjectsReturned:
-    #         # Manejar el caso donde se devuelven múltiples objetos
-    #         promoXcliente = models.PromoPorCliente.objects.filter(cliente=cliente)
-    #         # Seleccionar el primero, por ejemplo
-    #         promoXcliente = promoXcliente.first()
-            
-    #         # se retorna el nombre de la promocion
-    #         # context['tipo_promocion'] = cliente.promociones.all() #promoXcliente.promo.nombre_promo
-    #         context['promociones'] = promoXcliente
-    #         context['bidones_disponibles'] = promoXcliente.bidones_disponibles
-    #         context['entrega_bidones'] = promoXcliente.entrega_bidones
-    #         context['retorno_bidones'] = promoXcliente.retorno_bidones
-    #         context['bidones_acumulados'] = promoXcliente.bidones_acumulados
-    #         context['promo_asignado'] = True
+    #     # for promo in promociones:
+    #     #     lista_detalles_promo_cliente.append({
+    #     #         'bidones_disponibles': promo.bidones_disponibles,
+    #     #         'entrega_bidones': promo.entrega_bidones,
+    #     #         'retorno_bidones': promo.retorno_bidones,
+    #     #         'bidones_acumulados': promo.bidones_acumulados 
+    #     #     })
 
-    #     except models.PromoPorCliente.DoesNotExist:
-    #         #context['tipo_promocion'] = "No se cargo PROMOCION para este cliente."
-    #         context['promociones'] = promociones
-    #         context['promo_asignado'] = False
-    #         context['bidones_disponibles'] = 0
-    #         context['entrega_bidones'] = 0
-    #         context['retorno_bidones'] = 0
-    #         context['bidones_acumulados'] = 0
+    #     # # Agregar la información al contexto
+    #     # context['promociones'] = lista_detalles_promo_cliente
+    #     # context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
+    #     ### NUEVO ENFOQUE ###
 
-                
+    #     # Crear listas para los datos que se mostrarán
+    #     bidones_disponibles = []
+    #     entrega_bidones = []
+    #     retorno_bidones = []
+    #     bidones_acumulados = []
+
+    #     for promo in promociones:
+    #         bidones_disponibles.append(promo.bidones_disponibles)
+    #         entrega_bidones.append(promo.entrega_bidones)
+    #         retorno_bidones.append(promo.retorno_bidones)
+    #         bidones_acumulados.append(promo.bidones_acumulados)
+
+    #     # Agregar la información al contexto
+    #     context['promociones'] = promociones
+    #     context['bidones_disponibles'] = bidones_disponibles
+    #     context['entrega_bidones'] = entrega_bidones
+    #     context['retorno_bidones'] = retorno_bidones
+    #     context['bidones_acumulados'] = bidones_acumulados
+    #     context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
+
     #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cliente = self.get_object()
+        '''  En lugar de construir el diccionario a mano, 
+            podrías usar values() o values_list() si solo necesitas ciertos campos,
+            lo que optimizaría la consulta a la base de datos. '''
+
+        if cliente:
+            # Filtrar las promociones activas del cliente
+            promociones_del_cliente = models.PromoPorCliente.objects.filter(
+                cliente=cliente,
+                estado=True
+            ).values('promo__id','promo__nombre_promo','promo__valor_promo',
+            'fecha_pago_promo', 'bidones_disponibles', 'bidones_acumulados')
+            context['promociones'] = promociones_del_cliente
+        return context
+    
 
 ################# CRUD ####################
 
@@ -459,6 +436,7 @@ class GestioVentaView(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
         # form.save()  # Guardar el formulario
         return super().form_valid(form)
 
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class VentaProductoCreateView(FormView):
     ## https://www.youtube.com/watch?v=fycZ_d2vDwM
     ## https://github.com/neunapp/formsets-django/blob/master/djfomrsets/templates/alumno/add.html

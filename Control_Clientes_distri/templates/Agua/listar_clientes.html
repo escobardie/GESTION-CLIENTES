@@ -31,8 +31,8 @@
         <div class="client-list">
             {% for cliente in lista_clientes %}
                 <a href={% url 'menu_cliente'  id=cliente.id %} class="client">
-                    <p><strong>Nombre:</strong> {{ cliente.nombre }}</p>
                     <p><strong>Apellido:</strong> {{ cliente.apellido }}</p>
+                    <p><strong>Nombre:</strong> {{ cliente.nombre }}</p>
                     <p><strong>Dirección:</strong> {{ cliente.direccion }}</p>
                     <p><strong>Fecha de Alta:</strong> {{ cliente.fecha_alta }}</p>
                 </a>

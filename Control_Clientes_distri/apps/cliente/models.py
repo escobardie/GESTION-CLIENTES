@@ -28,8 +28,6 @@ class Promo(models.Model):
 ###### Modelo CLIENTE #####
 ###########################
 class Cliente(models.Model):
-    # SE ELIMINAR LA REALACION, YA QUE ESTA MAS CREADA
-    # tipo_promo = models.ForeignKey(Promo, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Tipo de Promoción')
     nombre = models.CharField(max_length=150, verbose_name='Nombre')
     apellido = models.CharField(max_length=150, verbose_name='Apellido')
     telefono = models.CharField(max_length=15, verbose_name='Teléfono')
@@ -52,10 +50,8 @@ class Cliente(models.Model):
 ############################
 class PromoPorCliente(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente', related_name='promociones')
-    # cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente') # ORIGINAL
     promo = models.ForeignKey(Promo, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Promoción')
     inicio_promo = models.DateTimeField(auto_now_add=True, verbose_name='Inicio de Promo')
-    # inicio_promo = models.DateField(verbose_name='Inicio de Promo')
     fin_promo = models.DateField(verbose_name='Fin de Promo')
     fecha_pago_promo = models.DateField(null=True, blank=True, verbose_name='Fecha de Pago Promo')
     ########## control de bidones ##########

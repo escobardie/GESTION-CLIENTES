@@ -37,13 +37,14 @@
         <h1>Lista de Clientes Próximos a Cobrar</h1>
         
         <div class="client-list">
-            {% for cliente in lista_clientes %}
-                <a href={% url 'menu_cliente'  id=cliente.id %} class="client">
-                    <p><strong>Nombre:</strong> {{ cliente.nombre }}</p>
-                    <p><strong>Apellido:</strong> {{ cliente.apellido }}</p>
-                    <p><strong>Dirección:</strong> {{ cliente.direccion }}</p>
-                    <p><strong>Fecha de Cobro:</strong> {{ cliente.fecha_cobro }}</p>
-                    {% if cliente in clientes_con_fecha_vencida %}
+            {% for promo in listar_promos %}
+                <a href={% url 'menu_cliente'  id=promo.cliente.id %} class="client">
+                    <p><strong>Nombre:</strong> {{ promo.cliente.nombre }}</p>
+                    <p><strong>Apellido:</strong> {{ promo.cliente.apellido }}</p>
+                    <p><strong>Promocion:</strong> {{ promo.promo.nombre_promo }}</p>
+                    <p><strong>Dirección:</strong> {{ promo.cliente.direccion }}</p>
+                    <p><strong>Fecha de Cobro:</strong> {{ promo.fecha_pago_promo }}</p>
+                    {% if promo in promos_con_fecha_vencida %}
                         <div class="alert alert-warning">
                             ¡Atención! La fecha de cobro para este cliente ha vencido.
                         </div>
