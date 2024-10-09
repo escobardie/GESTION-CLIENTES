@@ -133,7 +133,7 @@ class DetalleVentaListView(ListView):
         return models.VentaProducto.objects.filter(venta=venta)
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class MenuClienteDetailView(DetailView): ##TODO SE DEBE CAMBIAR EL ENFOQUE 
+class MenuClienteDetailView(DetailView):
     model = models.Cliente
     template_name = "Agua/menu_cliente.html"
     context_object_name = 'cliente'
@@ -214,7 +214,7 @@ class MenuClienteDetailView(DetailView): ##TODO SE DEBE CAMBIAR EL ENFOQUE
 
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ClienteCreateView(CreateView):
+class ClienteCreateView(CreateView): ##TODO quitar fecha de cobro, ya que corresponde a promo por cliente
     ''' FORMULARIO BASICO '''
     model = models.Cliente
     template_name = 'Agua/forms/crear_cliente.html'
@@ -257,9 +257,12 @@ class VisitaCreateView(CreateView):
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class PromoPorClienteCreateView(CreateView):
+    ##TODO cambiar:
+    ## 1_ al seleccionar promo, carga utomatica de bidones disponibles
+    ## 2_ agregar label con valor de la promo
     template_name = 'Agua/forms/promo_x_cliente.html'
     form_class = forms.AddPromoPorClienteForm
-
+    
     def get_initial(self):
         # Obtener el cliente específico
         cliente_id = self.kwargs['id']
@@ -267,10 +270,7 @@ class PromoPorClienteCreateView(CreateView):
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
         # promo = get_object_or_404(models.Promo, id=promo_id)
         fecha_actual = datetime.now().date().isoformat()  # 'YYYY-MM-DD'  # Obtiene solo la fecha actual
-        # Acceder al campo `cant_bidones` de la instancia de `promo`
-        # bidones_disponibles = promo.cant_bidones
-        # Retornar los valores iniciales del formulario
-        # return {'cliente': cliente, 'promo':promo} # ORIGINAL
+        
         return {
             'cliente': cliente, 
             # 'promo': promo, 
@@ -290,7 +290,7 @@ class PromoPorClienteCreateView(CreateView):
 
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ServisVisitaUpdateView(UpdateView):
+class ServisVisitaUpdateView(UpdateView): ## TODO realizar chequeo con el cliente
     model = models.PromoPorCliente
     template_name = 'Agua/forms/servis_visita_cliente.html'
     form_class = forms.ServisVisitaClienteForm
@@ -359,83 +359,83 @@ class ProductoCreateView(CreateView):
     model = models.Producto
     template_name = 'Agua/forms/crear_producto.html'
     form_class = forms.ProductoForm
-    success_url = reverse_lazy('inicio')
+    success_url = reverse_lazy('listar_productos')
     
    
     def form_valid(self, form):
         form.save()  # Guardar el formulario
         return super().form_valid(form)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class VentaCreateView(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
-    model = models.Venta
-    template_name = 'Agua/forms/crear_venta.html'
-    form_class = forms.VentaForm
-    success_url = reverse_lazy('inicio')
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+# class VentaCreateView(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
+#     model = models.Venta
+#     template_name = 'Agua/forms/crear_venta.html'
+#     form_class = forms.VentaForm
+#     success_url = reverse_lazy('inicio')
     
    
-    def form_valid(self, form):
-        form.save()  # Guardar el formulario
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         form.save()  # Guardar el formulario
+#         return super().form_valid(form)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class VentaProductoCreateView2(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
-    model = models.VentaProducto
-    template_name = 'Agua/forms/crear_venta_producto.html'
-    form_class = forms.VentaProductoForm
-    success_url = reverse_lazy('inicio')
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+# class VentaProductoCreateView2(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
+#     model = models.VentaProducto
+#     template_name = 'Agua/forms/crear_venta_producto.html'
+#     form_class = forms.VentaProductoForm
+#     success_url = reverse_lazy('inicio')
     
    
-    def form_valid(self, form):
-        form.save()  # Guardar el formulario
-        return super().form_valid(form)
+#     def form_valid(self, form):
+#         form.save()  # Guardar el formulario
+#         return super().form_valid(form)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class GestioVentaView(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
-    model = models.VentaProducto
-    template_name = 'Agua/forms/gestion_venta2.html'
-    form_class = forms.VentaProductoForm
-    success_url = reverse_lazy('inicio')
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+# class GestioVentaView(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
+#     model = models.VentaProducto
+#     template_name = 'Agua/forms/gestion_venta2.html'
+#     form_class = forms.VentaProductoForm
+#     success_url = reverse_lazy('inicio')
     
-    def form_invalid(self, form): ## NO BORRAR
-        print("Formulario inválido:", form.errors)
-        return super().form_invalid(form)
+#     def form_invalid(self, form): ## NO BORRAR
+#         print("Formulario inválido:", form.errors)
+#         return super().form_invalid(form)
 
-    def get_cliente_data(self):
-        # Intenta obtener el cliente_id de los argumentos de la URL
-        cliente_id = self.kwargs.get('id')
-        if cliente_id is not None:
-            return get_object_or_404(models.Cliente, id=cliente_id)
-        return None  # Devuelve None si no hay cliente_id
+#     def get_cliente_data(self):
+#         # Intenta obtener el cliente_id de los argumentos de la URL
+#         cliente_id = self.kwargs.get('id')
+#         if cliente_id is not None:
+#             return get_object_or_404(models.Cliente, id=cliente_id)
+#         return None  # Devuelve None si no hay cliente_id
         
-    def form_valid(self, form):
-        cliente = self.get_cliente_data()
-        # Crear una nueva instancia de Venta y guardar
-        venta = models.Venta.objects.create(cliente=cliente)
-        ##################
-         # Procesar productos
-        producto_list = self.request.POST.getlist('producto')
-        producto=form.cleaned_data['producto']
-        cantidad_list = self.request.POST.getlist('cantidad')
-        descuento_list = self.request.POST.getlist('descuento')
-        precio_list = self.request.POST.getlist('precio_unidad_venta')
-        precio_total_venta_list = self.request.POST.getlist('precio_total_venta')
-        print("PROBANDO 1")
-        print(producto_list)
-        print(producto)
-        print("PROBANDO 2")
-        print(cantidad_list)
-        print(descuento_list)
-        print(precio_list)
-        print(precio_total_venta_list)
-        ##################
-        # Ahora guarda la instancia de VentaProducto asociándola a la venta creada
-        venta_producto = form.save(commit=False)
-        venta_producto.venta = venta  # Asocia la venta a VentaProducto
-        venta_producto.save()  # Ahora guarda el VentaProducto
+#     def form_valid(self, form):
+#         cliente = self.get_cliente_data()
+#         # Crear una nueva instancia de Venta y guardar
+#         venta = models.Venta.objects.create(cliente=cliente)
+#         ##################
+#          # Procesar productos
+#         producto_list = self.request.POST.getlist('producto')
+#         producto=form.cleaned_data['producto']
+#         cantidad_list = self.request.POST.getlist('cantidad')
+#         descuento_list = self.request.POST.getlist('descuento')
+#         precio_list = self.request.POST.getlist('precio_unidad_venta')
+#         precio_total_venta_list = self.request.POST.getlist('precio_total_venta')
+#         print("PROBANDO 1")
+#         print(producto_list)
+#         print(producto)
+#         print("PROBANDO 2")
+#         print(cantidad_list)
+#         print(descuento_list)
+#         print(precio_list)
+#         print(precio_total_venta_list)
+#         ##################
+#         # Ahora guarda la instancia de VentaProducto asociándola a la venta creada
+#         venta_producto = form.save(commit=False)
+#         venta_producto.venta = venta  # Asocia la venta a VentaProducto
+#         venta_producto.save()  # Ahora guarda el VentaProducto
 
-        # form.save()  # Guardar el formulario
-        return super().form_valid(form)
+#         # form.save()  # Guardar el formulario
+#         return super().form_valid(form)
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class VentaProductoCreateView(FormView):
@@ -445,7 +445,7 @@ class VentaProductoCreateView(FormView):
     template_name = 'Agua/forms/gestion_venta2_fucion.html'
     ## formset_factory = conjunto de formularios
     form_class = formset_factory(forms.VentaProductoForm)
-    success_url = reverse_lazy('inicio')
+    # success_url = reverse_lazy('inicio')
 
     def get_cliente_data(self):
         # Intenta obtener el cliente_id de los argumentos de la URL
@@ -453,6 +453,12 @@ class VentaProductoCreateView(FormView):
         if cliente_id is not None:
             return get_object_or_404(models.Cliente, id=cliente_id)
         return None  # Devuelve None si no hay cliente_id
+
+    def get_success_url(self):
+        cliente_id = self.kwargs.get('id')
+        if cliente_id is not None:
+            return reverse('menu_cliente', kwargs={'id': cliente_id})
+        return reverse('listar_ventas')
 
     def form_valid(self, form):
         cliente = self.get_cliente_data()
@@ -490,22 +496,15 @@ class VentaProductoCreateView(FormView):
 ################# GESTION DE PAGOS ####################
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class PagoCreateView(CreateView):
+    ''' pago para no clientes '''
     model = models.Pagos
     template_name = 'Agua/forms/crear_pago.html'
     form_class = forms.PagoForm
-    success_url = reverse_lazy('inicio')
-    
-    def get_cliente_data(self):
-        # Intenta obtener el cliente_id de los argumentos de la URL
-        cliente_id = self.kwargs.get('id')
-        if cliente_id is not None:
-            return get_object_or_404(models.Cliente, id=cliente_id)
-        return None  # Devuelve None si no hay cliente_id
+    success_url = reverse_lazy('listar_pago')
 
     def form_valid(self, form):
-        cliente = self.get_cliente_data()
         pago = form.save(commit=False)
-        pago.cliente = cliente
+        pago.cliente = None
         pago.save()  # Guardar el formulario
         return super().form_valid(form)
 
@@ -519,7 +518,7 @@ class PagoClienteCreateView(CreateView):
     
     def get_success_url(self): ## FUNCIONA PERFECTO
         # Obtiene el ID
-        id_cliente = self.get_cliente_data()
+        id_cliente = self.kwargs.get('id')
         # Genera la URL para la vista 'MENU CLIENTE' usando el ID
         return reverse('menu_cliente', kwargs={'id': id_cliente})
 
@@ -530,27 +529,6 @@ class PagoClienteCreateView(CreateView):
         if cliente_id is not None:
             return get_object_or_404(models.Cliente, id=cliente_id)
         return None  # Devuelve None si no hay cliente_id
-    
-    # def  get_context_data(self, **kwargs): ##filtra todos los PROMOS del cliente
-    #     context = super().get_context_data(**kwargs)
-    #     cliente = self.get_cliente_data()
-    #     # Filtrar los promos cuyo estado asociadas con el cliente
-    #     promociones_del_cliente = models.PromoPorCliente.objects.filter(cliente=cliente,estado=True)
-    #     # Crear listas para los datos que se mostrarán
-    #     lista_promo_del_cliente = []
-    #     # for promo in promociones_del_cliente:
-    #     #     lista_promo_del_cliente.append(promo.promo.nombre_promo)
-        
-    #     for promo in promociones_del_cliente:
-    #         lista_promo_del_cliente.append({
-    #             'nombre': promo.promo.nombre_promo,
-    #             'precio': promo.promo.valor_promo,  
-    #             'fecha': promo.promo.vencimiento_promo 
-    #         })
-
-    #     # Agregar la información al contexto
-    #     context['promociones'] = lista_promo_del_cliente
-    #     return context
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -11,7 +11,7 @@ urlpatterns = [
     path('listar_pago/', views.ListarPagoClienteView.as_view(), name='listar_pago'),
     path('listar_pago_cliente/<int:id>', views.ListarPagoClienteView.as_view(), name='listar_pago_cliente'),
 
-    path('listar_venta_cliente/', views.ListarVentaClienteView.as_view(), name='listar_ventas'),
+    path('listar_venta/', views.ListarVentaClienteView.as_view(), name='listar_ventas'),
     path('listar_venta_cliente/<int:id>', views.ListarVentaClienteView.as_view(), name='listar_venta_cliente'),
     
     path('info_venta/<int:id>', views.DetalleVentaListView.as_view(), name='info_venta'),
@@ -19,7 +19,7 @@ urlpatterns = [
 
     # GESTION VENTAS
     path('crear_producto/', views.ProductoCreateView.as_view(), name='crear_producto'),
-    path('crear_venta/', views.VentaCreateView.as_view(), name='crear_venta'),
+    # path('crear_venta/', views.VentaCreateView.as_view(), name='crear_venta'),
 
     ## FUNCIONAL 
     path('crear_venta_producto/', views.VentaProductoCreateView.as_view(), name='crear_venta_producto'),
@@ -33,8 +33,8 @@ urlpatterns = [
 
 
     # YA NO SE USA
-    path('gestion_ventas/', views.GestioVentaView.as_view(), name='gestion_ventas'),  # Sin cliente
-    path('gestion_ventas/<int:id>/', views.GestioVentaView.as_view(), name='gestion_ventas_cliente'),  # Con cliente
+    # path('gestion_ventas/', views.GestioVentaView.as_view(), name='gestion_ventas'),  # Sin cliente
+    # path('gestion_ventas/<int:id>/', views.GestioVentaView.as_view(), name='gestion_ventas_cliente'),  # Con cliente
     # YA NO SE USA
 
     path('cargar_cliente/', views.ClienteCreateView.as_view(), name='cargar_cliente'),
