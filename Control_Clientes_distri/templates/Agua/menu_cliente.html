@@ -174,10 +174,10 @@
                                 {% for promo in promociones %}
                                     <option value="{{ promo.promo__valor_promo }}"
                                             data-valor="{{ promo.promo__valor_promo }}"
-                                            data-id="{{ promo.promo__id }}"
+                                            data-id="{{ promo.id }}"
                                             data-bidones-disponibles="{{ promo.bidones_disponibles }}"
                                             data-bidones-acumulados="{{ promo.bidones_acumulados }}">
-                                        {{ promo.promo__id }} - {{ promo.promo__nombre_promo }} - ${{ promo.promo__valor_promo }} - {{promo.fecha_pago_promo}}
+                                        {{ promo.id }} - {{ promo.promo__nombre_promo }} - ${{ promo.promo__valor_promo }} - {{promo.fecha_pago_promo}}
                                     </option>
                                 {% endfor %}
                             </select>
@@ -224,7 +224,7 @@
     </div>
 
     <script>
-        function toggleMenu() { 
+        function toggleMenu() {
             const navLinks = document.querySelector('.nav-links');
             navLinks.classList.toggle('active');
         }

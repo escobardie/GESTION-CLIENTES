@@ -145,57 +145,58 @@ class MenuClienteDetailView(DetailView): ##TODO SE DEBE CAMBIAR EL ENFOQUE
         # Busca el cliente por su 'id'. Si no se encuentra, arroja un error 404.
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
         return cliente
+    ## CODIGO EXTRA SIN USO, PERO PARA FUTURAS REFERENCIAS
+        # def get_context_data(self, **kwargs):
+        #     context = super().get_context_data(**kwargs)
+        #     cliente = self.get_object()  # Obtén el cliente
+
+        #     # Obtén todas las promociones relacionadas con el cliente
+        #     promociones = models.PromoPorCliente.objects.filter(cliente=cliente,estado=True)
+
+        #     ### NUEVO ENFOQUE ###
+        #     # # Crear listas para los datos que se mostrarán
+        #     # lista_detalles_promo_cliente = []
+            
+        #     # for promo in promociones:
+        #     #     lista_detalles_promo_cliente.append({
+        #     #         'bidones_disponibles': promo.bidones_disponibles,
+        #     #         'entrega_bidones': promo.entrega_bidones,
+        #     #         'retorno_bidones': promo.retorno_bidones,
+        #     #         'bidones_acumulados': promo.bidones_acumulados 
+        #     #     })
+
+        #     # # Agregar la información al contexto
+        #     # context['promociones'] = lista_detalles_promo_cliente
+        #     # context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
+        #     ### NUEVO ENFOQUE ###
+
+        #     # Crear listas para los datos que se mostrarán
+        #     bidones_disponibles = []
+        #     entrega_bidones = []
+        #     retorno_bidones = []
+        #     bidones_acumulados = []
+
+        #     for promo in promociones:
+        #         bidones_disponibles.append(promo.bidones_disponibles)
+        #         entrega_bidones.append(promo.entrega_bidones)
+        #         retorno_bidones.append(promo.retorno_bidones)
+        #         bidones_acumulados.append(promo.bidones_acumulados)
+
+        #     # Agregar la información al contexto
+        #     context['promociones'] = promociones
+        #     context['bidones_disponibles'] = bidones_disponibles
+        #     context['entrega_bidones'] = entrega_bidones
+        #     context['retorno_bidones'] = retorno_bidones
+        #     context['bidones_acumulados'] = bidones_acumulados
+        #     context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
+
+        #     return context
     
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     cliente = self.get_object()  # Obtén el cliente
-
-    #     # Obtén todas las promociones relacionadas con el cliente
-    #     promociones = models.PromoPorCliente.objects.filter(cliente=cliente,estado=True)
-
-    #     ### NUEVO ENFOQUE ###
-    #     # # Crear listas para los datos que se mostrarán
-    #     # lista_detalles_promo_cliente = []
-        
-    #     # for promo in promociones:
-    #     #     lista_detalles_promo_cliente.append({
-    #     #         'bidones_disponibles': promo.bidones_disponibles,
-    #     #         'entrega_bidones': promo.entrega_bidones,
-    #     #         'retorno_bidones': promo.retorno_bidones,
-    #     #         'bidones_acumulados': promo.bidones_acumulados 
-    #     #     })
-
-    #     # # Agregar la información al contexto
-    #     # context['promociones'] = lista_detalles_promo_cliente
-    #     # context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
-    #     ### NUEVO ENFOQUE ###
-
-    #     # Crear listas para los datos que se mostrarán
-    #     bidones_disponibles = []
-    #     entrega_bidones = []
-    #     retorno_bidones = []
-    #     bidones_acumulados = []
-
-    #     for promo in promociones:
-    #         bidones_disponibles.append(promo.bidones_disponibles)
-    #         entrega_bidones.append(promo.entrega_bidones)
-    #         retorno_bidones.append(promo.retorno_bidones)
-    #         bidones_acumulados.append(promo.bidones_acumulados)
-
-    #     # Agregar la información al contexto
-    #     context['promociones'] = promociones
-    #     context['bidones_disponibles'] = bidones_disponibles
-    #     context['entrega_bidones'] = entrega_bidones
-    #     context['retorno_bidones'] = retorno_bidones
-    #     context['bidones_acumulados'] = bidones_acumulados
-    #     context['promo_asignado'] = promociones.exists()  # Verifica si hay promociones asociadas
-
-    #     return context
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cliente = self.get_object()
         '''  En lugar de construir el diccionario a mano, 
-            podrías usar values() o values_list() si solo necesitas ciertos campos,
+            usamos values() o values_list() si solo hace falta ciertos campos,
             lo que optimizaría la consulta a la base de datos. '''
 
         if cliente:
@@ -203,7 +204,7 @@ class MenuClienteDetailView(DetailView): ##TODO SE DEBE CAMBIAR EL ENFOQUE
             promociones_del_cliente = models.PromoPorCliente.objects.filter(
                 cliente=cliente,
                 estado=True
-            ).values('promo__id','promo__nombre_promo','promo__valor_promo',
+            ).values('id','promo__nombre_promo','promo__valor_promo',
             'fecha_pago_promo', 'bidones_disponibles', 'bidones_acumulados')
             context['promociones'] = promociones_del_cliente
         return context
@@ -214,6 +215,7 @@ class MenuClienteDetailView(DetailView): ##TODO SE DEBE CAMBIAR EL ENFOQUE
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ClienteCreateView(CreateView):
+    ''' FORMULARIO BASICO '''
     model = models.Cliente
     template_name = 'Agua/forms/crear_cliente.html'
     form_class = forms.AddClienteForm
@@ -514,8 +516,15 @@ class PagoClienteCreateView(CreateView):
     model = models.Pagos
     template_name = 'Agua/forms/crear_pago_cliente.html'
     form_class = forms.PagoForm
-    success_url = reverse_lazy('inicio')
+    # success_url = reverse_lazy('inicio')
     
+    def get_success_url(self): ## FUNCIONA PERFECTO
+        # Obtiene el ID
+        id_cliente = self.get_cliente_data()
+        # Genera la URL para la vista 'MENU CLIENTE' usando el ID
+        return reverse('menu_cliente', kwargs={'id': id_cliente})
+
+
     def get_cliente_data(self):
         # Intenta obtener el cliente_id de los argumentos de la URL
         cliente_id = self.kwargs.get('id')
