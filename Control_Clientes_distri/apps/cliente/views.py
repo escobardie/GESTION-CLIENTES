@@ -245,13 +245,12 @@ class VisitaCreateView(CreateView):
         return {'cliente': cliente}
 
     def form_valid(self, form): ## original
-        
         form.save()  # Guardar el formulario
         return super().form_valid(form)
 
     def get_success_url(self):
         # Obtiene el ID del cliente desde los kwargs
-        cliente_id = self.kwargs.get('id')
+        cliente_id = self.kwargs.get('id') ## USAMOS ESTE PORQUE EL USAMOS EL FORMULARIO PREDETERMIANDO "{{ form.as_p }}"
         # Genera la URL para la vista 'menu_cliente' usando el ID del cliente
         return reverse('menu_cliente', kwargs={'id': cliente_id})
     
