@@ -10,8 +10,8 @@ admin.site.site_title = 'Cliente'
 
 
 class ClientesAdmin(admin.ModelAdmin):
-    readonly_fields = ('nombre', 'apellido', 'direccion', 'telefono', 'fecha_alta', 'fecha_cobro')
-    list_display = ('nombre', 'apellido', 'direccion', 'fecha_cobro', 'listar_promociones')
+    readonly_fields = ('nombre', 'apellido', 'direccion', 'telefono', 'fecha_alta')
+    list_display = ('nombre', 'apellido', 'direccion', 'listar_promociones')
 
     def listar_promociones(self, obj):
         promociones = obj.promociones.all()  # 'promociones' es el related_name que usamos en PromoPorCliente

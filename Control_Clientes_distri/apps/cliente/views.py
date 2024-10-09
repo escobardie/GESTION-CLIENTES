@@ -219,8 +219,10 @@ class ClienteCreateView(CreateView): ##TODO quitar fecha de cobro, ya que corres
     model = models.Cliente
     template_name = 'Agua/forms/crear_cliente.html'
     form_class = forms.AddClienteForm
-    success_url = reverse_lazy('inicio')
-    
+    # success_url = reverse_lazy('inicio')
+    def get_success_url(self):
+        # Redirigir al menú del cliente creado
+        return reverse('menu_cliente', kwargs={'id': self.object.id})
    
     def form_valid(self, form):
         form.save()  # Guardar el formulario
@@ -258,8 +260,7 @@ class VisitaCreateView(CreateView):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class PromoPorClienteCreateView(CreateView):
     ##TODO cambiar:
-    ## 1_ al seleccionar promo, carga utomatica de bidones disponibles
-    ## 2_ agregar label con valor de la promo
+    ## 1_ al seleccionar promo, carga automatica de bidones disponibles
     template_name = 'Agua/forms/promo_x_cliente.html'
     form_class = forms.AddPromoPorClienteForm
     
@@ -279,6 +280,7 @@ class PromoPorClienteCreateView(CreateView):
         }
 
     def form_valid(self, form):
+        promo_id = form.cleaned_data['promo'].id  # Obtén el ID de promo
         form.save()  # Guardar el formulario
         return super().form_valid(form)
 
@@ -554,8 +556,12 @@ class PagoClienteCreateView(CreateView):
         # Obtener la instancia de PromoPorCliente asociada al cliente y promoción
         promo_por_cliente = get_object_or_404(models.PromoPorCliente, cliente=cliente, promo=promo_instance)
 
-        ## Actualizar la fecha de pago
-        nueva_fecha_pago = (datetime.now() + relativedelta(months=1)).date().isoformat()  # Sumar 1 mes a la fecha actual
+        # Capturar la fecha de pago de la promoción actual
+        fecha_pago_promo = promo_por_cliente.fecha_pago_promo
+
+        # Sumar un mes a la fecha de pago actual
+        nueva_fecha_pago = fecha_pago_promo + relativedelta(months=1)
+
         promo_por_cliente.fecha_pago_promo = nueva_fecha_pago
         promo_por_cliente.bidones_disponibles = promo_instance.cant_bidones
 

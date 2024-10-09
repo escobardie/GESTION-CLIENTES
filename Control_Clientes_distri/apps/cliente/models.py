@@ -21,7 +21,7 @@ class Promo(models.Model):
         ordering = ['id']
     
     def __str__(self):
-        return self.nombre_promo
+        return f"{self.nombre_promo} - ${self.valor_promo}"
 
 
 ###########################
@@ -33,7 +33,7 @@ class Cliente(models.Model):
     telefono = models.CharField(max_length=15, verbose_name='Teléfono')
     direccion = models.CharField(max_length=150, verbose_name='Dirección')
     fecha_alta = models.DateField(auto_now_add=True, verbose_name='Fecha de Alta')
-    fecha_cobro = models.DateField(verbose_name='Fecha de Cobro')
+    # fecha_cobro = models.DateField(verbose_name='Fecha de Cobro')
     estado = models.BooleanField(default=True, verbose_name='Estado')
 
     class Meta:
