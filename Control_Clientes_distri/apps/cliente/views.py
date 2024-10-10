@@ -211,6 +211,16 @@ class MenuClienteDetailView(DetailView):
     
 
 ################# CRUD ####################
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class PromoCreateView(CreateView):
+    model = models.Promo
+    form_class = forms.AddPromoForm
+    template_name = 'Agua/forms/crear_promo.html'
+    success_url = reverse_lazy('inicio')
+    
+    def form_valid(self, form):
+        form.save()  # Guardar el formulario
+        return super().form_valid(form)
 
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')

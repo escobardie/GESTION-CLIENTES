@@ -21,6 +21,8 @@ urlpatterns = [
     path('crear_producto/', views.ProductoCreateView.as_view(), name='crear_producto'),
     # path('crear_venta/', views.VentaCreateView.as_view(), name='crear_venta'),
 
+    path('nueva_promo/', views.PromoCreateView.as_view(), name='nueva_promo'),
+
     ## FUNCIONAL 
     path('crear_venta_producto/', views.VentaProductoCreateView.as_view(), name='crear_venta_producto'),
     path('crear_venta_producto/<int:id>/', views.VentaProductoCreateView.as_view(), name='crear_venta_producto_cliente'),
