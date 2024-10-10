@@ -214,7 +214,7 @@ class MenuClienteDetailView(DetailView):
 
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ClienteCreateView(CreateView): ##TODO quitar fecha de cobro, ya que corresponde a promo por cliente
+class ClienteCreateView(CreateView): 
     ''' FORMULARIO BASICO '''
     model = models.Cliente
     template_name = 'Agua/forms/crear_cliente.html'
@@ -259,29 +259,25 @@ class VisitaCreateView(CreateView):
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class PromoPorClienteCreateView(CreateView):
-    ##TODO cambiar:
-    ## 1_ al seleccionar promo, carga automatica de bidones disponibles
     template_name = 'Agua/forms/promo_x_cliente.html'
     form_class = forms.AddPromoPorClienteForm
     
     def get_initial(self):
         # Obtener el cliente específico
         cliente_id = self.kwargs['id']
-        # promo_id = self.kwargs['promo_id']
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
-        # promo = get_object_or_404(models.Promo, id=promo_id)
-        fecha_actual = datetime.now().date().isoformat()  # 'YYYY-MM-DD'  # Obtiene solo la fecha actual
-        
-        return {
-            'cliente': cliente, 
-            # 'promo': promo, 
-            'inicio_promo': fecha_actual, 
-            #'bidones_disponibles': bidones_disponibles
-        }
+        return {'cliente': cliente}
 
     def form_valid(self, form):
         promo_id = form.cleaned_data['promo'].id  # Obtén el ID de promo
-        form.save()  # Guardar el formulario
+        promo_instance = get_object_or_404(models.Promo, id=promo_id)
+
+        fecha_actual = datetime.now().date().isoformat()  # 'YYYY-MM-DD'  # Obtiene solo la fecha actual
+        dibones_disponibles_promo = promo_instance.cant_bidones
+        promocliente = form.save(commit=False)
+        promocliente.inicio_promo = fecha_actual
+        promocliente.bidones_disponibles = dibones_disponibles_promo
+        promocliente.save()  # Guardar el formulario
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -368,76 +364,6 @@ class ProductoCreateView(CreateView):
         form.save()  # Guardar el formulario
         return super().form_valid(form)
 
-# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-# class VentaCreateView(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
-#     model = models.Venta
-#     template_name = 'Agua/forms/crear_venta.html'
-#     form_class = forms.VentaForm
-#     success_url = reverse_lazy('inicio')
-    
-   
-#     def form_valid(self, form):
-#         form.save()  # Guardar el formulario
-#         return super().form_valid(form)
-
-# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-# class VentaProductoCreateView2(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
-#     model = models.VentaProducto
-#     template_name = 'Agua/forms/crear_venta_producto.html'
-#     form_class = forms.VentaProductoForm
-#     success_url = reverse_lazy('inicio')
-    
-   
-#     def form_valid(self, form):
-#         form.save()  # Guardar el formulario
-#         return super().form_valid(form)
-
-# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-# class GestioVentaView(CreateView): ##TODO CORROBORAR SI SE USA TODAVIA
-#     model = models.VentaProducto
-#     template_name = 'Agua/forms/gestion_venta2.html'
-#     form_class = forms.VentaProductoForm
-#     success_url = reverse_lazy('inicio')
-    
-#     def form_invalid(self, form): ## NO BORRAR
-#         print("Formulario inválido:", form.errors)
-#         return super().form_invalid(form)
-
-#     def get_cliente_data(self):
-#         # Intenta obtener el cliente_id de los argumentos de la URL
-#         cliente_id = self.kwargs.get('id')
-#         if cliente_id is not None:
-#             return get_object_or_404(models.Cliente, id=cliente_id)
-#         return None  # Devuelve None si no hay cliente_id
-        
-#     def form_valid(self, form):
-#         cliente = self.get_cliente_data()
-#         # Crear una nueva instancia de Venta y guardar
-#         venta = models.Venta.objects.create(cliente=cliente)
-#         ##################
-#          # Procesar productos
-#         producto_list = self.request.POST.getlist('producto')
-#         producto=form.cleaned_data['producto']
-#         cantidad_list = self.request.POST.getlist('cantidad')
-#         descuento_list = self.request.POST.getlist('descuento')
-#         precio_list = self.request.POST.getlist('precio_unidad_venta')
-#         precio_total_venta_list = self.request.POST.getlist('precio_total_venta')
-#         print("PROBANDO 1")
-#         print(producto_list)
-#         print(producto)
-#         print("PROBANDO 2")
-#         print(cantidad_list)
-#         print(descuento_list)
-#         print(precio_list)
-#         print(precio_total_venta_list)
-#         ##################
-#         # Ahora guarda la instancia de VentaProducto asociándola a la venta creada
-#         venta_producto = form.save(commit=False)
-#         venta_producto.venta = venta  # Asocia la venta a VentaProducto
-#         venta_producto.save()  # Ahora guarda el VentaProducto
-
-#         # form.save()  # Guardar el formulario
-#         return super().form_valid(form)
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class VentaProductoCreateView(FormView):

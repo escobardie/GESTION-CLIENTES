@@ -14,10 +14,6 @@ class AddClienteForm(forms.ModelForm):
             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
-            # 'fecha_cobro': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            # 'tipo_promo': forms.Select(attrs={'class': 'form-control'}),
-            # tipo_promo es una relación de clave foránea (ForeignKey) y solo se puede 
-            # seleccionar una promoción, se debería usar forms.Select. 
         }
         
 
@@ -40,14 +36,14 @@ class AddPromoPorClienteForm(forms.ModelForm):
     class Meta:
         model = PromoPorCliente
         fields = ['cliente', 'promo', 'fin_promo', 'fecha_pago_promo',
-                'bidones_disponibles', 'codigo_dispenser', 'estado', 'nota']
+                'codigo_dispenser', 'estado', 'nota']
 
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             'promo': forms.Select(attrs={'class': 'form-control'}),
             'fecha_pago_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fin_promo': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'bidones_disponibles': forms.NumberInput(attrs={'class': 'form-control'}),
+            # 'bidones_disponibles': forms.NumberInput(attrs={'class': 'form-control'}),
             'codigo_dispenser': forms.TextInput(attrs={'class': 'form-control'}),
             'nota': forms.Textarea(attrs={'class': 'form-control'}),
         }

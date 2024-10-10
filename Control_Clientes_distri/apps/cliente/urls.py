@@ -30,13 +30,6 @@ urlpatterns = [
     path('crear_pago/', views.PagoCreateView.as_view(), name='crear_pago'),
     path('crear_pago_cliente/<int:id>/', views.PagoClienteCreateView.as_view(), name='crear_pago_cliente'),
 
-
-
-    # YA NO SE USA
-    # path('gestion_ventas/', views.GestioVentaView.as_view(), name='gestion_ventas'),  # Sin cliente
-    # path('gestion_ventas/<int:id>/', views.GestioVentaView.as_view(), name='gestion_ventas_cliente'),  # Con cliente
-    # YA NO SE USA
-
     path('cargar_cliente/', views.ClienteCreateView.as_view(), name='cargar_cliente'),
     path('cargar_visita/<int:id>', views.VisitaCreateView.as_view(), name='cargar_visita'),
 

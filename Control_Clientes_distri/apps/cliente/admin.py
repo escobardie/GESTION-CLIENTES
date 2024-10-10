@@ -36,7 +36,7 @@ class PromoAdmin(admin.ModelAdmin):
 admin.site.register(models.Promo, PromoAdmin)
 
 class PromoPorClienteAdmin(admin.ModelAdmin):
-    readonly_fields = ('cliente','promo','inicio_promo','codigo_dispenser','fin_promo', 
+    readonly_fields = ('cliente','promo','inicio_promo','fin_promo', 
     'fecha_pago_promo', 'bidones_disponibles', 'entrega_bidones','retorno_bidones',
     'bidones_acumulados','codigo_dispenser','nota')
     list_display = ('id','cliente','promo','fecha_pago_promo', 'inicio_promo','estado')

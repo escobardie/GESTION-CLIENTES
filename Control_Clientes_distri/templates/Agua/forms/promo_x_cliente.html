@@ -8,63 +8,15 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h2>Agregar Promoción por Cliente</h2>
+        <h2>Promocion</h2>
         <form method="POST">
-          {% csrf_token %}
-          
-          <!-- Campo cliente (deshabilitado por la vista) -->
-          <div class="form-group">
-            <label for="{{ form.cliente.id_for_label }}">Cliente</label>
-            {{ form.cliente }}
-          </div>
-    
-          <!-- Campo promo -->
-          <div class="form-group">
-            <label for="{{ form.promo.id_for_label }}">Promoción</label>
-            {{ form.promo }}
-          </div>
-    
-          <!-- Campo fecha_pago_promo -->
-          <div class="form-group">
-            <label for="{{ form.fecha_pago_promo.id_for_label }}">Fecha de Pago de Promoción</label>
-            {{ form.fecha_pago_promo }}
-          </div>
-    
-          <!-- Campo fin_promo -->
-          <div class="form-group">
-            <label for="{{ form.fin_promo.id_for_label }}">Fin de Promoción</label>
-            {{ form.fin_promo }}
-          </div>
-    
-          <!-- Campo bidones_disponibles -->
-          <div class="form-group">
-            <label for="{{ form.bidones_disponibles.id_for_label }}">Bidones Disponibles</label>
-            {{ form.bidones_disponibles }}
-          </div>
-    
-          <!-- Campo codigo_dispenser -->
-          <div class="form-group">
-            <label for="{{ form.codigo_dispenser.id_for_label }}">Código de Dispenser</label>
-            {{ form.codigo_dispenser }}
-          </div>
-    
-          <!-- Campo estado -->
-          <div class="form-group form-check">
-            <label class="form-check-label" for="{{ form.estado.id_for_label }}">
-              {{ form.estado }} Activo
-            </label>
-          </div>
-    
-          <!-- Campo nota -->
-          <div class="form-group">
-            <label for="{{ form.nota.id_for_label }}">Notas</label>
-            {{ form.nota }}
-          </div>
-    
-          <!-- Botón de envío -->
-          <button type="submit" class="btn btn-primary">Guardar</button>
-          <a href="{% url 'inicio' %}" class="btn btn-secondary">Cancelar</a>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Enviar</button>
+            
         </form>
-      </div>
+        
+        
+    </div>
 </body>
 </html>
