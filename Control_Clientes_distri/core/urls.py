@@ -21,6 +21,16 @@ from django.urls import path, include
 urlpatterns = [
     path('', include('apps.cliente.urls')),
 ############################
+    path('', include('apps.pagos.urls')),
+############################
+    path('', include('apps.productos.urls')),
+############################
+    path('', include('apps.promociones.urls')),
+############################
+    path('', include('apps.ventas.urls')),
+############################
+    path('', include('apps.visitas.urls')),
+############################
     path('admin/', admin.site.urls),
 ]
 if settings.DEBUG:

@@ -29,11 +29,11 @@ admin.site.register(models.Cliente, ClientesAdmin)
 
 # admin.site.register(models.Cliente, ClientesAdmin)
 
-class PromoAdmin(admin.ModelAdmin):
-    readonly_fields = ('cant_bidones','nombre_promo')
-    list_display = ('nombre_promo','cant_bidones','valor_promo')
+# class PromoAdmin(admin.ModelAdmin):
+#     readonly_fields = ('cant_bidones','nombre_promo')
+#     list_display = ('nombre_promo','cant_bidones','valor_promo')
 
-admin.site.register(models.Promo, PromoAdmin)
+# admin.site.register(models.Promo, PromoAdmin)
 
 class PromoPorClienteAdmin(admin.ModelAdmin):
     readonly_fields = ('cliente','promo','inicio_promo','fin_promo', 
@@ -43,33 +43,33 @@ class PromoPorClienteAdmin(admin.ModelAdmin):
 
 admin.site.register(models.PromoPorCliente, PromoPorClienteAdmin)
 
-class VisitaAdmin(admin.ModelAdmin):
-    readonly_fields = ('cliente','fecha_visita','nota')
-    list_display = ('fecha_visita', 'cliente')
+# class VisitaAdmin(admin.ModelAdmin):
+#     readonly_fields = ('cliente','fecha_visita','nota')
+#     list_display = ('fecha_visita', 'cliente')
 
-admin.site.register(models.Visita, VisitaAdmin)
+# admin.site.register(models.Visita, VisitaAdmin)
 
-class VentaAdmin(admin.ModelAdmin):
-    readonly_fields = ('cliente', 'fecha_venta', 'total_venta', 'nota')
-    list_display = ('cliente', 'fecha_venta')
+# class VentaAdmin(admin.ModelAdmin):
+#     readonly_fields = ('cliente', 'fecha_venta', 'total_venta', 'nota')
+#     list_display = ('cliente', 'fecha_venta')
 
-admin.site.register(models.Venta, VentaAdmin)
+# admin.site.register(models.Venta, VentaAdmin)
 
-class ProductoAdmin(admin.ModelAdmin):
-    readonly_fields = ('nombre_producto', 'precio_producto', 'stock', 'estado')
-    list_display = ('nombre_producto', 'precio_producto', 'stock', 'estado')
+# class ProductoAdmin(admin.ModelAdmin):
+#     readonly_fields = ('nombre_producto', 'precio_producto', 'stock', 'estado')
+#     list_display = ('nombre_producto', 'precio_producto', 'stock', 'estado')
 
-admin.site.register(models.Producto, ProductoAdmin)
+# admin.site.register(models.Producto, ProductoAdmin)
 
-class VentaProductoAdmin(admin.ModelAdmin):
-    readonly_fields = ('id', 'fecha', 'venta', 'producto', 'descuento', 'precio_unidad_venta', 'cantidad','precio_total_venta')
-    list_display = ('id', 'fecha','venta', 'producto', 'cantidad','precio_total_venta')
+# class VentaProductoAdmin(admin.ModelAdmin):
+#     readonly_fields = ('id', 'fecha', 'venta', 'producto', 'descuento', 'precio_unidad_venta', 'cantidad','precio_total_venta')
+#     list_display = ('id', 'fecha','venta', 'producto', 'cantidad','precio_total_venta')
 
-admin.site.register(models.VentaProducto, VentaProductoAdmin)
+# admin.site.register(models.VentaProducto, VentaProductoAdmin)
 
 
-class PagoAdmin(admin.ModelAdmin):
-    readonly_fields = ('fecha_pago', 'venta', 'promo','cliente', 'monto','metodo_pago', 'descripcion')
-    list_display = ('fecha_pago', 'cliente', 'monto','metodo_pago', 'descripcion')
+# class PagoAdmin(admin.ModelAdmin):
+#     readonly_fields = ('fecha_pago', 'venta', 'promo','cliente', 'monto','metodo_pago', 'descripcion')
+#     list_display = ('fecha_pago', 'cliente', 'monto','metodo_pago', 'descripcion')
 
-admin.site.register(models.Pagos, PagoAdmin)
+# admin.site.register(models.Pagos, PagoAdmin)
