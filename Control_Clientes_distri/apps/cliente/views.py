@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from . import models, forms
 from django.urls import reverse
@@ -9,12 +9,17 @@ from datetime import datetime
 from apps.visitas.models import Visita
 from django.utils import timezone
 
+
+class IndexView(TemplateView):
+    template_name = "base/index.html"
+    context_object_name = 'index'
+
 def usuario_es_admin(user):
     return user.groups.filter(name='admin').exists()
 
-class InicioView(ListView):
+class ListarVencimientoView(ListView):
     model = models.PromoPorCliente
-    template_name = "Agua/index.html"
+    template_name = "base/listar_vencimiento_clte.html"
     context_object_name = "listar_promos"
     paginate_by = 10
 
@@ -32,7 +37,7 @@ class InicioView(ListView):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarClientesView(ListView):
     model = models.Cliente
-    template_name = "Agua/listar_clientes.html"
+    template_name = "base/listar_clientes.html"
     context_object_name = 'lista_clientes'
     paginate_by = 5
     queryset = models.Cliente.objects.filter(estado=True).order_by('apellido')
@@ -63,7 +68,7 @@ class MenuClienteDetailView(DetailView):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ClienteCreateView(CreateView):
     model = models.Cliente
-    template_name = 'Agua/forms/crear_cliente.html'
+    template_name = 'base/forms/crear_cliente.html'
     form_class = forms.AddClienteForm
 
     def get_success_url(self):
