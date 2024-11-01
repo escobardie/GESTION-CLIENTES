@@ -61,6 +61,44 @@ python manage.py makemigrations
 python manage.py migrate
 py manage.py runserver
 
+
 ################ pythonanywhere.com ################
 git pull  (para bajar los cambio del repo)
 workon venv (activa el entorno virtual)
+
+/static/
+/home/gestionagua/GESTION-CLIENTES/Control_Clientes_distri/
+/home/gestionagua/.virtualenvs/myvirtualenv/
+
+
+# Config Django
+SECRET_KEY=django-insecure-e_s&y%3bc6l+vf0lgwso-gb!8oko3zf7u++pfm9dl72r=*+9l#
+
+DEBUG=True
+ALLOWED_HOSTS=gestionagua.pythonanywhere.com
+
+# Config data base
+DB_NAME=gestionagua$gestion_cliente_agua_v2
+DB_USER=gestionagua
+DB_PASSWORD=X2j6bv58
+DB_HOST=gestionagua.mysql.pythonanywhere-services.com
+DB_PORT=3306
+
+
+
+# +++++++++++ DJANGO +++++++++++
+# To use your own django app use code like this:
+import os
+import sys
+#
+## assuming your django settings file is at '/home/escobardie/mysite/mysite/settings.py'
+## and your manage.py is is at '/home/escobardie/mysite/manage.py'
+path = '/home/gestionagua/GESTION-CLIENTES/Control_Clientes_distri'
+if path not in sys.path:
+    sys.path.append(path)
+#
+os.environ['DJANGO_SETTINGS_MODULE'] = 'core.settings'
+#
+## then:
+from django.core.wsgi import get_wsgi_application
+application = get_wsgi_application()
