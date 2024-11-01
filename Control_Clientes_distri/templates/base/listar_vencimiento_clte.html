@@ -1,0 +1,86 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block contenedor %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Clientes</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item">Clientes</li>
+                <li class="breadcrumb-item active">Vencimiento Clientes</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Vencimiento Clientes</h5>
+
+                        {% for promo in listar_promos %}
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <h5 class="card-title">
+                                        <a href="{% url 'menu_cliente' id=promo.cliente.id %}">{{ promo.cliente }}</a>
+                                    </h5>
+
+                                    <!-- Default List group -->
+                                    <ul class="list-group">
+                                        {% if promo in promos_con_fecha_vencida %}
+                                            <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
+                                                ¡Atención! La fecha de cobro para este cliente ha vencido.
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        {% endif %}
+
+                                        <a href="{% url 'menu_cliente' id=promo.cliente.id %}">
+                                            <li class="list-group-item">{{ promo.promo.nombre_promo }}</li>
+                                            <li class="list-group-item">{{ promo.cliente.direccion }}</li>
+                                            <li class="list-group-item">{{ promo.fecha_pago_promo }}</li>
+                                        </a>
+                                    </ul><!-- End Default List group -->
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <!-- Centered Pagination -->
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ page_obj.number }}</span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item" aria-current="page">
+                                        <a class="page-link">{{ page_obj.paginator.num_pages }}</a>
+                                    </li>
+                                {% endif %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav><!-- End Centered Pagination -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main><!-- End #main -->
+{% endblock contenedor %}

@@ -1,0 +1,61 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+
+
+{% block contenedor %}
+
+{% comment %} <div class="container mt-5">
+    <h2>Agregar Cliente</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Enviar</button>
+        <a href="{% url 'listar_clientes' %}" class="btn btn-secondary">Volver a la Lista de Clientes</a>
+    </form>
+</div> {% endcomment %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Formulario</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Cliente</li>
+          <li class="breadcrumb-item active">Agregar Cliente</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-6">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Formulario Nuevo Cliente</h5>
+
+              <!-- General Form Elements -->
+              <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                  <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary">Cargar</button>
+                  </div>
+                </div>
+
+              </form><!-- End Form  -->
+
+            </div>
+          </div>
+
+        </div>
+
+        
+      </div>
+    </section>
+
+</main><!-- End #main -->
+
+
+{% endblock contenedor %}
