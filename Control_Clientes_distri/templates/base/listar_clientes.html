@@ -1,85 +1,141 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-
-
 {% block contenedor %}
-
 <main id="main" class="main">
-
-        <div class="pagetitle">
-          <h1>Clientes</h1>
-          <nav>
+    <div class="pagetitle">
+        <h1>Clientes</h1>
+        <nav>
             <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-              <li class="breadcrumb-item">Clientes</li>
-              <li class="breadcrumb-item active">Lista Clientes</li>
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item">Clientes</li>
+                <li class="breadcrumb-item active">Lista Clientes</li>
             </ol>
-          </nav>
-        </div><!-- End Page Title -->
+        </nav>
+    </div><!-- End Page Title -->
+
     <section class="section">
         <div class="row">
-            <div class="col-lg-6">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                    <h5 class="card-title">Lista</h5>
-                
-                    <!-- Table with stripped rows -->
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            {% comment %} <th scope="col">#</th> {% endcomment %}
-                            <th scope="col">Apellido</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Dirección</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for cliente in lista_clientes %}
-                            <tr>
-                                {% comment %} <th scope="row">1</th> {% endcomment %}
-                                <td>
-                                    <a href={% url 'menu_cliente'  id=cliente.id %}>
-                                        {{ cliente.apellido }}</td>
-                                    </a>
-                                <td>{{ cliente.nombre }}</td>
-                                <td>{{ cliente.direccion }}</td>
-                            </tr>
-                        
-                        {% empty %}
-                            <h4>No hay registros</h4>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                    <!-- End Table with stripped rows -->
-                    <!-- Centered Pagination -->
-                    <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-center">
-                            {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+                        <h5 class="card-title">Lista de Clientes</h5>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="todos-tab" data-bs-toggle="tab" href="#todos" role="tab" aria-controls="todos" aria-selected="true">Todos</a>
                             </li>
-                            {% endif %}
-                            {% comment %} {% if page_obj.has_previous %}
-                            <li class="page-item" aria-current="page">
-                                <span class="page-link">{{ page_obj.previous_page_number }}</span>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="vip-tab" data-bs-toggle="tab" href="#vip" role="tab" aria-controls="vip" aria-selected="false">VIP</a>
                             </li>
-                            {% endif %} {% endcomment %}
-                            <li class="page-item active" aria-current="page">
-                                <span class="page-link">{{ page_obj.number }}</span>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="nuevo-tab" data-bs-toggle="tab" href="#nuevo" role="tab" aria-controls="nuevo" aria-selected="false">Nuevos</a>
                             </li>
-                            {% if page_obj.has_next %}
-                            <li class="page-item" aria-current="page">
-                                <a class="page-link">{{ page_obj.paginator.num_pages }}</a>
-                            </li>
-                            {% endif %}
-                            {% if page_obj.has_next %}
-                                <a class="page-link"  href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
-                            {% endif %}
-                        </li>
                         </ul>
-                    </nav><!-- End Centered Pagination -->
-                
+
+                        <!-- Tab content -->
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="todos" role="tabpanel" aria-labelledby="todos-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Apellido</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Dirección</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cliente in lista_clientes %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'menu_cliente' id=cliente.id %}">{{ cliente.apellido }}</a>
+                                                </td>
+                                                <td>{{ cliente.nombre }}</td>
+                                                <td>{{ cliente.direccion }}</td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3">No hay registros</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="vip" role="tabpanel" aria-labelledby="vip-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Apellido</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Dirección</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cliente in lista_clientes_vip %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'menu_cliente' id=cliente.id %}">{{ cliente.apellido }}</a>
+                                                </td>
+                                                <td>{{ cliente.nombre }}</td>
+                                                <td>{{ cliente.direccion }}</td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3">No hay registros VIP</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="nuevo" role="tabpanel" aria-labelledby="nuevo-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Apellido</th>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Dirección</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for cliente in lista_clientes_nuevos %}
+                                            <tr>
+                                                <td>
+                                                    <a href="{% url 'menu_cliente' id=cliente.id %}">{{ cliente.apellido }}</a>
+                                                </td>
+                                                <td>{{ cliente.nombre }}</td>
+                                                <td>{{ cliente.direccion }}</td>
+                                            </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3">No hay registros nuevos</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Tabs -->
+
+                        <!-- Centered Pagination -->
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ page_obj.number }}</span>
+                                </li>
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav><!-- End Centered Pagination -->
+
                     </div>
                 </div>
             </div>

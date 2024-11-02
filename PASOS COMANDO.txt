@@ -65,6 +65,7 @@ py manage.py runserver
 ################ pythonanywhere.com ################
 git pull  (para bajar los cambio del repo)
 workon venv (activa el entorno virtual)
+python manage.py collectstatic
 
 /static/
 /home/gestionagua/GESTION-CLIENTES/Control_Clientes_distri/
