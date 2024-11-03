@@ -1,0 +1,198 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block contenedor %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Clientes</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item">Clientes</li>
+                <li class="breadcrumb-item active">Menu Clientes</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+    <section class="section profile">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Detalle del Cliente</h5>
+                            <!-- Default Tabs -->
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Cliente</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Gestion</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Visitas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Ventas</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Pagos</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content pt-2" id="myTabContent">
+                                <!-- Detalle del Cliente --> 
+                                <div class="tab-pane fade show active profile-overview" id="home" role="tabpanel" aria-labelledby="home-tab">
+                                    <h5 class="card-title">Detalle del Cliente</h5>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Apellido y Nombre:</div>
+                                        <div class="col-lg-9 col-md-8"> {{ cliente.apellido }} {{ cliente.nombre }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Direccion:</div>
+                                        <div class="col-lg-9 col-md-8"> {{ cliente.direccion }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Fecha de Alta:</div>
+                                        <div class="col-lg-9 col-md-8">{{ cliente.fecha_alta }}</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Ultima Visita:</div>
+                                        <div class="col-lg-9 col-md-8">*FECHA*</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Ultimo Pago:</div>
+                                        <div class="col-lg-9 col-md-8">*FECHA*</div>
+                                    </div>
+                                </div>
+                                <!-- Gestion --> 
+                                <div class="tab-pane fade profile-overview" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                                    <h5 class="card-title">Promociones Disponibles</h5>
+                                    {% if promociones %}
+                                        <div class="row mb-3">
+                                            <label class="col-sm-2 col-form-label">Promoción</label>
+                                            <div class="col-sm-10">
+                                                {% comment %} <select class="form-select" aria-label="Default select example"> {% endcomment %}
+                                                <select name="promocion" id="promocion" class="form-control">
+                                                    <option value="">--Selecciona una Promoción--</option>
+                                                    {% for promo in promociones %}
+                                                        <option value="{{ promo.promo__valor_promo }}"
+                                                                data-valor="{{ promo.promo__valor_promo }}"
+                                                                data-id="{{ promo.id }}"
+                                                                data-bidones-disponibles="{{ promo.bidones_disponibles }}"
+                                                                data-bidones-acumulados="{{ promo.bidones_acumulados }}"
+                                                                data-promo-valor="{{ promo.promo__valor_promo }}"
+                                                                data-promo-fecha-pago="{{promo.fecha_pago_promo}}">
+                                                            {{ promo.promo__nombre_promo }}
+                                                        </option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="promo_id" id="promo_id" value="">
+                                    {% else %}
+                                        <p>Este cliente no tiene promociones activas.</p>
+                                    {% endif %}
+                                    <h5 class="card-title">Detalle Promocion</h5>
+                                    <div class="bidon-details">
+                                        <div class="row">
+                                             
+                                            <div class="col-lg-3 col-md-4 label ">Valor:</div>
+                                            <div class="col-lg-9 col-md-8">
+                                                <p id="id_promo_valor"></p>
+                                                {% comment %}  {{ promo.promo__valor_promo }} {% endcomment %}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label ">Fecha de Cobro:</div>
+                                            <div class="col-lg-9 col-md-8">
+                                                <p id="id_promo_fecha_pago">0</p>
+                                                {% comment %}  {{promo.fecha_pago_promo}} {% endcomment %}
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label ">Bidones Disponibles:</div>
+                                            <div class="col-lg-9 col-md-8">
+                                                <p id="id_bidones_disponibles">0</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label ">Bidones en Domicilio:</div>
+                                            <div class="col-lg-9 col-md-8">
+                                                <p id="id_bidones_acumulados">0</p>
+                                            </div>
+                                        </div>
+
+                                    <div class="container">           
+                                        <div class="client-actions">
+                                            <button id="ver-visitas-btn" onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Visitas</button>
+                                            <button id="cargar-visita-btn" onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Cargar Visita</button>
+                                            <button id="servis-visita-btn" class="servis-visita-button" disabled>Servis Visita</button>
+                                            <button onclick="location.href='{% url 'promo_por_cliente' id=cliente.id %}'" class="servis-visita-button">Cargar Promoción</button>
+                                            <button onclick="location.href='{% url 'crear_venta_producto_cliente' id=cliente.id %}'">Venta</button>
+                                            <button onclick="location.href='{% url 'listar_venta_cliente' id=cliente.id %}'">Venta Realizadas</button>
+                                            <button onclick="location.href='{% url 'crear_pago_cliente' id=cliente.id %}'">Nuevo Pago</button>
+                                            <button onclick="location.href='{% url 'listar_pago_cliente' id=cliente.id %}'">Pagos Realizados</button>
+                                        </div>
+            
+                                    </div>
+                                </div>
+                                <!-- Visitas --> 
+                                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                </div>
+                                <!-- Ventas-->
+                                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                </div>
+                                <!-- Pagos --> 
+                                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                                </div>
+                            </div><!-- End Default Tabs -->
+
+                        
+                    <div>
+                <div>
+            </div>
+        </div>
+    </section>
+</main><!-- End #main -->
+<script>
+    function toggleMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectPromocion = document.getElementById('promocion');
+        const idBidonesDisponibles = document.getElementById('id_bidones_disponibles');
+        const idBidonesAcumulados = document.getElementById('id_bidones_acumulados');
+        const idPromoValor = document.getElementById('id_promo_valor');
+        const idPromoFechaPago = document.getElementById('id_promo_fecha_pago');        
+        const hiddenPromoId = document.getElementById('promo_id');
+        const servisVisitaButton = document.getElementById('servis-visita-btn');
+        
+        function updateBidones() {
+            const selectedOption = selectPromocion.options[selectPromocion.selectedIndex];
+            const bidonesDisponibles = selectedOption.getAttribute('data-bidones-disponibles') || 0;
+            const bidonesAcumulados = selectedOption.getAttribute('data-bidones-acumulados') || 0;
+            const promoValor = selectedOption.getAttribute('data-promo-valor') || 0;
+            const promoFechaPago = selectedOption.getAttribute('data-promo-fecha-pago') || 0;                
+
+            idBidonesDisponibles.textContent = bidonesDisponibles;
+            idBidonesAcumulados.textContent = bidonesAcumulados;
+            idPromoValor.textContent = promoValor;
+            idPromoFechaPago.textContent = promoFechaPago;
+            
+            // Captura el data-id del option seleccionado
+            hiddenPromoId.value = selectedOption.getAttribute('data-id');
+            // Habilitar el botón "Servis Visita" si se ha seleccionado una promoción válida
+            if (selectedOption.value) {
+                servisVisitaButton.disabled = false;
+                servisVisitaButton.setAttribute('onclick', `location.href='{% url 'servis_visita' pk=cliente.id %}?id_promo=${hiddenPromoId.value}'`);
+            } else {
+                servisVisitaButton.disabled = true;
+            }
+        }
+
+        selectPromocion.addEventListener('change', updateBidones);
+        updateBidones(); // Llama a la función para establecer el valor inicial
+    });
+</script>
+{% endblock contenedor %}

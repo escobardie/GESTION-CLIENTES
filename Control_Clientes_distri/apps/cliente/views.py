@@ -45,7 +45,7 @@ class ListarClientesView(ListView):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class MenuClienteDetailView(DetailView):
     model = models.Cliente
-    template_name = "Agua/menu_cliente.html"
+    template_name = "base/menu_cliente.html"
     context_object_name = 'cliente'
 
     def get_object(self):
