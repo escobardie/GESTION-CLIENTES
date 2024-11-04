@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
 from datetime import datetime
 from apps.visitas.models import Visita
+from apps.pagos.models import Pagos
+from apps.ventas.models import Venta
 from django.utils import timezone
 
 
@@ -62,6 +64,32 @@ class MenuClienteDetailView(DetailView):
                 estado=True
             ).values('id', 'promo__nombre_promo', 'promo__valor_promo',
                      'fecha_pago_promo', 'bidones_disponibles', 'bidones_acumulados')
+            # fecha_visita_clte = Visita.objects.filter(
+            #     cliente=cliente
+            # ).values('fecha_visita')
+            ultima_visita = Visita.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
+            if ultima_visita:
+                fecha_visita_clte = ultima_visita.fecha_visita.date()
+            else:
+                fecha_visita_clte = "Sin visitas"
+
+            ultima_pago = Pagos.objects.filter(cliente=cliente).order_by('-fecha_pago').first()
+            if ultima_pago:
+                fecha_pago_clte = ultima_pago.fecha_pago.date()
+            else:
+                fecha_pago_clte = "Sin Pagos Realizados"
+            
+            visitas_cliente = Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')[:10]
+            
+            ventas_cliente = Venta.objects.filter(cliente=cliente).order_by('-fecha_venta')[:10]
+            
+            pagos_cliente = Pagos.objects.filter(cliente=cliente).order_by('-fecha_pago')[:10]
+
+            context['pagos_cliente'] = pagos_cliente
+            context['ventas_cliente'] = ventas_cliente
+            context['visitas_cliente'] = visitas_cliente
+            context['fecha_pago'] = fecha_pago_clte
+            context['fecha_visita'] = fecha_visita_clte
             context['promociones'] = promociones_del_cliente
         return context
 

@@ -20,105 +20,113 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Detalle del Cliente</h5>
-                            <!-- Default Tabs -->
-                            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Cliente</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Gestion</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Visitas</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Ventas</button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Pagos</button>
-                                </li>
-                            </ul>
-                            <div class="tab-content pt-2" id="myTabContent">
-                                <!-- Detalle del Cliente --> 
-                                <div class="tab-pane fade show active profile-overview" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                    <h5 class="card-title">Detalle del Cliente</h5>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label ">Apellido y Nombre:</div>
-                                        <div class="col-lg-9 col-md-8"> {{ cliente.apellido }} {{ cliente.nombre }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label ">Direccion:</div>
-                                        <div class="col-lg-9 col-md-8"> {{ cliente.direccion }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label ">Fecha de Alta:</div>
-                                        <div class="col-lg-9 col-md-8">{{ cliente.fecha_alta }}</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label ">Ultima Visita:</div>
-                                        <div class="col-lg-9 col-md-8">*FECHA*</div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-lg-3 col-md-4 label ">Ultimo Pago:</div>
-                                        <div class="col-lg-9 col-md-8">*FECHA*</div>
-                                    </div>
+                        <!-- Default Tabs -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="cliente-tab" data-bs-toggle="tab" data-bs-target="#cliente" type="button" role="tab" aria-controls="cliente" aria-selected="true">Cliente</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="gestion-tab" data-bs-toggle="tab" data-bs-target="#Gestion" type="button" role="tab" aria-controls="Gestion" aria-selected="false">Gestion</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="visitas-tab" data-bs-toggle="tab" data-bs-target="#Visitas" type="button" role="tab" aria-controls="Visitas" aria-selected="false">Visitas</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="ventas-tab" data-bs-toggle="tab" data-bs-target="#Ventas" type="button" role="tab" aria-controls="Ventas" aria-selected="false">Ventas</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="pagos-tab" data-bs-toggle="tab" data-bs-target="#Pagos" type="button" role="tab" aria-controls="Pagos" aria-selected="false">Pagos</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-2" id="myTabContent">
+                            <!-- Detalle del Cliente -->
+                            <div class="tab-pane fade show active profile-overview" id="cliente" role="tabpanel" aria-labelledby="cliente-tab">
+                                <h5 class="card-title">Detalle del Cliente</h5>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Apellido y Nombre:</div>
+                                    <div class="col-lg-9 col-md-8"> {{ cliente.apellido }} {{ cliente.nombre }}</div>
                                 </div>
-                                <!-- Gestion --> 
-                                <div class="tab-pane fade profile-overview" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                                    <h5 class="card-title">Promociones Disponibles</h5>
-                                    {% if promociones %}
-                                        <div class="row mb-3">
-                                            <label class="col-sm-2 col-form-label">Promoción</label>
-                                            <div class="col-sm-10">
-                                                {% comment %} <select class="form-select" aria-label="Default select example"> {% endcomment %}
-                                                <select name="promocion" id="promocion" class="form-control">
-                                                    <option value="">--Selecciona una Promoción--</option>
-                                                    {% for promo in promociones %}
-                                                        <option value="{{ promo.promo__valor_promo }}"
-                                                                data-valor="{{ promo.promo__valor_promo }}"
-                                                                data-id="{{ promo.id }}"
-                                                                data-bidones-disponibles="{{ promo.bidones_disponibles }}"
-                                                                data-bidones-acumulados="{{ promo.bidones_acumulados }}"
-                                                                data-promo-valor="{{ promo.promo__valor_promo }}"
-                                                                data-promo-fecha-pago="{{promo.fecha_pago_promo}}">
-                                                            {{ promo.promo__nombre_promo }}
-                                                        </option>
-                                                    {% endfor %}
-                                                </select>
-                                            </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Direccion:</div>
+                                    <div class="col-lg-9 col-md-8"> {{ cliente.direccion }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Fecha de Alta:</div>
+                                    <div class="col-lg-9 col-md-8">{{ cliente.fecha_alta }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Ultima Visita:</div>
+                                    <div class="col-lg-9 col-md-8">{{ fecha_visita }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Ultimo Pago:</div>
+                                    <div class="col-lg-9 col-md-8">{{ fecha_pago }}</div>
+                                </div>
+                            </div>
+                            <!-- Gestion -->
+                            <div class="tab-pane fade profile-overview" id="Gestion" role="tabpanel" aria-labelledby="gestion-tab">
+                                <h5 class="card-title">Promociones Disponibles</h5>
+                                {% if promociones %}
+                                    <div class="row mb-3">
+                                        <label class="col-sm-2 col-form-label">Promoción</label>
+                                        <div class="col-sm-10">                                                
+                                            <select name="promocion" id="promocion" class="form-control">
+                                                <option value="">--Selecciona una Promoción--</option>
+                                                {% for promo in promociones %}
+                                                    <option value="{{ promo.promo__valor_promo }}"
+                                                            data-valor="{{ promo.promo__valor_promo }}"
+                                                            data-id="{{ promo.id }}"
+                                                            data-bidones-disponibles="{{ promo.bidones_disponibles }}"
+                                                            data-bidones-acumulados="{{ promo.bidones_acumulados }}"
+                                                            data-promo-valor="{{ promo.promo__valor_promo }}"
+                                                            data-promo-fecha-pago="{{promo.fecha_pago_promo}}">
+                                                        {{ promo.promo__nombre_promo }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
                                         </div>
-                                        <input type="hidden" name="promo_id" id="promo_id" value="">
-                                    {% else %}
-                                        <p>Este cliente no tiene promociones activas.</p>
-                                    {% endif %}
-                                    <h5 class="card-title">Detalle Promocion</h5>
-                                    <div class="bidon-details">
-                                        <div class="row">
-                                             
-                                            <div class="col-lg-3 col-md-4 label ">Valor:</div>
-                                            <div class="col-lg-9 col-md-8">
-                                                <p id="id_promo_valor"></p>
-                                                {% comment %}  {{ promo.promo__valor_promo }} {% endcomment %}
-                                            </div>
+                                    </div>
+                                    <input type="hidden" name="promo_id" id="promo_id" value="">
+                                {% else %}
+                                    <p>Este cliente no tiene promociones activas.</p>
+                                {% endif %}
+                                <h5 class="card-title">Detalle Promocion</h5>
+                                <div class="bidon-details">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Valor:</div>
+                                        <div class="col-lg-9 col-md-8">
+                                            <p id="id_promo_valor"></p>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-3 col-md-4 label ">Fecha de Cobro:</div>
-                                            <div class="col-lg-9 col-md-8">
-                                                <p id="id_promo_fecha_pago">0</p>
-                                                {% comment %}  {{promo.fecha_pago_promo}} {% endcomment %}
-                                            </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Fecha de Cobro:</div>
+                                        <div class="col-lg-9 col-md-8">
+                                            <p id="id_promo_fecha_pago">0</p>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-3 col-md-4 label ">Bidones Disponibles:</div>
-                                            <div class="col-lg-9 col-md-8">
-                                                <p id="id_bidones_disponibles">0</p>
-                                            </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Bidones Disponibles:</div>
+                                        <div class="col-lg-9 col-md-8">
+                                            <p id="id_bidones_disponibles">0</p>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-lg-3 col-md-4 label ">Bidones en Domicilio:</div>
-                                            <div class="col-lg-9 col-md-8">
-                                                <p id="id_bidones_acumulados">0</p>
-                                            </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-4 label ">Bidones en Domicilio:</div>
+                                        <div class="col-lg-9 col-md-8">
+                                            <p id="id_bidones_acumulados">0</p>
+                                        </div>
+                                    </div>
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Gestionar Servicios</h5>
+                            
+                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Visitar</button>
+                                            <button type="button" class="btn btn-primary" id="servis-visita-btn" disabled>Servis</button>
+                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'crear_venta_producto_cliente' id=cliente.id %}'">Vender</button>
+                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'crear_pago_cliente' id=cliente.id %}'">Pagar</button>
+                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'promo_por_cliente' id=cliente.id %}'" >Nueva Promoción</button>
+                                            
+                                        </div>
                                         </div>
 
                                     <div class="container">           
@@ -135,20 +143,116 @@
             
                                     </div>
                                 </div>
-                                <!-- Visitas --> 
-                                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            </div>
+                            <!-- Visitas -->
+                            <div class="tab-pane fade profile-overview" id="Visitas" role="tabpanel" aria-labelledby="visitas-tab">
+                                <h5 class="card-title">Detalle del Cliente</h5>
+                                <div class="card recent-sales overflow-auto">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Ultimas 10 Visitas</h5>
+                                        <!-- Table with hoverable rows {{visitas_cliente}}-->
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">Fecha visita</th>
+                                                <th scope="col">Ver</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for visita in visitas_cliente %}
+                                                    <tr>
+                                                        <th scope="row">{{visita.fecha_visita}}</th>
+                                                        <td>VER *BOTON*</td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <tr>
+                                                        <td colspan="2">No hay registros</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <!-- End Table with hoverable rows -->
+                                        <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Todo</button>
+                                    </div>
                                 </div>
-                                <!-- Ventas-->
-                                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            </div>
+                            <!-- Ventas-->
+                            <div class="tab-pane fade profile-overview" id="Ventas" role="tabpanel" aria-labelledby="ventas-tab">
+                                <h5 class="card-title">Detalle del Cliente</h5>
+                                <div class="card recent-sales overflow-auto">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Ultimas 10 Ventas</h5>
+                                        <!-- Table with hoverable rows {{visitas_cliente}}-->
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">Fecha </th>
+                                                <th scope="col">Total</th>
+                                                <th scope="col">Nota</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for venta in ventas_cliente %}
+                                                    <tr>
+                                                        <th scope="row"><a href="{% url 'info_venta' venta.id %}">{{venta.fecha_venta}}</a></th>
+                                                        <td>{{venta.total_venta}}</td>
+                                                        <td>{{venta.nota}}</td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <tr>
+                                                        <td colspan="3">No hay registros</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <!-- End Table with hoverable rows -->
+                                        <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_venta_cliente' id=cliente.id %}'">Ver Todo</button>
+                                    </div>
                                 </div>
-                                <!-- Pagos --> 
-                                <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+                            </div>
+                            <!-- Pagos --> 
+                            <div class="tab-pane fade profile-overview" id="Pagos" role="tabpanel" aria-labelledby="pagos-tab">
+                                <h5 class="card-title">Detalle del Cliente</h5>
+                                <div class="card recent-sales overflow-auto">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Ultimas 10 Pagos</h5>
+                                        <!-- Table with hoverable rows {{visitas_cliente}}-->
+                                        <table class="table table-hover">
+                                            <thead>
+                                            <tr>
+                                                <th scope="col">Fecha </th>
+                                                <th scope="col">Concepto</th>
+                                                <th scope="col">Metodo</th>
+                                                <th scope="col">Total</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for pago in pagos_cliente %}
+                                                    <tr>
+                                                        <th scope="row"><a href="#">{{pago.fecha_pago}}</a></th>
+                                                        {% if pago.venta %}
+                                                            <td><a href="{% url 'info_venta' pago.venta.id %}">Venta N°:{{pago.venta.id}}</a></td>
+                                                        {% else %}
+                                                            <td>{{pago.promo}}</td>
+                                                        {% endif %}
+                                                        <td>{{pago.metodo_pago}}</td>
+                                                        <td>{{pago.monto}}</td>
+                                                    </tr>
+                                                {% empty %}
+                                                    <tr>
+                                                        <td colspan="3">No hay registros</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        <!-- End Table with hoverable rows -->
+                                        <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_pago_cliente' id=cliente.id %}'">Ver Todo</button>
+                                    </div>
                                 </div>
-                            </div><!-- End Default Tabs -->
-
-                        
-                    <div>
-                <div>
+                            </div>
+                        </div><!-- End Default Tabs -->
+                    </div>
+                </div>
             </div>
         </div>
     </section>
