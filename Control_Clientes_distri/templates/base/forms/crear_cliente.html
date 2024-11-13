@@ -1,19 +1,33 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
+{% block nav-cliente %}
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'cargar_cliente' %}"  class="active">
+              <i class="bi bi-circle"></i><span>Agregar Cliente</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'listar_clientes' %}">
+              <i class="bi bi-circle"></i><span>Lista Clientes</span>
+            </a>
+          </li>
+          <li>  
+            <a href="{% url 'listar_vto_clte' %}">
+              <i class="bi bi-circle"></i><span>Vencimientos Cliente</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Cliente Nav -->
+{% endblock nav-cliente %}
 
 
 {% block contenedor %}
-
-{% comment %} <div class="container mt-5">
-    <h2>Agregar Cliente</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Enviar</button>
-        <a href="{% url 'listar_clientes' %}" class="btn btn-secondary">Volver a la Lista de Clientes</a>
-    </form>
-</div> {% endcomment %}
 <main id="main" class="main">
 
     <div class="pagetitle">
@@ -22,7 +36,7 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
           <li class="breadcrumb-item">Cliente</li>
-          <li class="breadcrumb-item active">Agregar Cliente</li>
+          <li class="breadcrumb-item">Agregar Cliente</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->

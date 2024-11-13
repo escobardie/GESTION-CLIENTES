@@ -127,9 +127,9 @@
                                             <button type="button" class="btn btn-primary" onclick="location.href='{% url 'promo_por_cliente' id=cliente.id %}'" >Nueva Promoción</button>
                                             
                                         </div>
-                                        </div>
+                                    </div>
 
-                                    <div class="container">           
+                                    {% comment %} <div class="container">           
                                         <div class="client-actions">
                                             <button id="ver-visitas-btn" onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Visitas</button>
                                             <button id="cargar-visita-btn" onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Cargar Visita</button>
@@ -141,7 +141,7 @@
                                             <button onclick="location.href='{% url 'listar_pago_cliente' id=cliente.id %}'">Pagos Realizados</button>
                                         </div>
             
-                                    </div>
+                                    </div> {% endcomment %}
                                 </div>
                             </div>
                             <!-- Visitas -->
@@ -162,8 +162,35 @@
                                                 {% for visita in visitas_cliente %}
                                                     <tr>
                                                         <th scope="row">{{visita.fecha_visita}}</th>
-                                                        <td>VER *BOTON*</td>
-                                                    </tr>
+                                                        <td>
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">VER</button>
+                                                        </td>
+                                                    </tr>                                               
+                                                    <!-- The Modal -->
+                                                    <div class="modal" id="myModal-{{ forloop.counter }}">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                        
+                                                                <!-- Modal Header -->
+                                                                <div class="modal-header">
+                                                                    <h4 class="modal-title">{{visita.fecha_visita}}</h4>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                        
+                                                                <!-- Modal body -->
+                                                                <div class="modal-body">
+                                                                    {{visita.nota|safe }}
+                                                                </div>
+                                                        
+                                                                <!-- Modal footer -->
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                                                </div>
+                                                        
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--  Modal -->
                                                 {% empty %}
                                                     <tr>
                                                         <td colspan="2">No hay registros</td>
@@ -175,6 +202,7 @@
                                         <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Todo</button>
                                     </div>
                                 </div>
+                                
                             </div>
                             <!-- Ventas-->
                             <div class="tab-pane fade profile-overview" id="Ventas" role="tabpanel" aria-labelledby="ventas-tab">
@@ -233,11 +261,44 @@
                                                         {% if pago.venta %}
                                                             <td><a href="{% url 'info_venta' pago.venta.id %}">Venta N°:{{pago.venta.id}}</a></td>
                                                         {% else %}
-                                                            <td>{{pago.promo}}</td>
+                                                            <td>
+                                                                {% comment %} {{pago.promo}} {% endcomment %}
+                                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalPago-{{ forloop.counter }}">VER</button>
+                                                            </td>
+                                                            
                                                         {% endif %}
                                                         <td>{{pago.metodo_pago}}</td>
                                                         <td>{{pago.monto}}</td>
                                                     </tr>
+                                                    <!-- The Modal -->
+                                                    <div class="modal" id="myModalPago-{{ forloop.counter }}">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                        
+                                                                <!-- Modal Header -->
+                                                                <div class="modal-header">
+                                                                    <h4 class="modal-title">{{ pago.fecha_pago }}</h4>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                                </div>
+                                                        
+                                                                <!-- Modal body -->
+                                                                <div class="modal-body">
+                                                                    <p class="visit-date"><strong>Promo:</strong> {{ pago.promo }}</p>
+                                                                    <p class="visit-date"><strong>Fecha Pago:</strong> {{ pago.fecha_pago }}</p>
+                                                                    <p class="visit-date"><strong>Metodo Pago:</strong> {{ pago.metodo_pago }}</p>
+                                                                    <p class="visit-date"><strong>Descripcion:</strong> {{ pago.descripcion }}</p>
+                                                                    <p class="visit-date"><strong>Monto:</strong> {{ pago.monto }}</p>
+                                                                </div>
+                                                        
+                                                                <!-- Modal footer -->
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                                                </div>
+                                                        
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!--  Modal -->
                                                 {% empty %}
                                                     <tr>
                                                         <td colspan="3">No hay registros</td>

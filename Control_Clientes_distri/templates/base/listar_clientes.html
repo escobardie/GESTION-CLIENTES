@@ -1,6 +1,32 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
+
+{% block nav-cliente %}
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'cargar_cliente' %}">
+              <i class="bi bi-circle"></i><span>Agregar Cliente</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'listar_clientes' %}" class="active">
+              <i class="bi bi-circle"></i><span>Lista Clientes</span>
+            </a>
+          </li>
+          <li>  
+            <a href="{% url 'listar_vto_clte' %}">
+              <i class="bi bi-circle"></i><span>Vencimientos Cliente</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Cliente Nav -->
+{% endblock nav-cliente %}
+
 {% block contenedor %}
 <main id="main" class="main">
     <div class="pagetitle">

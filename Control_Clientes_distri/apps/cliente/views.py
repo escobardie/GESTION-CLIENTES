@@ -36,7 +36,7 @@ class ListarVencimientoView(ListView):
         context['promos_con_fecha_vencida'] = promo_con_fecha_vencida
         return context
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class ListarClientesView(ListView):
     model = models.Cliente
     template_name = "base/listar_clientes.html"
@@ -44,7 +44,7 @@ class ListarClientesView(ListView):
     paginate_by = 5
     queryset = models.Cliente.objects.filter(estado=True).order_by('apellido')
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class MenuClienteDetailView(DetailView):
     model = models.Cliente
     template_name = "base/menu_cliente.html"
@@ -93,7 +93,7 @@ class MenuClienteDetailView(DetailView):
             context['promociones'] = promociones_del_cliente
         return context
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class ClienteCreateView(CreateView):
     model = models.Cliente
     template_name = 'base/forms/crear_cliente.html'
@@ -106,7 +106,7 @@ class ClienteCreateView(CreateView):
         form.save()
         return super().form_valid(form)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class PromoPorClienteCreateView(CreateView):
     template_name = 'Agua/forms/promo_x_cliente.html'
     form_class = forms.AddPromoPorClienteForm
@@ -131,10 +131,10 @@ class PromoPorClienteCreateView(CreateView):
         cliente_id = self.kwargs.get('id')
         return reverse('menu_cliente', kwargs={'id': cliente_id})
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class ServisVisitaUpdateView(UpdateView):
     model = models.PromoPorCliente
-    template_name = 'Agua/forms/servis_visita_cliente.html'
+    template_name = 'base/forms/servis_visita_cliente.html'
     form_class = forms.ServisVisitaClienteForm
     slug_field = 'slug'
     slug_url_kwarg = 'pk'
@@ -163,13 +163,18 @@ class ServisVisitaUpdateView(UpdateView):
         promo = get_object_or_404(models.PromoPorCliente, id=promo_id)
         visita = Visita.objects.create(
             cliente=cliente,
-            nota="<ul>"+
-                 f"<li>PROMOCION:  {promo.promo.nombre_promo}</li>"+
-                 f"<li>BIDONES DISPONIBLES:  {bidones_disponibles}</li>"+
-                 f"<li>BIDONES ENTREGADOS AL CLIENTE: {entrega_bidones} </li>"+
-                 f"<li>BIDONES RETIRADOS DEL DOMICILIO:{retorno_bidones}</li>"+
-                 f"<li>BIDONES EN PODER DEL CLIENTE: {bidones_acumulados}</li>"+
-                 "</ul>"
+            # nota="<ul>"+
+            #      f"<li>PROMOCION:  {promo.promo.nombre_promo}</li>"+
+            #      f"<li>BIDONES DISPONIBLES:  {bidones_disponibles}</li>"+
+            #      f"<li>BIDONES ENTREGADOS AL CLIENTE: {entrega_bidones} </li>"+
+            #      f"<li>BIDONES RETIRADOS DEL DOMICILIO:{retorno_bidones}</li>"+
+            #      f"<li>BIDONES EN PODER DEL CLIENTE: {bidones_acumulados}</li>"+
+            #      "</ul>"
+            nota =  f"<p><strong>Promoción:</strong> {promo.promo.nombre_promo}</p>"+
+                    f"<p><strong>Bidones Disponibles:</strong> {bidones_disponibles}</p>"+
+                    f"<p><strong>Bidones Entregados al cliente:</strong> {entrega_bidones}</p>"+
+                    f"<p><strong>Bidones Retirados del domicilio:</strong> {retorno_bidones}</p>"+
+                    f"<p><strong>Bidones en poder del cliente:</strong> {bidones_acumulados}</p>"
         )
         return super().form_valid(form)
 
