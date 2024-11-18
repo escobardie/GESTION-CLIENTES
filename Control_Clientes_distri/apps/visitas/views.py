@@ -31,7 +31,7 @@ class ListarVisitasView(ListView):
 ## se agrega capa de seguridad para la carga de datos
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class VisitaCreateView(CreateView):
-    template_name = 'Agua/forms/visita.html'
+    template_name = 'base/forms/visita_cliente.html'
     form_class = forms.AddVisitaForm
     
     def get_cliente_data(self):

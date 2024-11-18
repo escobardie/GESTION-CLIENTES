@@ -1,0 +1,155 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block nav-cliente %}
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'cargar_cliente' %}">
+              <i class="bi bi-circle"></i><span>Agregar Cliente</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'listar_clientes' %}">
+              <i class="bi bi-circle"></i><span>Lista Clientes</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'listar_vto_clte' %}">
+              <i class="bi bi-circle"></i><span>Vencimientos Cliente</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Cliente Nav -->
+{% endblock nav-cliente %}
+
+
+{% block contenedor %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Lista Pagos</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Cliente</li>
+          <li class="breadcrumb-item">Pagos</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Lista Pagos</h5>
+
+                        {% for pago in lista_pago_cliente %}
+                            <div class="card">
+                                <div class="card-body">
+
+                                    <h5 class="card-title">
+                                        {{ pago.fecha_pago }}
+                                    </h5>
+
+                                    <!-- Default List group -->
+                                    {% comment %} <div class="tab-pane fade show  profile-overview">
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label ">Promocion:</div>
+                                            <div class="col-lg-9 col-md-8"> {{ pago.promo }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label ">Promocion:</div>
+                                            <div class="col-lg-9 col-md-8"> {{ pago.promo }}</div>
+                                        </div>
+                                    </div> {% endcomment %}
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                {% if pago.venta %}
+                                                    <div class="col-lg-3 col-md-4 label ">Venta:</div>
+                                                    <div class="col-lg-9 col-md-8">
+                                                        <a href="{% url 'info_venta' pago.venta.id %}"> N° {{pago.venta.id}} </a>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-lg-3 col-md-4 label ">Promocion:</div>
+                                                    <div class="col-lg-9 col-md-8"> {{ pago.promo.nombre_promo }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">Metodo Pago:</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {% if pago.metodo_pago %}
+                                                        {{ pago.metodo_pago }}
+                                                    {% else %}
+                                                        Sin Metodo de Pago
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">Monto:</div>
+                                                <div class="col-lg-9 col-md-8">$ {{ pago.monto }}</div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">Descripcion:</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {% if pago.descripcion %}
+                                                        {{ pago.descripcion }}
+                                                    {% else %}
+                                                        Sin Descripcion
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul><!-- End Default List group -->
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                        <!-- Centered Pagination -->
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ page_obj.number }}</span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item" aria-current="page">
+                                        <a class="page-link">{{ page_obj.paginator.num_pages }}</a>
+                                    </li>
+                                {% endif %}
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav><!-- End Centered Pagination -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main><!-- End #main -->
+{% endblock contenedor %}

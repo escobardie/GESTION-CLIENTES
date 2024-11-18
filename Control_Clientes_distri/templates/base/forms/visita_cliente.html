@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block nav-cliente %}
+      <li class="nav-item">
+        <a class="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-menu-button-wide"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'cargar_cliente' %}">
+              <i class="bi bi-circle"></i><span>Agregar Cliente</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'listar_clientes' %}">
+              <i class="bi bi-circle"></i><span>Lista Clientes</span>
+            </a>
+          </li>
+          <li>  
+            <a href="{% url 'listar_vto_clte' %}">
+              <i class="bi bi-circle"></i><span>Vencimientos Cliente</span>
+            </a>
+          </li>
+        </ul>
+      </li><!-- End Cliente Nav -->
+{% endblock nav-cliente %}
+
+
+{% block contenedor %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Formulario</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Cliente</li>
+          <li class="breadcrumb-item">Agregar Visita</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+    <section class="section">
+        <div class="row">
+          <div class="col-lg-6">
+  
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Agregar Visita</h5>
+  
+                <!-- General Form Elements -->
+                <form method="POST">
+                      {% csrf_token %}
+                      {{ form.as_p }}
+                    <div class="col-sm-10">
+                      <button type="submit" class="btn btn-primary">Cargar</button>
+                    </div>
+                  </div>
+  
+                </form><!-- End Form  -->
+  
+              </div>
+            </div>
+  
+          </div>
+  
+          
+        </div>
+    </section>
+</main><!-- End #main -->
+{% endblock contenedor %}
