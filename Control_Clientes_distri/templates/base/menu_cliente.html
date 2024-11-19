@@ -163,7 +163,7 @@
                                                     <tr>
                                                         <th scope="row">{{visita.fecha_visita}}</th>
                                                         <td>
-                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">VER</button>
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">VISITA</button>
                                                         </td>
                                                     </tr>                                               
                                                     <!-- The Modal -->
@@ -216,6 +216,7 @@
                                             <tr>
                                                 <th scope="col">Fecha </th>
                                                 <th scope="col">Total</th>
+                                                <th scope="col">Metodo Pago</th>
                                                 <th scope="col">Nota</th>
                                             </tr>
                                             </thead>
@@ -224,6 +225,7 @@
                                                     <tr>
                                                         <th scope="row"><a href="{% url 'info_venta' venta.id %}">{{venta.fecha_venta}}</a></th>
                                                         <td>{{venta.total_venta}}</td>
+                                                        <td>{{venta.metodo_pago}}</td>
                                                         <td>{{venta.nota}}</td>
                                                     </tr>
                                                 {% empty %}
@@ -257,13 +259,13 @@
                                             <tbody>
                                                 {% for pago in pagos_cliente %}
                                                     <tr>
-                                                        <th scope="row"><a href="#">{{pago.fecha_pago}}</a></th>
+                                                        <th scope="row">{{pago.fecha_pago}}</th>
                                                         {% if pago.venta %}
                                                             <td><a href="{% url 'info_venta' pago.venta.id %}">Venta N°:{{pago.venta.id}}</a></td>
                                                         {% else %}
                                                             <td>
                                                                 {% comment %} {{pago.promo}} {% endcomment %}
-                                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalPago-{{ forloop.counter }}">VER</button>
+                                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModalPago-{{ forloop.counter }}">PROMO</button>
                                                             </td>
                                                             
                                                         {% endif %}

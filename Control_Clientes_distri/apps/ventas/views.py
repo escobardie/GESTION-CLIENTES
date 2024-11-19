@@ -64,6 +64,7 @@ class VentaProductoCreateView(FormView):
         cliente = self.get_cliente_data()
         precio_total_todas_venta = self.request.POST.get('precio_total_todas_venta')
         nota_venta = self.request.POST.get('nota_venta')
+        metodo_pago = self.request.POST.get('metodo_pago')
         
         if nota_venta == "" and cliente is None:
             nota_venta = "Venta a No Cliente"      
@@ -71,12 +72,14 @@ class VentaProductoCreateView(FormView):
         venta = models.Venta.objects.create(
             cliente=cliente,
             nota=nota_venta,
+            metodo_pago=metodo_pago,
             total_venta=precio_total_todas_venta
         )
 
         pago = Pagos.objects.create(
             cliente=cliente,
             venta=venta,
+            metodo_pago=metodo_pago,
             monto=precio_total_todas_venta,
             descripcion=nota_venta
         )

@@ -3,8 +3,8 @@ from . import models
 
 
 class VentaAdmin(admin.ModelAdmin):
-    readonly_fields = ('cliente', 'fecha_venta', 'total_venta', 'nota')
-    list_display = ('cliente', 'fecha_venta')
+    readonly_fields = ('cliente', 'fecha_venta', 'total_venta','metodo_pago', 'nota')
+    list_display = ('cliente', 'fecha_venta','metodo_pago')
 
 admin.site.register(models.Venta, VentaAdmin)
 

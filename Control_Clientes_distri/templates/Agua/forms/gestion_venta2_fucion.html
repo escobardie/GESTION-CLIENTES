@@ -36,6 +36,22 @@
                 <label for="id_precio_total_todas_venta">Costo total de todos los productos:</label>
                 <input type="text" name="precio_total_todas_venta" class="form-control" id="id_precio_total_todas_venta" value="0.00" readonly>
             </div>
+            
+            <!-- Campo Método de Pago -->
+            <div class="form-group mb-3">
+                <label for="id_metodo_pago">Método de Pago:</label>
+                <select name="metodo_pago" id="id_metodo_pago" class="form-control">
+                    <option value="">Seleccione una opción</option>
+                    <option value="tarjeta">Tarjeta de Crédito/Débito</option>
+                    <option value="efectivo">Efectivo</option>
+                    <option value="transferencia">Transferencia Bancaria</option>
+                </select>
+                {% if form.metodo_pago.errors %}
+                <small class="text-danger">{{ form.metodo_pago.errors }}</small>
+                {% endif %}
+            </div>
+            
+            
             <div class="form-group">
                 <label for="id_precio_total_todas_venta">Nota:</label>
                 <input type="text" name="nota_venta" class="form-control" id="id_nota_venta" >

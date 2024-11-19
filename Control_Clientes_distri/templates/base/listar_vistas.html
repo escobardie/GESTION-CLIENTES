@@ -31,12 +31,12 @@
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Lista Ventas</h1>
+      <h1>Lista Visitas</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
           <li class="breadcrumb-item">Cliente</li>
-          <li class="breadcrumb-item">Ventas</li>
+          <li class="breadcrumb-item">Visita</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -48,54 +48,28 @@
                     <div class="card-body">
                         <h5 class="card-title">Lista</h5>
 
-                        {% for venta in lista_venta_cliente %}
+                        {% for visita in lista_vistas %}
                             <div class="card">
                                 <div class="card-body">
 
                                     <h5 class="card-title">
-                                        {{ venta.fecha_venta }}
+                                        {{ visita.fecha_visita }}
                                     </h5>
                                     <ul class="list-group">
                                         <li class="list-group-item">
                                             <div class="row">
-                                                <div class="col-lg-3 col-md-4 label ">Venta:</div>
-                                                <div class="col-lg-9 col-md-8">
-                                                    <a href="{% url 'info_venta' venta.id %}"> N° {{venta.id}} </a>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li class="list-group-item">
-                                            <div class="row">
-                                                <div class="col-lg-3 col-md-4 label ">Metodo Pago:</div>
-                                                <div class="col-lg-9 col-md-8">
-                                                    {% if venta.metodo_pago %}
-                                                        {{venta.metodo_pago}}
-                                                    {% else %}
-                                                        Sin Metodo de Pago
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </li>
-
-                                        <li class="list-group-item">
-                                            <div class="row">
-                                                <div class="col-lg-3 col-md-4 label ">Total Venta:</div>
-                                                <div class="col-lg-9 col-md-8">$ {{ venta.total_venta }}</div>
-                                            </div>
-                                        </li>
-
-                                        <li class="list-group-item">
-                                            <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">Nota:</div>
                                                 <div class="col-lg-9 col-md-8">
-                                                    {% if venta.nota %}
-                                                        {{ venta.nota }}
+                                                    {% if visita.nota %}
+                                                        {{ visita.nota|safe }}
                                                     {% else %}
                                                         Sin Nota
                                                     {% endif %}
                                                 </div>
                                             </div>
                                         </li>
+
+                                        
                                     </ul><!-- End Default List group -->
 
                                 </div>

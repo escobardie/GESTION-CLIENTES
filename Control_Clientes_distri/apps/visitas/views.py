@@ -14,7 +14,7 @@ def usuario_es_admin(user):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarVisitasView(ListView):
     model = models.Visita
-    template_name = "Agua/listar_vistas.html"
+    template_name = "base/listar_vistas.html"
     context_object_name = 'lista_vistas'
     paginate_by = 5
     

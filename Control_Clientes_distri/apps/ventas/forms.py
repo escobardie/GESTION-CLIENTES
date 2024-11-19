@@ -18,9 +18,10 @@ class VentaProductoForm(forms.ModelForm):
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = ['cliente']
+        fields = ['cliente', 'metodo_pago']
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             'total_venta': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Total Venta'}),
+            'metodo_pago': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Metodo Pago'}),
             'nota': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Nota'}),
         }

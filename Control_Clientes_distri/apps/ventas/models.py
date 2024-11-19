@@ -11,7 +11,11 @@ class Venta(models.Model):
     fecha_venta = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Venta')
     total_venta = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name='Total Venta')
     nota = models.TextField(null=True, blank=True, verbose_name='Nota')
-    
+    metodo_pago = models.CharField(null=True, max_length=50, choices=[
+        ('tarjeta', 'Tarjeta de Crédito/Débito'),
+        ('efectivo', 'Efectivo'),
+        ('transferencia', 'Transferencia Bancaria'),
+    ])
 
     class Meta:
         verbose_name = 'Venta'
