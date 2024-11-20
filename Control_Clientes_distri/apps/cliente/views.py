@@ -73,7 +73,7 @@ class MenuClienteDetailView(DetailView):
             else:
                 fecha_visita_clte = "Sin visitas"
 
-            ultima_pago = Pagos.objects.filter(cliente=cliente).order_by('-fecha_pago').first()
+            ultima_pago = Pagos.objects.filter(cliente=cliente, venta=None).order_by('-fecha_pago').first()
             if ultima_pago:
                 fecha_pago_clte = ultima_pago.fecha_pago.date()
             else:
