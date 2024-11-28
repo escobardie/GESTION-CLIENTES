@@ -11,7 +11,7 @@ def usuario_es_admin(user):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarProductosView(ListView):
     model = models.Producto
-    template_name = "Agua/listar_productos.html"
+    template_name = "Base/listar_productos.html"
     context_object_name = 'lista_productos'
     paginate_by = 5
     queryset = models.Producto.objects.filter(estado=True).order_by('nombre_producto')
@@ -21,7 +21,7 @@ class ListarProductosView(ListView):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ProductoCreateView(CreateView):
     model = models.Producto
-    template_name = 'Agua/forms/crear_producto.html'
+    template_name = 'Base/forms/crear_producto.html'
     form_class = forms.ProductoForm
     success_url = reverse_lazy('listar_productos')
 

@@ -1,0 +1,99 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block nav-productos %}
+<li class="nav-item">
+    <a class="nav-link " data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-menu-button-wide"></i><span>Productos</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+        <li>
+            <a href="{% url 'crear_producto' %}">
+              <i class="bi bi-circle"></i><span>Cargar Producto</span>
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'listar_productos' %}" class="active">
+              <i class="bi bi-circle"></i><span>Productos Vigentes</span>
+            </a>
+          </li>
+          
+    </ul>
+</li><!-- End Cliente Nav -->
+{% endblock nav-productos %}
+
+{% block contenedor %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Formulario</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Productos</li>
+          <li class="breadcrumb-item">Productos Vigentes</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-6">
+
+          <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Lista de Productos</h5>
+                {% for producto in lista_productos %}
+                    <!-- Card with an image on left -->
+                    <div class="card mb-3">
+                        <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{ producto.imagen_url.url }}" class="img-fluid rounded-start" alt="...">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title"> {{ producto.nombre_producto }}</h5>
+                                <p class="card-text"> {{ producto.descripcion_producto }}</p>
+                                <p><strong>Proveedor:</strong> {{producto.proveedor }}</p>
+                                <p><strong>Precio:</strong> ${{ producto.precio_producto }}</p>
+                                <p><strong>Stock:</strong> {{ producto.stock }}</p>
+                            </div>
+                        </div>
+                        </div>
+                    </div><!-- End Card with an image on left -->
+                {% empty %}
+                    <h4>No hay registros</h4>
+                {% endfor %}
+          
+            <!-- Centered Pagination -->
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+                        </li>
+                    {% endif %}
+                    <li class="page-item active" aria-current="page">
+                        <span class="page-link">{{ page_obj.number }}</span>
+                    </li>
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav><!-- End Centered Pagination -->
+
+            </div>
+          </div>
+
+        </div>
+
+        
+      </div>
+    </section>
+
+</main><!-- End #main -->
+
+
+{% endblock contenedor %}
