@@ -1,26 +1,26 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block nav-productos %}
+{% block nav-promociones %}
 <li class="nav-item">
-    <a class="nav-link " data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-      <i class="bi bi-menu-button-wide"></i><span>Productos</span><i class="bi bi-chevron-down ms-auto"></i>
-    </a>
-    <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
-        <li>
-            <a href="{% url 'crear_producto' %}" class="active">
-              <i class="bi bi-circle"></i><span>Cargar Producto</span>
-            </a>
-        </li>
-        <li>
-            <a href="{% url 'listar_productos' %}">
-              <i class="bi bi-circle"></i><span>Productos Vigentes</span>
-            </a>
-          </li>
-          
-    </ul>
-</li><!-- End productos Nav -->
-{% endblock nav-productos %}
+  <a class="nav-link " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+    <i class="bi bi-journal-text"></i><span>Promociones</span><i class="bi bi-chevron-down ms-auto"></i>
+  </a>
+  <ul id="forms-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+    <li>
+      <a href="{% url 'nueva_promo' %}" class="active">
+        <i class="bi bi-circle"></i><span>Crear Promociones</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'listar_promociones' %}">
+        <i class="bi bi-circle"></i><span>Promociones Vigentes</span>
+      </a>
+    </li>
+    
+  </ul>
+</li><!-- End Promociones Nav -->
+{% endblock nav-promociones %}
 
 {% block contenedor %}
 <main id="main" class="main">
@@ -30,8 +30,8 @@
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-          <li class="breadcrumb-item">Productos</li>
-          <li class="breadcrumb-item">Cargar Producto</li>
+          <li class="breadcrumb-item">Promociones</li>
+          <li class="breadcrumb-item">Cargar Promocion</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -42,7 +42,7 @@
 
           <div class="card">
             <div class="card-body">
-              <h5 class="card-title">Formulario Nuevo Producto</h5>
+              <h5 class="card-title">Formulario Nuevo Promocion</h5>
 
               <!-- General Form Elements -->
               <form method="POST" enctype='multipart/form-data'>

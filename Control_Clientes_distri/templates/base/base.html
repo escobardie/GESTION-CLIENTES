@@ -315,15 +315,16 @@
         </a>
         <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="{% url 'index' %}">
-              <i class="bi bi-circle"></i><span>Promociones Vigentes</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'index' %}">
+            <a href="{% url 'nueva_promo' %}">
               <i class="bi bi-circle"></i><span>Crear Promociones</span>
             </a>
           </li>
+          <li>
+            <a href="{% url 'listar_promociones' %}">
+              <i class="bi bi-circle"></i><span>Promociones Vigentes</span>
+            </a>
+          </li>
+          
         </ul>
       </li><!-- End Promociones Nav -->
       {% endblock nav-promociones %}

@@ -1,0 +1,197 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+
+{% block nav-promociones %}
+<li class="nav-item">
+  <a class="nav-link " data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
+    <i class="bi bi-journal-text"></i><span>Promociones</span><i class="bi bi-chevron-down ms-auto"></i>
+  </a>
+  <ul id="forms-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+    <li>
+      <a href="{% url 'nueva_promo' %}" >
+        <i class="bi bi-circle"></i><span>Crear Promociones</span>
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'listar_promociones' %}" class="active">
+        <i class="bi bi-circle"></i><span>Promociones Vigentes</span>
+      </a>
+    </li>
+    
+  </ul>
+</li><!-- End Promociones Nav -->
+{% endblock nav-promociones %}
+
+{% block contenedor %}
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Clientes</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item">Promociones</li>
+                <li class="breadcrumb-item active">Lista Promocion</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Lista de Promociones</h5>
+
+                        <!-- Tabs -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link active" id="todos-tab" data-bs-toggle="tab" href="#todos" role="tab" aria-controls="todos" aria-selected="true">Todos</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="vip-tab" data-bs-toggle="tab" href="#vip" role="tab" aria-controls="vip" aria-selected="false">VIP</a>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <a class="nav-link" id="nuevo-tab" data-bs-toggle="tab" href="#nuevo" role="tab" aria-controls="nuevo" aria-selected="false">Nuevos</a>
+                            </li>
+                        </ul>
+
+                        <!-- Tab content -->
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="todos" role="tabpanel" aria-labelledby="todos-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Nombre</th>
+                                            <th scope="col">Valor</th>
+                                            <th scope="col">Bidones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for promo in lista_promos %}
+                                            <tr>
+                                                <td>{{ promo.nombre_promo }}</td>
+                                                <td>{{ promo.valor_promo }}</td>
+                                                <td>{{ promo.cant_bidones }}</td>
+                                                <td>
+                                                  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">+Info</button>
+                                                </td>
+                                            </tr>
+                                            <!-- The Modal -->
+                                            <div class="modal" id="myModal-{{ forloop.counter }}">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                
+                                                        <!-- Modal Header -->
+                                                        <div class="modal-header">
+                                                            <h4 class="modal-title">{{promo.nombre_promo}}</h4>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                
+                                                        <!-- Modal body -->
+                                                        <div class="modal-body">
+                                                          <p class="visit-date"><strong>Valor:</strong> {{ promo.valor_promo }}</p>
+                                                          <p class="visit-date"><strong>Cant. Bidones:</strong> {{ promo.cant_bidones }}</p>
+                                                          <p class="visit-date"><strong>Alta:</strong> {{ promo.alta_promo }}</p>
+                                                          <p class="visit-date"><strong>Vencimiento:</strong> {{ promo.vencimiento_promo }}</p>
+                                                          <p class="visit-date"><strong>Nota:</strong> {{ promo.nota }}</p>
+                                                        </div>
+                                                
+                                                        <!-- Modal footer -->
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                                        </div>
+                                                
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--  Modal -->
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3">No hay registros</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="vip" role="tabpanel" aria-labelledby="vip-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                          <th scope="col">Nombre</th>
+                                          <th scope="col">Valor</th>
+                                          <th scope="col">Bidones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for promo in lista_promos_vip %}
+                                        <tr>
+                                            <td>
+                                                <a href="">{{ promo.nombre_promo }}</a>
+                                            </td>
+                                            <td>{{ promo.valor_promo }}</td>
+                                            <td>{{ promo.cant_bidones }}</td>
+                                        </tr>
+                                        {% empty %}
+                                            <tr>
+                                                <td colspan="3">No hay registros VIP</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="tab-pane fade" id="nuevo" role="tabpanel" aria-labelledby="nuevo-tab">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                          <th scope="col">Nombre</th>
+                                          <th scope="col">Valor</th>
+                                          <th scope="col">Bidones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                          {% for promo in lista_promos_nuevo %}
+                                          <tr>
+                                              <td>
+                                                  <a href="">{{ promo.nombre_promo }}</a>
+                                              </td>
+                                              <td>{{ promo.valor_promo }}</td>
+                                              <td>{{ promo.cant_bidones }}</td>
+                                          </tr>
+                                          {% empty %}
+                                              <tr>
+                                                  <td colspan="3">No hay registros NUEVO</td>
+                                              </tr>
+                                          {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- End Tabs -->
+
+                        <!-- Centered Pagination -->
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo; Anterior</a>
+                                    </li>
+                                {% endif %}
+                                <li class="page-item active" aria-current="page">
+                                    <span class="page-link">{{ page_obj.number }}</span>
+                                </li>
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente &raquo;</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav><!-- End Centered Pagination -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main><!-- End #main -->
+{% endblock contenedor %}
