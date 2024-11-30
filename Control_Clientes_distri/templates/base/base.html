@@ -357,12 +357,12 @@
         </a>
         <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="{% url 'index' %}">
+            <a href="{% url 'crear_venta_producto' %}">
               <i class="bi bi-circle"></i><span>Nueva Venta</span>
             </a>
           </li>
           <li>
-            <a href="{% url 'index' %}">
+            <a href="{% url 'listar_ventas' %}">
               <i class="bi bi-circle"></i><span>Ventas Realizadas</span>
             </a>
           </li>
@@ -377,12 +377,12 @@
         </a>
         <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="{% url 'index' %}">
-              <i class="bi bi-circle"></i><span>Nueno Pago</span>
+            <a href="{% url 'crear_pago' %}">
+              <i class="bi bi-circle"></i><span>Nuevo Pago</span>
             </a>
           </li>
           <li>
-            <a href="{% url 'index' %}">
+            <a href="{% url 'listar_pagos' %}">
               <i class="bi bi-circle"></i><span>Pagos Realizados</span>
             </a>
           </li>
@@ -397,15 +397,16 @@
         </a>
         <ul id="visita-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
           <li>
-            <a href="{% url 'index' %}">
-              <i class="bi bi-circle"></i><span>Ver Visitas</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'index' %}">
+            <a href="{% url 'cargar_visita' %}">
               <i class="bi bi-circle"></i><span>Carga Visita</span>
             </a>
           </li>
+          <li>
+            <a href="{% url 'listar_visitas' %}">
+              <i class="bi bi-circle"></i><span>Ver Visitas</span>
+            </a>
+          </li>
+          
         </ul>
       </li><!-- End Visita Nav -->
       {% endblock nav-visitas %}

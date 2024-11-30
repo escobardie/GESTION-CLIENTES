@@ -1,30 +1,25 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block nav-cliente %}
-      <li class="nav-item">
-        <a class="nav-link " data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-          <i class="bi bi-menu-button-wide"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
+{% block nav-ventas %}
+<li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-bar-chart"></i><span>Ventas</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="charts-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+      <li>
+        <a href="{% url 'crear_venta_producto' %}">
+          <i class="bi bi-circle"></i><span>Nueva Venta</span>
         </a>
-        <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
-          <li>
-            <a href="{% url 'cargar_cliente' %}">
-              <i class="bi bi-circle"></i><span>Agregar Cliente</span>
-            </a>
-          </li>
-          <li>
-            <a href="{% url 'listar_clientes' %}">
-              <i class="bi bi-circle"></i><span>Lista Clientes</span>
-            </a>
-          </li>
-          <li>  
-            <a href="{% url 'listar_vto_clte' %}">
-              <i class="bi bi-circle"></i><span>Vencimientos Cliente</span>
-            </a>
-          </li>
-        </ul>
-      </li><!-- End Cliente Nav -->
-{% endblock nav-cliente %}
+      </li>
+      <li>
+        <a href="{% url 'listar_ventas' %}">
+          <i class="bi bi-circle"></i><span>Ventas Realizadas</span>
+        </a>
+      </li>
+    </ul>
+  </li><!-- End Ventas Nav -->
+{% endblock nav-ventas %}
 
 
 {% block contenedor %}
@@ -93,14 +88,28 @@
         let total = 0;
 
         // Recorre cada elemento con la clase 'precio-total' y suma sus valores
+       /* 
         precios.forEach((precio) => {
             total += parseFloat(precio.textContent) || 0;
         });
+        */
+        precios.forEach((precio) => {
+            // Reemplaza la coma por un punto para convertir al formato estándar
+            const valor = parseFloat(precio.textContent.replace('.', '').replace(',', '.')) || 0;
+            total += valor;
+        });
+        // Asegúrate de que el elemento existe antes de intentar actualizarlo
+        const totalElement = document.getElementById('precio-total-sum');
+        if (totalElement) {
+            totalElement.textContent = total.toFixed(2);
+        } else {
+            console.error('Elemento con ID "precio-total-sum" no encontrado');
+        }
 
         // Muestra el total calculado
-        document.getElementById('precio-total-sum').textContent = total.toFixed(2);
+        // document.getElementById('precio-total-sum').textContent = total.toFixed(2);
     }
-
+    
     // Ejecuta la función cuando la página esté cargada
     window.onload = calcularPrecioTotal;
 </script>

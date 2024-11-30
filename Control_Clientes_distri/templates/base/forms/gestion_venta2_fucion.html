@@ -1,0 +1,219 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block nav-ventas %}
+<li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-bar-chart"></i><span>Ventas</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="charts-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+      <li>
+        <a href="{% url 'crear_venta_producto' %}" class="active">
+          <i class="bi bi-circle"></i><span>Nueva Venta</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'listar_ventas' %}">
+          <i class="bi bi-circle"></i><span>Ventas Realizadas</span>
+        </a>
+      </li>
+    </ul>
+  </li><!-- End Ventas Nav -->
+{% endblock nav-ventas %}
+
+{% block contenedor %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Formulario</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Ventas</li>
+          <li class="breadcrumb-item">Nueva Venta</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-6">
+
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Formulario Nueva Venta</h5>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <!-- Mostrar errores globales del formulario -->
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+        
+                    {{ form.management_form }}
+        
+                    <!-- Contenedor dinámico de items -->
+                    <div id="items-container" class="mb-4">
+                        <!-- Los ítems se agregarán aquí dinámicamente -->
+                    </div>
+        
+                    <!-- Botón para agregar un nuevo item -->
+                    <button type="button" class="btn btn-success mb-3" id="add-item">Agregar otro item</button>
+        
+                    <!-- Campo de costo total de todos los productos -->
+                    <div class="form-group">
+                        <label for="id_precio_total_todas_venta">Costo total de todos los productos:</label>
+                        <input type="text" name="precio_total_todas_venta" class="form-control" id="id_precio_total_todas_venta" value="0.00" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_precio_total_todas_venta">Nota:</label>
+                        <input type="text" name="nota_venta" class="form-control" id="id_nota_venta" >
+                    </div>
+        
+                    <!-- Botón de envío -->
+                    {% comment %} <input type="submit" class="btn btn-primary" value="Guardar"> {% endcomment %}
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Cargar</button>
+                    </div>
+                </form>
+
+            </div>
+          </div>
+
+        </div>
+
+        
+      </div>
+    </section>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const itemsContainer = document.getElementById('items-container');
+            const addItemButton = document.getElementById('add-item');
+            let forms = document.querySelector('#id_form-TOTAL_FORMS');
+            forms.value = 0; // Inicializar el valor del total de formularios
+
+            // Función para calcular el total de la venta
+            function updateVenta() {
+                let totalVenta = 0;
+                const items = itemsContainer.querySelectorAll('.item');
+
+                items.forEach(item => {
+                    const cantidad = parseInt(item.querySelector('[id$="cantidad"]').value) || 0;
+                    const descuento = parseFloat(item.querySelector('[id$="descuento"]').value) || 0;
+                    const precioUnidad = parseFloat(item.querySelector('[id$="precio_unidad_venta"]').value) || 0;
+
+                    const precioConDescuento = precioUnidad - (precioUnidad * (descuento / 100));
+                    const totalProducto = precioConDescuento * cantidad;
+
+                    // Actualizar el costo total del producto
+                    item.querySelector('[id$="precio_total_venta"]').value = totalProducto.toFixed(2);
+
+                    totalVenta += totalProducto;
+                });
+
+                // Actualizar el costo total de todos los productos
+                document.getElementById('id_precio_total_todas_venta').value = totalVenta.toFixed(2);
+            }
+
+            // Función para agregar un nuevo item
+            function createNewItem(index) {
+                const newItem = document.createElement('div');
+                newItem.className = 'item mb-4 p-3 border rounded';
+
+                newItem.innerHTML = `
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_form-${index}-producto">Producto:</label>
+                                <select name="form-${index}-producto" class="form-control" id="id_form-${index}-producto">
+                                    <option value="">Seleccione un producto</option>
+                                    {% for option in form.empty_form.fields.producto.choices %}
+                                        <option value="{{ option.0 }}">{{ option.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="id_form-${index}-cantidad">Cantidad:</label>
+                                <input type="number" name="form-${index}-cantidad" id="id_form-${index}-cantidad" class="form-control" min="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="id_form-${index}-descuento">Descuento %:</label>
+                                <input type="number" name="form-${index}-descuento" id="id_form-${index}-descuento" class="form-control" value="0" min="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="id_form-${index}-precio_unidad_venta">Precio por Unidad:</label>
+                                <input type="number" name="form-${index}-precio_unidad_venta" id="id_form-${index}-precio_unidad_venta" class="form-control" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="id_form-${index}-precio_total_venta">Total:</label>
+                                <input type="number" name="form-${index}-precio_total_venta" id="id_form-${index}-precio_total_venta" class="form-control" value="0.00" step="0.01" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" class="btn btn-danger mt-4 remove-item">Quitar</button>
+                        </div>
+                    </div>
+                `;
+
+                itemsContainer.appendChild(newItem);
+                attachItemListeners(newItem);
+            }
+
+            // Función para asignar eventos a los campos del nuevo item
+            function attachItemListeners(item) {
+                item.querySelector('.remove-item').addEventListener('click', function() {
+                    itemsContainer.removeChild(item);
+                    forms.value = parseInt(forms.value) - 1; // Disminuir el contador de formularios
+                    updateFormIndices();
+                    updateVenta();
+                });
+
+                // Recalcular el total de la venta al modificar los campos
+                item.querySelectorAll('[id$="cantidad"], [id$="descuento"], [id$="precio_unidad_venta"]').forEach(input => {
+                    input.addEventListener('input', updateVenta);
+                });
+            }
+
+            // Actualiza los índices de los formularios al eliminar un item
+            function updateFormIndices() {
+                const items = itemsContainer.querySelectorAll('.item');
+                items.forEach((item, index) => {
+                    item.querySelectorAll('input, select').forEach(field => {
+                        const name = field.name.replace(/form-\d+/, `form-${index}`);
+                        field.name = name;
+                        const id = field.id.replace(/id_form-\d+/, `id_form-${index}`);
+                        field.id = id;
+                    });
+                });
+                forms.value = items.length; // Actualiza el número total de formularios
+            }
+
+            // Evento para agregar un nuevo item
+            addItemButton.addEventListener('click', function() {
+                createNewItem(forms.value);
+                forms.value = parseInt(forms.value) + 1;
+                updateVenta();
+            });
+
+            // Inicializar el total de la venta
+            updateVenta();
+        });
+    </script>
+
+</main><!-- End #main -->
+
+
+{% endblock contenedor %}

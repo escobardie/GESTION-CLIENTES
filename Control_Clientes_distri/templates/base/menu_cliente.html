@@ -120,7 +120,7 @@
                                         <div class="card-body">
                                             <h5 class="card-title">Gestionar Servicios</h5>
                             
-                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Visitar</button>
+                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'cargar_visita_cliente' id=cliente.id %}'">Visitar</button>
                                             <button type="button" class="btn btn-primary" id="servis-visita-btn" disabled>Servis</button>
                                             <button type="button" class="btn btn-primary" onclick="location.href='{% url 'crear_venta_producto_cliente' id=cliente.id %}'">Vender</button>
                                             <button type="button" class="btn btn-primary" onclick="location.href='{% url 'crear_pago_cliente' id=cliente.id %}'">Pagar</button>
@@ -199,7 +199,7 @@
                                             </tbody>
                                         </table>
                                         <!-- End Table with hoverable rows -->
-                                        <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Todo</button>
+                                        <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_visitas_cliente' id=cliente.id %}'">Ver Todo</button>
                                     </div>
                                 </div>
                                 

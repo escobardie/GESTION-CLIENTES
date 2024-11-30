@@ -17,9 +17,9 @@ def usuario_es_admin(user):
 class PagoCreateView(CreateView):
     ''' pago para no clientes '''
     model = models.Pagos
-    template_name = 'Agua/forms/crear_pago.html'
+    template_name = 'base/forms/crear_pago.html'
     form_class = forms.PagoForm
-    success_url = reverse_lazy('listar_pago')
+    success_url = reverse_lazy('listar_pagos')
 
     def form_valid(self, form):
         pago = form.save(commit=False)
@@ -43,11 +43,22 @@ class ListarPagoClienteView(ListView):
     def get_queryset(self):
         cliente = self.get_cliente_data()
         return models.Pagos.objects.filter(cliente=cliente)
+        
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarPagosView(ListView):
+    model = models.Pagos
+    template_name = "base/listar_pagos.html"
+    paginate_by = 10
+    context_object_name = 'lista_pagos'
+   
+    def get_queryset(self):
+        return models.Pagos.objects.all()
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class PagoClienteCreateView(CreateView):
     model = models.Pagos
-    template_name = 'Agua/forms/crear_pago_cliente.html'
+    template_name = 'base/forms/crear_pago_cliente.html'
     form_class = forms.PagoForm
     
     def get_success_url(self):

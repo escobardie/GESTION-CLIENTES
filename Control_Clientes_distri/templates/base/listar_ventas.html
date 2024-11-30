@@ -1,38 +1,37 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block nav-visitas %}
+{% block nav-ventas %}
 <li class="nav-item">
-  <a class="nav-link collapsed" data-bs-target="#visita-nav" data-bs-toggle="collapse" href="#">
-    <i class="bi bi-pin-angle"></i><span>Visita</span><i class="bi bi-chevron-down ms-auto"></i>
-  </a>
-  <ul id="visita-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
-    <li>
-      <a href="{% url 'cargar_visita' %}">
-        <i class="bi bi-circle"></i><span>Carga Visita</span>
-      </a>
-    </li>
-    <li>
-      <a href="{% url 'listar_visitas' %}"  class="active">
-        <i class="bi bi-circle"></i><span>Ver Visitas</span>
-      </a>
-    </li>
-    
-  </ul>
-</li><!-- End Visita Nav -->
-{% endblock nav-visitas %}
+    <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-bar-chart"></i><span>Ventas</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="charts-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+      <li>
+        <a href="{% url 'crear_venta_producto' %}">
+          <i class="bi bi-circle"></i><span>Nueva Venta</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'listar_ventas' %}" class="active">
+          <i class="bi bi-circle"></i><span>Ventas Realizadas</span>
+        </a>
+      </li>
+    </ul>
+  </li><!-- End Ventas Nav -->
+{% endblock nav-ventas %}
 
 
 {% block contenedor %}
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Lista Visitas</h1>
+      <h1>Lista Ventas</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-          <li class="breadcrumb-item">Visita</li>
-          <li class="breadcrumb-item">Ver Visitas</li>
+          <li class="breadcrumb-item">Ventas</li>
+          <li class="breadcrumb-item">Ventas Realizads</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -42,35 +41,61 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Lista</h5>
+                        <h5 class="card-title">Lista Todas las ventas</h5>
 
-                        {% for visita in lista_vistas %}
+                        {% for venta in lista_ventas %}
                             <div class="card">
                                 <div class="card-body">
 
                                     <h5 class="card-title">
-                                        {{ visita.fecha_visita }} -
-                                            {% if visita.cliente is None %}
+                                        {{ venta.fecha_venta }} -
+                                            {% if venta.cliente is None %}
                                                 Cliente no registrado.
                                             {% else %}
-                                                {{ visita.cliente }}
+                                                {{ venta.cliente }}
                                             {% endif %}
                                     </h5>
                                     <ul class="list-group">
                                         <li class="list-group-item">
                                             <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">Venta:</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    <a href="{% url 'info_venta' venta.id %}"> N° {{venta.id}} </a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">Metodo Pago:</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {% if venta.metodo_pago %}
+                                                        {{venta.metodo_pago}}
+                                                    {% else %}
+                                                        Sin Metodo de Pago
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">Total Venta:</div>
+                                                <div class="col-lg-9 col-md-8">$ {{ venta.total_venta }}</div>
+                                            </div>
+                                        </li>
+
+                                        <li class="list-group-item">
+                                            <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">Nota:</div>
                                                 <div class="col-lg-9 col-md-8">
-                                                    {% if visita.nota %}
-                                                        {{ visita.nota|safe }}
+                                                    {% if venta.nota %}
+                                                        {{ venta.nota }}
                                                     {% else %}
                                                         Sin Nota
                                                     {% endif %}
                                                 </div>
                                             </div>
                                         </li>
-
-                                        
                                     </ul><!-- End Default List group -->
 
                                 </div>

@@ -28,6 +28,16 @@ class ListarVentaClienteView(ListView):
         return models.Venta.objects.filter(cliente=cliente)
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarVentasView(ListView): 
+    model = models.Venta
+    template_name = "base/listar_ventas.html"
+    paginate_by = 10
+    context_object_name = 'lista_ventas'
+    
+    def get_queryset(self):
+        return models.Venta.objects.all()
+
+@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class DetalleVentaListView(ListView):
     model = models.VentaProducto
     template_name = "base/detalle_venta.html"
@@ -45,7 +55,7 @@ class DetalleVentaListView(ListView):
 @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class VentaProductoCreateView(FormView):
     model = models.VentaProducto
-    template_name = 'Agua/forms/gestion_venta2_fucion.html'
+    template_name = 'Base/forms/gestion_venta2_fucion.html'
     form_class = formset_factory(forms.VentaProductoForm)
 
     def get_cliente_data(self):

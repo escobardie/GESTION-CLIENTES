@@ -1,42 +1,37 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block nav-cliente %}
+{% block nav-pagos %}
 <li class="nav-item">
-  <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-    <i class="bi bi-menu-button-wide"></i><span>Cliente</span><i class="bi bi-chevron-down ms-auto"></i>
-  </a>
-  <ul id="components-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
-    <li>
-      <a href="{% url 'cargar_cliente' %}">
-        <i class="bi bi-circle"></i><span>Agregar Cliente</span>
-      </a>
-    </li>
-    <li>
-      <a href="{% url 'listar_clientes' %}">
-        <i class="bi bi-circle"></i><span>Lista Clientes</span>
-      </a>
-    </li>
-    <li>  
-      <a href="{% url 'listar_vto_clte' %}">
-        <i class="bi bi-circle"></i><span>Vencimientos Cliente</span>
-      </a>
-    </li>
-  </ul>
-</li><!-- End Cliente Nav -->
-{% endblock nav-cliente %}
+        <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+          <i class="bi bi-gem"></i><span>Pagos</span><i class="bi bi-chevron-down ms-auto"></i>
+        </a>
+        <ul id="icons-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+          <li>
+            <a href="{% url 'crear_pago' %}" >
+              <i class="bi bi-circle"></i><span>Nuevo Pago</span>
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'listar_pagos' %}"  class="active">
+              <i class="bi bi-circle"></i><span>Pagos Realizados</span>
+            </a>
+          </li>
+        </ul>
+</li><!-- End Pagos Nav -->
+{% endblock nav-pagos %}
 
 
 {% block contenedor %}
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Lista Ventas</h1>
+      <h1>Lista Pagos</h1>
       <nav>
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-          <li class="breadcrumb-item">Cliente</li>
-          <li class="breadcrumb-item">Ventas</li>
+          <li class="breadcrumb-item">Pagos</li>
+          <li class="breadcrumb-item">Pagos Realizados</li>
         </ol>
       </nav>
     </div><!-- End Page Title -->
@@ -46,30 +41,55 @@
             <div class="col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Lista Todas las ventas</h5>
+                        <h5 class="card-title">Lista Todos los Pagos</h5>
 
-                        {% for venta in lista_venta_cliente %}
+                        {% for pago in lista_pagos %}
                             <div class="card">
                                 <div class="card-body">
 
                                     <h5 class="card-title">
-                                        {{ venta.fecha_venta }} 
+                                        {{ pago.fecha_pago }} -
+                                            {% if pago.cliente is None %}
+                                                Cliente no registrado.
+                                            {% else %}
+                                                {{ pago.cliente }}
+                                            {% endif %}
                                     </h5>
+
+                                    <!-- Default List group -->
+                                    {% comment %} <div class="tab-pane fade show  profile-overview">
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label ">Promocion:</div>
+                                            <div class="col-lg-9 col-md-8"> {{ pago.promo }}</div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-3 col-md-4 label ">Promocion:</div>
+                                            <div class="col-lg-9 col-md-8"> {{ pago.promo }}</div>
+                                        </div>
+                                    </div> {% endcomment %}
                                     <ul class="list-group">
                                         <li class="list-group-item">
                                             <div class="row">
-                                                <div class="col-lg-3 col-md-4 label ">Venta:</div>
-                                                <div class="col-lg-9 col-md-8">
-                                                    <a href="{% url 'info_venta' venta.id %}"> N° {{venta.id}} </a>
-                                                </div>
+                                                {% if pago.venta %}
+                                                    <div class="col-lg-3 col-md-4 label ">Venta:</div>
+                                                    <div class="col-lg-9 col-md-8">
+                                                        <a href="{% url 'info_venta' pago.venta.id %}"> N° {{pago.venta.id}} </a>
+                                                    </div>
+                                                {% elif pago.promo %}
+                                                    <div class="col-lg-3 col-md-4 label ">Promocion3:</div>
+                                                    <div class="col-lg-9 col-md-8"> {{ pago.promo.nombre_promo }}</div>
+                                                {% else %}
+                                                    <div class="col-lg-3 col-md-4 label ">No cliente</div>
+                                                
+                                                {% endif %}
                                             </div>
                                         </li>
                                         <li class="list-group-item">
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">Metodo Pago:</div>
                                                 <div class="col-lg-9 col-md-8">
-                                                    {% if venta.metodo_pago %}
-                                                        {{venta.metodo_pago}}
+                                                    {% if pago.metodo_pago %}
+                                                        {{ pago.metodo_pago }}
                                                     {% else %}
                                                         Sin Metodo de Pago
                                                     {% endif %}
@@ -79,19 +99,19 @@
 
                                         <li class="list-group-item">
                                             <div class="row">
-                                                <div class="col-lg-3 col-md-4 label ">Total Venta:</div>
-                                                <div class="col-lg-9 col-md-8">$ {{ venta.total_venta }}</div>
+                                                <div class="col-lg-3 col-md-4 label ">Monto:</div>
+                                                <div class="col-lg-9 col-md-8">$ {{ pago.monto }}</div>
                                             </div>
                                         </li>
 
                                         <li class="list-group-item">
                                             <div class="row">
-                                                <div class="col-lg-3 col-md-4 label ">Nota:</div>
+                                                <div class="col-lg-3 col-md-4 label ">Descripcion:</div>
                                                 <div class="col-lg-9 col-md-8">
-                                                    {% if venta.nota %}
-                                                        {{ venta.nota }}
+                                                    {% if pago.descripcion %}
+                                                        {{ pago.descripcion }}
                                                     {% else %}
-                                                        Sin Nota
+                                                        Sin Descripcion
                                                     {% endif %}
                                                 </div>
                                             </div>

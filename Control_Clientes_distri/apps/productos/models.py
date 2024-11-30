@@ -21,6 +21,6 @@ class Producto(models.Model):
         ordering = ['nombre_producto']
 
     def __str__(self):
-        return f"Producto {self.nombre_producto} ${self.precio_producto}"
+        return f"{self.nombre_producto}"
 
 

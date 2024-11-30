@@ -3,6 +3,10 @@ from . import views
 
 
 urlpatterns = [
-    path('listar_visitas/<int:id>', views.ListarVisitasView.as_view(), name='listar_visitas'),
-    path('cargar_visita/<int:id>', views.VisitaCreateView.as_view(), name='cargar_visita'),
+    path('cargar_visita/', views.VisitaCreateView.as_view(), name='cargar_visita'),
+    path('cargar_visita_cliente/<int:id>', views.VisitaClienteCreateView.as_view(), name='cargar_visita_cliente'),
+    path('listar_visitas_cliente/<int:id>', views.ListarVisitasClienteView.as_view(), name='listar_visitas_cliente'),
+    path('listar_visitas/', views.ListarVisitasView.as_view(), name='listar_visitas'),
+    
+    
 ]

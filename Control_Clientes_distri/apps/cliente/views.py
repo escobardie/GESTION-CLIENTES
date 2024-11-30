@@ -9,6 +9,7 @@ from datetime import datetime
 from apps.visitas.models import Visita
 from apps.pagos.models import Pagos
 from apps.ventas.models import Venta
+from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 
 
@@ -108,13 +109,16 @@ class ClienteCreateView(CreateView):
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class PromoPorClienteCreateView(CreateView):
-    template_name = 'Agua/forms/promo_x_cliente.html'
+    template_name = 'base/forms/promo_x_cliente.html'
     form_class = forms.AddPromoPorClienteForm
 
     def get_initial(self):
+        fecha_actual = timezone.now().date()
         cliente_id = self.kwargs['id']
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
-        return {'cliente': cliente}
+        un_año_default = ( fecha_actual + relativedelta(years=1)).isoformat()
+        un_mes_default = ( fecha_actual + relativedelta(months=1)).isoformat()
+        return {'cliente': cliente, 'fin_promo': un_año_default, 'fecha_pago_promo': un_mes_default}
 
     def form_valid(self, form):
         promo_id = form.cleaned_data['promo'].id
