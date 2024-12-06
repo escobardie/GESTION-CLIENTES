@@ -5,110 +5,106 @@
 <main id="main" class="main">
 
     <div class="pagetitle">
-      <h1>Formulario</h1>
-      <nav>
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
-          <li class="breadcrumb-item">Ventas</li>
-          <li class="breadcrumb-item">Nueva Venta</li>
-        </ol>
-      </nav>
+        <h1>Formulario</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                <li class="breadcrumb-item">Ventas</li>
+                <li class="breadcrumb-item">Nueva Venta</li>
+            </ol>
+        </nav>
     </div><!-- End Page Title -->
 
     <section class="section">
-      <div class="row">
-        <div class="col-lg-6">
+        <div class="row">
+            <div class="col-lg-6">
 
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Formulario Nueva Venta</h5>
-              <form method="post" id="venta-form">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <h3>Productos</h3>
-            
-                <table id="productos-table" class="table">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Descuento</th>
-                            <th>Precio Unitario</th>
-                            <th>Total</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Aquí se agregarán las filas dinámicas -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" class="text-end"><strong>Suma Total:</strong></td>
-                            <td id="suma-total" class="text-end">0.00</td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            
-                <!-- Plantilla oculta para una nueva fila -->
-                <template id="producto-template">
-                    <tr>
-                        <td>
-                            <select name="producto" class="form-control producto-select">
-                                {% for producto in productos %}
-                                    <option value="{{ producto.id }}">{{ producto.nombre_producto }}</option>
-                                {% endfor %}
-                            </select>
-                        </td>
-                        <td><input type="number" name="cantidad" class="form-control cantidad-input" value="0" min="1"></td>
-                        <td><input type="number" name="descuento" class="form-control descuento-input" value="0" min="0" step="0.01"></td>
-                        <td><input type="number" name="precio_unidad" class="form-control precio-input" value="0" min="0" step="0.01" readonly></td>
-                        <td class="total-cell">0.00</td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-remove">Quitar</button>
-                        </td>
-                    </tr>
-                </template>
-                
-                
-                
-            
-                <button type="button" id="btn-add" class="btn btn-primary">Agregar Producto</button>
-                <button type="submit" class="btn btn-success">Guardar Venta</button>
-            </form>
-                       
-            
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Formulario Nueva Venta</h5>
+                        <form method="post" id="venta-form">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <h3>Productos</h3>
+
+                            <table id="productos-table" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Cantidad</th>
+                                        <th>Descuento</th>
+                                        <th>Precio Unitario</th>
+                                        <th>Total</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Aquí se agregarán las filas dinámicas -->
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-end"><strong>Suma Total:</strong></td>
+                                        <td id="suma-total" class="text-end">0.00</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                            <!-- Plantilla oculta para una nueva fila -->
+                            <template id="producto-template">
+                                <tr>
+                                    <td>
+                                        <select name="producto" class="form-control producto-select">
+                                            {% for producto in productos %}
+                                                <option value="{{ producto.id }}">{{ producto.nombre_producto }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td><input type="number" name="cantidad" class="form-control cantidad-input" value="0" min="1"></td>
+                                    <td><input type="number" name="descuento" class="form-control descuento-input" value="0" min="0" step="0.01"></td>
+                                    <td><input type="number" name="precio_unidad" class="form-control precio-input" value="0" min="0" step="0.01" readonly></td>
+                                    <td class="total-cell">0.00</td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger btn-remove">Quitar</button>
+                                    </td>
+                                </tr>
+                            </template>
+
+                            <button type="button" id="btn-add" class="btn btn-primary">Agregar Producto</button>
+                            <button type="submit" class="btn btn-success">Guardar Venta</button>
+                        </form>
+
+                    </div>
+                </div>
+
             </div>
+
         </div>
+    </section>
 
-      </div>
-
-      
-    </div>
-  </section>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const productosTableBody = document.querySelector('#productos-table tbody');
         const addButton = document.getElementById('btn-add');
         const template = document.getElementById('producto-template');
         const sumaTotalElement = document.getElementById('suma-total');
-    
+
         // Lista de precios cargados desde el backend
         const productosPrecios = JSON.parse(document.getElementById('productos-precios').textContent);
-    
+
         // Función para agregar una nueva fila
         addButton.addEventListener('click', function () {
             if (!template || !template.content) {
                 console.error('El template no está definido o no tiene contenido.');
                 return;
             }
-        
+
             const newRow = template.content.cloneNode(true).firstElementChild;
             if (!newRow) {
                 console.error('No se pudo clonar correctamente la fila del template.');
                 return;
             }
-        
+
             // Configurar el <select> para que no tenga seleccionado ningún producto
             const productoSelect = newRow.querySelector('.producto-select');
             if (productoSelect) {
@@ -119,22 +115,22 @@
                 emptyOption.disabled = true; // Evitar que sea seleccionable después
                 productoSelect.insertBefore(emptyOption, productoSelect.firstChild);
             }
-        
+
             configurarEventosFila(newRow); // Configurar los eventos de la fila
             productosTableBody.appendChild(newRow); // Agregar la fila al DOM
         });
-        
-    
+
+
         // Configurar los eventos para una fila
         function configurarEventosFila(row) {
             const productoSelect = row.querySelector('.producto-select');
             const precioInput = row.querySelector('.precio-input');
-    
+
             if (!productoSelect || !precioInput) {
                 console.error('No se encontraron los elementos necesarios en la fila:', row);
                 return;
             }
-    
+
             // Actualizar precio unitario al cambiar el producto seleccionado
             productoSelect.addEventListener('change', function () {
                 const productoId = productoSelect.value;
@@ -143,8 +139,8 @@
                 actualizarTotal(row);
                 actualizarSumaTotal();
             });
-            
-    
+
+
             // Actualizar total al cambiar cantidad, precio o descuento
             row.querySelectorAll('.cantidad-input, .precio-input, .descuento-input').forEach(input => {
                 input.addEventListener('input', function () {
@@ -152,7 +148,7 @@
                     actualizarSumaTotal();
                 });
             });
-    
+
             // Configurar el botón "Quitar"
             const removeButton = row.querySelector('.btn-remove');
             if (removeButton) {
@@ -162,47 +158,46 @@
                 });
             }
         }
-    
+
         // Calcular y actualizar el total dinámico de una fila
         function actualizarTotal(row) {
             const cantidadInput = row.querySelector('.cantidad-input');
             const precioInput = row.querySelector('.precio-input');
             const descuentoInput = row.querySelector('.descuento-input');
             const totalCell = row.querySelector('.total-cell');
-    
+
             // Validar que los elementos existen antes de usarlos
             if (!cantidadInput || !precioInput || !descuentoInput || !totalCell) {
                 console.error('Faltan elementos para calcular el total en la fila:', row);
                 return;
             }
-    
+
             const cantidad = parseFloat(cantidadInput.value) || 0;
             const precio = parseFloat(precioInput.value) || 0;
             const descuento = parseFloat(descuentoInput.value) || 0;
-    
+
             // Calcular el total
             const total = (cantidad * precio) - descuento;
-    
+
             // Mostrar el total con 2 decimales
             totalCell.textContent = total.toFixed(2);
         }
-    
+
         // Calcular y actualizar la suma total de todos los productos
         function actualizarSumaTotal() {
             let sumaTotal = 0;
             productosTableBody.querySelectorAll('.total-cell').forEach(cell => {
                 sumaTotal += parseFloat(cell.textContent) || 0;
             });
-    
+
             sumaTotalElement.textContent = sumaTotal.toFixed(2);
         }
-    
+
         // Configurar los eventos en las filas ya existentes (si hay alguna precargada)
         productosTableBody.querySelectorAll('tr').forEach(configurarEventosFila);
     });
-    
-    
 </script>
+
 <script id="productos-precios" type="application/json">
     {
         {% for producto in productos %}
