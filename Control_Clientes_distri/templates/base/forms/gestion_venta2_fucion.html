@@ -104,12 +104,15 @@
                     const cantidad = parseInt(item.querySelector('[id$="cantidad"]').value) || 0;
                     const descuento = parseFloat(item.querySelector('[id$="descuento"]').value) || 0;
                     const precioUnidad = parseFloat(item.querySelector('[id$="precio_unidad_venta"]').value) || 0;
+                    const valor_unidad_venta = parseFloat(item.querySelector('[id$="producto"]').value) || 0;
 
                     const precioConDescuento = precioUnidad - (precioUnidad * (descuento / 100));
                     const totalProducto = precioConDescuento * cantidad;
 
                     // Actualizar el costo total del producto
                     item.querySelector('[id$="precio_total_venta"]').value = totalProducto.toFixed(2);
+
+                    item.querySelector('[id$="precio_unidad_venta"]').value = valor_unidad_venta.toFixed(2);
 
                     totalVenta += totalProducto;
                 });
@@ -130,16 +133,20 @@
                                 <label for="id_form-${index}-producto">Producto:</label>
                                 <select name="form-${index}-producto" class="form-control" id="id_form-${index}-producto">
                                     <option value="">Seleccione un producto</option>
-                                    {% for option in form.empty_form.fields.producto.choices %}
-                                        <option value="{{ option.0 }}">{{ option.1 }}</option>
+                                    {% for producto in productos %}
+                                        <option  value="{{ producto.id }}" precio="{{ producto.precio_producto }}"> {{ producto.nombre_producto }} - {{ producto.precio_producto }}</option>
                                     {% endfor %}
+                                    {% comment %} {% for option in form.empty_form.fields.producto.choices %}
+                                        <option value="{{ option.0 }}">{{ option.1 }}</option>
+                                    {% endfor %} {% endcomment %}
+
                                 </select>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="id_form-${index}-cantidad">Cantidad:</label>
-                                <input type="number" name="form-${index}-cantidad" id="id_form-${index}-cantidad" class="form-control" min="0" required>
+                                <input type="number" name="form-${index}-cantidad" id="id_form-${index}-cantidad" class="form-control" value="1" min="0" required>
                             </div>
                         </div>
                         <div class="col-md-3">

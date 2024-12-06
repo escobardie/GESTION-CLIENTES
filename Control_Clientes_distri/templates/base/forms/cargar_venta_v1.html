@@ -1,0 +1,138 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block nav-ventas %}
+<li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
+      <i class="bi bi-bar-chart"></i><span>Ventas</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="charts-nav" class="nav-content collapse show" data-bs-parent="#sidebar-nav">
+      <li>
+        <a href="{% url 'crear_venta_producto' %}" class="active">
+          <i class="bi bi-circle"></i><span>Nueva Venta</span>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'listar_ventas' %}">
+          <i class="bi bi-circle"></i><span>Ventas Realizadas</span>
+        </a>
+      </li>
+    </ul>
+  </li><!-- End Ventas Nav -->
+{% endblock nav-ventas %}
+
+
+{% block contenedor %}
+<main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Formulario</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item">Ventas</li>
+          <li class="breadcrumb-item">Nueva Venta</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section">
+        <div class="row">
+            <div class="col-lg-6">
+
+                <div class="card">
+                    <div class="card-body">
+                    <h5 class="card-title">Formulario Nueva Venta</h5>
+                        <!-- Formulario principal -->
+                    <form method="post" id="ventaForm">
+                        {% csrf_token %}
+                        
+                        <!-- Lista de Productos Disponibles -->
+                        <h2>Productos Disponibles</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Seleccionar</th>
+                                    <th>Cantidad</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                    {% for producto in productos %}
+                                    <tr>
+                                        <td>{{ producto.id }}</td>
+                                        <td>{{ producto.nombre_producto }}</td>
+                                        <td>{{ producto.precio_producto }}</td>
+                                        <td>{{ producto.stock }}</td>
+                                        <td>
+                                            <!-- Checkbox para seleccionar el producto -->
+                                            <input type="checkbox" name="producto_seleccionado_{{ producto.id }}" value="{{ producto.id }}">
+                                        </td>
+                                        <td>
+                                            <!-- Cantidad para el producto seleccionado -->
+                                            <input type="number" name="cantidad_{{ producto.id }}" min="1" max="{{ producto.stock }}" value="1" disabled>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                        </table>
+
+                                <!-- Información adicional para la venta -->
+                                <h2>Detalles de la Venta</h2>
+                                <label for="nota_venta">Nota de Venta:</label>
+                                <input type="text" name="nota_venta" id="nota_venta" placeholder="Venta a No Cliente">
+
+                                <label for="metodo_pago">Método de Pago:</label>
+                                <select name="metodo_pago" id="metodo_pago" required>
+                                    <option value="Efectivo">Efectivo</option>
+                                    <option value="Tarjeta">Tarjeta</option>
+                                    <option value="Transferencia">Transferencia</option>
+                                </select>
+
+                                <label for="precio_total_todas_venta">Total de la Venta:</label>
+                                <input type="text" name="precio_total_todas_venta" id="precio_total_todas_venta" readonly>
+
+                                <label for="descontar_producto">Descontar del Stock:</label>
+                                <input type="checkbox" name="descontar_producto" id="descontar_producto" value="1">
+
+                                <!-- Botón para enviar el formulario -->
+                                <button type="submit">Registrar Venta</button>
+                    </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    
+<script>
+    // Lógica para habilitar/deshabilitar inputs de cantidad según el checkbox
+    document.querySelectorAll('input[type="checkbox"][name^="producto_seleccionado_"]').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const cantidadInput = this.closest('tr').querySelector('input[type="number"]');
+            cantidadInput.disabled = !this.checked;
+        });
+    });
+
+    // Lógica para calcular el precio total dinámicamente
+    document.querySelectorAll('input[type="number"][name^="cantidad_"]').forEach(input => {
+        input.addEventListener('input', calculateTotal);
+    });
+
+    function calculateTotal() {
+        let total = 0;
+        document.querySelectorAll('input[type="checkbox"][name^="producto_seleccionado_"]:checked').forEach(checkbox => {
+            const row = checkbox.closest('tr');
+            const cantidad = parseInt(row.querySelector('input[type="number"]').value || 0);
+            const precio = parseFloat(row.querySelector('td:nth-child(3)').textContent);
+            total += cantidad * precio;
+        });
+        document.getElementById('precio_total_todas_venta').value = total.toFixed(2);
+    }
+</script>
+</main><!-- End #main -->
+{% endblock contenedor %}

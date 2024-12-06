@@ -1,5 +1,9 @@
 from django import forms
 from apps.ventas.models import Venta, VentaProducto
+from django.forms.models import inlineformset_factory
+from django.forms import BaseInlineFormSet
+
+
 
 
 class VentaProductoForm(forms.ModelForm):
@@ -25,3 +29,25 @@ class VentaForm(forms.ModelForm):
             'metodo_pago': forms.Select(attrs={'class': 'form-control', 'placeholder': 'Metodo Pago'}),
             'nota': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Nota'}),
         }
+    def clean(self):
+        cleaned_data = super().clean()
+        # Validaciones adicionales si son necesarias
+        return cleaned_data
+
+class BaseVentaProductoFormSet(BaseInlineFormSet):
+    def clean(self):
+        super().clean()
+        for form in self.forms:
+            if form.cleaned_data and not form.cleaned_data.get('DELETE', False):
+                cantidad = form.cleaned_data.get('cantidad', 0)
+                if cantidad <= 0:
+                    raise forms.ValidationError("La cantidad debe ser mayor a 0.")
+
+VentaProductoFormSet = inlineformset_factory(
+    Venta,
+    VentaProducto,
+    fields=['producto', 'cantidad', 'descuento', 'precio_unidad_venta'],
+    extra=1,
+    can_delete=True,
+    formset=BaseVentaProductoFormSet  # Asocia el formset personalizado aquí
+)
