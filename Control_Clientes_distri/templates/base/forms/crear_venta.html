@@ -56,7 +56,7 @@
                                     <td>
                                         <select name="producto" class="form-control producto-select">
                                             {% for producto in productos %}
-                                                <option value="{{ producto.id }}">{{ producto.nombre_producto }}</option>
+                                                <option value="{{ producto.id }}">{{ producto.nombre_producto }}-{{ producto.stock }}</option>
                                             {% endfor %}
                                         </select>
                                     </td>
@@ -88,123 +88,146 @@
         const addButton = document.getElementById('btn-add');
         const template = document.getElementById('producto-template');
         const sumaTotalElement = document.getElementById('suma-total');
-
-        // Lista de precios cargados desde el backend
-        const productosPrecios = JSON.parse(document.getElementById('productos-precios').textContent);
-
-        // Función para agregar una nueva fila
-        addButton.addEventListener('click', function () {
-            if (!template || !template.content) {
-                console.error('El template no está definido o no tiene contenido.');
-                return;
-            }
-
+        const ventaForm = document.getElementById('venta-form'); // El formulario principal
+    
+        // Lista de precios y stock cargados desde el backend
+        const productosData = JSON.parse(document.getElementById('productos-precios').textContent);
+    
+        // Asegurarse de que el <tbody> no esté vacío
+        if (productosTableBody.children.length === 0) {
+            agregarFila(); // Agregar una fila inicial si el <tbody> está vacío
+        }
+    
+        function agregarFila() {
             const newRow = template.content.cloneNode(true).firstElementChild;
-            if (!newRow) {
-                console.error('No se pudo clonar correctamente la fila del template.');
-                return;
-            }
-
-            // Configurar el <select> para que no tenga seleccionado ningún producto
+    
+            // Configurar el <select> inicial
             const productoSelect = newRow.querySelector('.producto-select');
             if (productoSelect) {
                 const emptyOption = document.createElement('option');
                 emptyOption.value = '';
                 emptyOption.textContent = 'Seleccione un producto';
-                emptyOption.selected = true; // Seleccionar esta opción por defecto
-                emptyOption.disabled = true; // Evitar que sea seleccionable después
+                emptyOption.selected = true;
+                emptyOption.disabled = true;
                 productoSelect.insertBefore(emptyOption, productoSelect.firstChild);
             }
-
-            configurarEventosFila(newRow); // Configurar los eventos de la fila
-            productosTableBody.appendChild(newRow); // Agregar la fila al DOM
-        });
-
-
-        // Configurar los eventos para una fila
+    
+            configurarEventosFila(newRow);
+            productosTableBody.appendChild(newRow);
+        }
+    
         function configurarEventosFila(row) {
             const productoSelect = row.querySelector('.producto-select');
             const precioInput = row.querySelector('.precio-input');
-
-            if (!productoSelect || !precioInput) {
-                console.error('No se encontraron los elementos necesarios en la fila:', row);
-                return;
-            }
-
-            // Actualizar precio unitario al cambiar el producto seleccionado
+    
             productoSelect.addEventListener('change', function () {
                 const productoId = productoSelect.value;
-                const precio = parseFloat(productosPrecios[productoId].replace(',', '.')) || 0; // Convertir a formato válido
-                precioInput.value = precio.toFixed(2); // Asegurar dos decimales
+    
+                if (isProductoDuplicado(productoId, row)) {
+                    alert('Este producto ya ha sido seleccionado. Por favor, elija otro.');
+                    productoSelect.value = ''; // Reiniciar el valor del select
+                    return;
+                }
+    
+                const productoData = productosData[productoId];
+                if (productoData) {
+                    const precio = parseFloat(productoData.precio.replace(',', '.')) || 0;
+                    precioInput.value = precio.toFixed(2);
+                }
+    
                 actualizarTotal(row);
                 actualizarSumaTotal();
             });
-
-
-            // Actualizar total al cambiar cantidad, precio o descuento
+    
             row.querySelectorAll('.cantidad-input, .precio-input, .descuento-input').forEach(input => {
                 input.addEventListener('input', function () {
                     actualizarTotal(row);
                     actualizarSumaTotal();
                 });
             });
-
-            // Configurar el botón "Quitar"
-            const removeButton = row.querySelector('.btn-remove');
-            if (removeButton) {
-                removeButton.addEventListener('click', function () {
-                    row.remove();
-                    actualizarSumaTotal();
-                });
-            }
+    
+            row.querySelector('.btn-remove').addEventListener('click', function () {
+                row.remove();
+                actualizarSumaTotal();
+    
+                if (productosTableBody.children.length === 0) {
+                    agregarFila(); // Agregar una fila inicial si el <tbody> queda vacío
+                }
+            });
         }
-
-        // Calcular y actualizar el total dinámico de una fila
+    
+        function isProductoDuplicado(productoId, currentRow) {
+            return Array.from(productosTableBody.querySelectorAll('.producto-select')).some(select => {
+                return select !== currentRow.querySelector('.producto-select') && select.value === productoId;
+            });
+        }
+    
         function actualizarTotal(row) {
             const cantidadInput = row.querySelector('.cantidad-input');
             const precioInput = row.querySelector('.precio-input');
             const descuentoInput = row.querySelector('.descuento-input');
             const totalCell = row.querySelector('.total-cell');
-
-            // Validar que los elementos existen antes de usarlos
-            if (!cantidadInput || !precioInput || !descuentoInput || !totalCell) {
-                console.error('Faltan elementos para calcular el total en la fila:', row);
-                return;
-            }
-
+    
             const cantidad = parseFloat(cantidadInput.value) || 0;
             const precio = parseFloat(precioInput.value) || 0;
             const descuento = parseFloat(descuentoInput.value) || 0;
-
-            // Calcular el total
-            const total = (cantidad * precio) - descuento;
-
-            // Mostrar el total con 2 decimales
-            totalCell.textContent = total.toFixed(2);
+    
+            totalCell.textContent = ((cantidad * precio) - descuento).toFixed(2);
         }
-
-        // Calcular y actualizar la suma total de todos los productos
+    
         function actualizarSumaTotal() {
             let sumaTotal = 0;
             productosTableBody.querySelectorAll('.total-cell').forEach(cell => {
                 sumaTotal += parseFloat(cell.textContent) || 0;
             });
-
             sumaTotalElement.textContent = sumaTotal.toFixed(2);
         }
-
-        // Configurar los eventos en las filas ya existentes (si hay alguna precargada)
-        productosTableBody.querySelectorAll('tr').forEach(configurarEventosFila);
+    
+        ventaForm.addEventListener('submit', function (event) {
+            let isValid = true;
+    
+            productosTableBody.querySelectorAll('tr').forEach(row => {
+                const productoSelect = row.querySelector('.producto-select');
+                const cantidadInput = row.querySelector('.cantidad-input');
+    
+                if (!productoSelect.value) {
+                    alert('Seleccione un producto.');
+                    isValid = false;
+                    return;
+                }
+    
+                const cantidad = parseInt(cantidadInput.value, 10) || 0;
+                const productoData = productosData[productoSelect.value];
+                if (cantidad <= 0 || cantidad > productoData.stock) {
+                    // alert('La cantidad es inválida o excede el stock.');
+                    alert(`La cantidad ingresada para el producto "${productoSelect.options[productoSelect.selectedIndex].text}" supera el stock disponible (${productoData.stock}).`);
+                    isValid = false;
+                }
+            });
+    
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    
+        addButton.addEventListener('click', agregarFila);
     });
+    
+    
+        
 </script>
 
 <script id="productos-precios" type="application/json">
     {
         {% for producto in productos %}
-            "{{ producto.id }}": "{{ producto.precio_producto }}"{% if not forloop.last %},{% endif %}
+            "{{ producto.id }}": {
+                "precio": "{{ producto.precio_producto }}",
+                "stock": "{{ producto.stock }}"
+            }{% if not forloop.last %},{% endif %}
         {% endfor %}
     }
 </script>
+
 
 </main><!-- End #main -->
 

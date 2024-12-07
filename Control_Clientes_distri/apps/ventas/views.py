@@ -10,6 +10,7 @@ from apps.productos.models import Producto
 from .forms import VentaForm, VentaProductoFormSet
 from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect
+from django.http import JsonResponse
 
 
 def usuario_es_admin(user):
@@ -129,6 +130,17 @@ class CrearVentaView(CreateView):
         context = super().get_context_data(**kwargs)
         context['productos'] = Producto.objects.all()  # Enviar productos al template
         return context
+    
+    def get_productos_data(request):
+        productos = Producto.objects.all()
+        data = {
+            producto.id: {
+                "precio": str(producto.precio_producto),
+                "stock": producto.stock  # Asegúrate de tener este campo en tu modelo
+            }
+            for producto in productos
+        }
+        return JsonResponse(data)
 
     def form_valid(self, form):
         # Guardar la venta principal
