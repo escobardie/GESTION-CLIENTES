@@ -16,6 +16,8 @@
     </div><!-- End Page Title -->
 
     <section class="section">
+        <!-- Contenedor para las alertas 
+        <div id="alert-container"></div>-->
         <div class="row">
             <div class="col-lg-6">
 
@@ -26,6 +28,8 @@
                             {% csrf_token %}
                             {{ form.as_p }}
                             <h3>Productos</h3>
+                            <!-- Contenedor para las alertas -->
+                            <div id="alert-container"></div>
 
                             <table id="productos-table" class="table">
                                 <thead>
@@ -82,6 +86,8 @@
         </div>
     </section>
 
+    
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const productosTableBody = document.querySelector('#productos-table tbody');
@@ -89,18 +95,18 @@
         const template = document.getElementById('producto-template');
         const sumaTotalElement = document.getElementById('suma-total');
         const ventaForm = document.getElementById('venta-form'); // El formulario principal
-    
+
         // Lista de precios y stock cargados desde el backend
         const productosData = JSON.parse(document.getElementById('productos-precios').textContent);
-    
+
         // Asegurarse de que el <tbody> no esté vacío
         if (productosTableBody.children.length === 0) {
             agregarFila(); // Agregar una fila inicial si el <tbody> está vacío
         }
-    
+
         function agregarFila() {
             const newRow = template.content.cloneNode(true).firstElementChild;
-    
+
             // Configurar el <select> inicial
             const productoSelect = newRow.querySelector('.producto-select');
             if (productoSelect) {
@@ -111,70 +117,70 @@
                 emptyOption.disabled = true;
                 productoSelect.insertBefore(emptyOption, productoSelect.firstChild);
             }
-    
+
             configurarEventosFila(newRow);
             productosTableBody.appendChild(newRow);
         }
-    
+
         function configurarEventosFila(row) {
             const productoSelect = row.querySelector('.producto-select');
             const precioInput = row.querySelector('.precio-input');
-    
+
             productoSelect.addEventListener('change', function () {
                 const productoId = productoSelect.value;
-    
+
                 if (isProductoDuplicado(productoId, row)) {
-                    alert('Este producto ya ha sido seleccionado. Por favor, elija otro.');
+                    mostrarAlerta('Este producto ya ha sido seleccionado. Por favor, elija otro.', 'danger');
                     productoSelect.value = ''; // Reiniciar el valor del select
                     return;
                 }
-    
+
                 const productoData = productosData[productoId];
                 if (productoData) {
                     const precio = parseFloat(productoData.precio.replace(',', '.')) || 0;
                     precioInput.value = precio.toFixed(2);
                 }
-    
+
                 actualizarTotal(row);
                 actualizarSumaTotal();
             });
-    
+
             row.querySelectorAll('.cantidad-input, .precio-input, .descuento-input').forEach(input => {
                 input.addEventListener('input', function () {
                     actualizarTotal(row);
                     actualizarSumaTotal();
                 });
             });
-    
+
             row.querySelector('.btn-remove').addEventListener('click', function () {
                 row.remove();
                 actualizarSumaTotal();
-    
+
                 if (productosTableBody.children.length === 0) {
                     agregarFila(); // Agregar una fila inicial si el <tbody> queda vacío
                 }
             });
         }
-    
+
         function isProductoDuplicado(productoId, currentRow) {
             return Array.from(productosTableBody.querySelectorAll('.producto-select')).some(select => {
                 return select !== currentRow.querySelector('.producto-select') && select.value === productoId;
             });
         }
-    
+
         function actualizarTotal(row) {
             const cantidadInput = row.querySelector('.cantidad-input');
             const precioInput = row.querySelector('.precio-input');
             const descuentoInput = row.querySelector('.descuento-input');
             const totalCell = row.querySelector('.total-cell');
-    
+
             const cantidad = parseFloat(cantidadInput.value) || 0;
             const precio = parseFloat(precioInput.value) || 0;
             const descuento = parseFloat(descuentoInput.value) || 0;
-    
+
             totalCell.textContent = ((cantidad * precio) - descuento).toFixed(2);
         }
-    
+
         function actualizarSumaTotal() {
             let sumaTotal = 0;
             productosTableBody.querySelectorAll('.total-cell').forEach(cell => {
@@ -182,39 +188,52 @@
             });
             sumaTotalElement.textContent = sumaTotal.toFixed(2);
         }
-    
+
+        // Función para mostrar alertas personalizadas
+        function mostrarAlerta(mensaje, tipo) {
+            const alertContainer = document.getElementById('alert-container');
+            const alerta = document.createElement('div');
+            alerta.classList.add('alert', `alert-${tipo}`, 'bg-danger', 'text-light', 'border-0', 'alert-dismissible', 'fade', 'show');
+            alerta.setAttribute('role', 'alert');
+            alerta.innerHTML = `
+                ${mensaje}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            alertContainer.appendChild(alerta);
+        }
+
+        // Validación al enviar el formulario
         ventaForm.addEventListener('submit', function (event) {
             let isValid = true;
-    
+
+            // Limpiar alertas previas
+            document.getElementById('alert-container').innerHTML = '';
+
             productosTableBody.querySelectorAll('tr').forEach(row => {
                 const productoSelect = row.querySelector('.producto-select');
                 const cantidadInput = row.querySelector('.cantidad-input');
-    
+
                 if (!productoSelect.value) {
-                    alert('Seleccione un producto.');
+                    mostrarAlerta('Seleccione un producto.', 'danger');
                     isValid = false;
                     return;
                 }
-    
+
                 const cantidad = parseInt(cantidadInput.value, 10) || 0;
                 const productoData = productosData[productoSelect.value];
                 if (cantidad <= 0 || cantidad > productoData.stock) {
-                    // alert('La cantidad es inválida o excede el stock.');
-                    alert(`La cantidad ingresada para el producto "${productoSelect.options[productoSelect.selectedIndex].text}" supera el stock disponible (${productoData.stock}).`);
+                    mostrarAlerta(`La cantidad ingresada para el producto "${productoSelect.options[productoSelect.selectedIndex].text}" supera el stock disponible (${productoData.stock}).`, 'danger');
                     isValid = false;
                 }
             });
-    
+
             if (!isValid) {
-                event.preventDefault();
+                event.preventDefault();  // Evitar el envío si hay errores
             }
         });
-    
+
         addButton.addEventListener('click', agregarFila);
     });
-    
-    
-        
 </script>
 
 <script id="productos-precios" type="application/json">
@@ -228,8 +247,6 @@
     }
 </script>
 
-
 </main><!-- End #main -->
-
 
 {% endblock contenedor %}
