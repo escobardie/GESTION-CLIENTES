@@ -52,13 +52,24 @@
               <form method="POST">
                     {% csrf_token %}
                     {% if promociones %}
-                    <div class="form-group">
+                    {% comment %} <div class="form-group"> ## ORIGINAL
                         <label for="promocion">Seleccionar Promoción Activa:</label>
                         <select name="promocion" id="promocion" class="form-control">
                             <option value="">--Selecciona una Promoción--</option>
                             {% for promo in promociones %}
                                 <option value="{{ promo.promo__valor_promo }}" data-valor="{{ promo.promo__valor_promo }}" data-id="{{ promo.promo__id }}">
-                                    {{ promo.promo__nombre_promo }} - ${{ promo.promo__valor_promo }}
+                                    {{ promo.promo__nombre_promo }} - ${{ promo.promo__valor_promo }} - {{promo.estado_vencimiento}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div> {% endcomment %}
+                    <div class="form-group">
+                        <label for="promocion">Seleccionar Promoción Activa:</label>
+                        <select name="promocion" id="promocion" class="form-control">
+                            <option value="">--Selecciona una Promoción--</option>
+                            {% for promo in promociones %}
+                                <option value="{{ promo.promo_valor }}" data-valor="{{ promo.promo_valor }}" data-id="{{ promo.promo_id }}">
+                                    {{ promo.promo_nombre }} - ${{ promo.promo_valor }} - {{ promo.estado_vencimiento }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -121,7 +132,7 @@
 
 
 
-
+{% comment %} 
 
 <!DOCTYPE html>
 <html lang="es">
@@ -190,4 +201,4 @@
         });
     </script>
 </body>
-</html>
+</html> {% endcomment %}

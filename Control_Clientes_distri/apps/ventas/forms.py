@@ -22,7 +22,7 @@ class VentaProductoForm(forms.ModelForm):
 class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = ['cliente', 'metodo_pago']
+        fields = ['metodo_pago','nota']
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
             'total_venta': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Total Venta'}),

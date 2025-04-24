@@ -10,7 +10,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
                 <li class="breadcrumb-item">Ventas</li>
-                <li class="breadcrumb-item">Nueva Venta</li>
+                <li class="breadcrumb-item">{{nombre_cliente}}</li>
             </ol>
         </nav>
     </div><!-- End Page Title -->
@@ -19,19 +19,22 @@
         <!-- Contenedor para las alertas 
         <div id="alert-container"></div>-->
         <div class="row">
+            <!-- <div class="col-lg-6"> -->
             <div class="col-lg-6">
+
 
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Formulario Nueva Venta</h5>
+                        <h5 class="card-title">Formulario Nueva Venta - {{nombre_cliente}}</h5>
                         <form method="post" id="venta-form">
-                            {% csrf_token %}
-                            {{ form.as_p }}
+                            {% comment %} {% csrf_token %}
+                            {{ form.as_p }} {% endcomment %}
                             <h3>Productos</h3>
                             <!-- Contenedor para las alertas -->
                             <div id="alert-container"></div>
 
-                            <table id="productos-table" class="table">
+                            <div class="table-responsive">
+                                <table id="productos-table" class="table">
                                 <thead>
                                     <tr>
                                         <th>Producto</th>
@@ -52,7 +55,8 @@
                                         <td></td>
                                     </tr>
                                 </tfoot>
-                            </table>
+                                </table>
+                            </div>
 
                             <!-- Plantilla oculta para una nueva fila -->
                             <template id="producto-template">
@@ -76,6 +80,8 @@
 
                             <button type="button" id="btn-add" class="btn btn-primary">Agregar Producto</button>
                             <button type="submit" class="btn btn-success">Guardar Venta</button>
+                            {% csrf_token %}
+                            {{ form.as_p }}
                         </form>
 
                     </div>

@@ -20,6 +20,12 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Detalle del Cliente</h5>
+                        {% if promo_vencida %}
+                            <div class="alert alert-danger bg-danger text-light border-0 alert-dismissible fade show" role="alert">
+                                ¡Atención! La fecha de cobro para este cliente ha vencido.
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endif %}
                         <!-- Default Tabs -->
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -335,7 +341,7 @@
         const hiddenPromoId = document.getElementById('promo_id');
         const servisVisitaButton = document.getElementById('servis-visita-btn');
         
-        function updateBidones() {
+        /*function updateBidones() { // ORIGINAL
             const selectedOption = selectPromocion.options[selectPromocion.selectedIndex];
             const bidonesDisponibles = selectedOption.getAttribute('data-bidones-disponibles') || 0;
             const bidonesAcumulados = selectedOption.getAttribute('data-bidones-acumulados') || 0;
@@ -356,7 +362,41 @@
             } else {
                 servisVisitaButton.disabled = true;
             }
+        }*/
+        function updateBidones() {
+            const selectedOption = selectPromocion.options[selectPromocion.selectedIndex];
+            const bidonesDisponibles = selectedOption.getAttribute('data-bidones-disponibles') || 0;
+            const bidonesAcumulados = selectedOption.getAttribute('data-bidones-acumulados') || 0;
+            const promoValor = selectedOption.getAttribute('data-promo-valor') || 0;
+            const promoFechaPago = selectedOption.getAttribute('data-promo-fecha-pago') || 0;
+        
+            idBidonesDisponibles.textContent = bidonesDisponibles;
+            idBidonesAcumulados.textContent = bidonesAcumulados;
+            idPromoValor.textContent = promoValor;
+            idPromoFechaPago.textContent = promoFechaPago;
+        
+            hiddenPromoId.value = selectedOption.getAttribute('data-id');
+        
+            if (selectedOption.value) {
+                // Obtener la fecha de hoy en formato YYYY-MM-DD
+                const today = new Date().toISOString().split('T')[0];
+        
+                // Si la fecha está vencida, deshabilitar el botón
+                if (promoFechaPago && promoFechaPago < today) {
+                    servisVisitaButton.disabled = true;
+                    servisVisitaButton.removeAttribute('onclick');
+                    return;
+                }
+        
+                // Habilitar el botón si todo está OK
+                servisVisitaButton.disabled = false;
+                servisVisitaButton.setAttribute('onclick', `location.href='{% url 'servis_visita' pk=cliente.id %}?id_promo=${hiddenPromoId.value}'`);
+            } else {
+                servisVisitaButton.disabled = true;
+                servisVisitaButton.removeAttribute('onclick');
+            }
         }
+        
 
         selectPromocion.addEventListener('change', updateBidones);
         updateBidones(); // Llama a la función para establecer el valor inicial

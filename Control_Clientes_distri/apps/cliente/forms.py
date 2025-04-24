@@ -58,4 +58,5 @@ class ServisVisitaClienteForm(forms.ModelForm):
         # Deshabilitar el campo cliente para que no sea editable
         self.fields['cliente'].disabled = True
         self.fields['codigo_dispenser'].disabled = True
+        self.fields['nota'].disabled = True
         self.fields['promo'].disabled = True

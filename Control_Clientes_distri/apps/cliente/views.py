@@ -29,13 +29,23 @@ class ListarVencimientoView(ListView):
     def get_queryset(self):
         return models.PromoPorCliente.objects.filter(estado=True).order_by('fecha_pago_promo')
     
+    
+    def get_promos_con_fecha_vencida(self):
+        fecha_actual = timezone.now().date()
+        return self.get_queryset().filter(fecha_pago_promo__lt=fecha_actual)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        queryset = self.get_queryset()
-        fecha_actual = timezone.now().date()
-        promo_con_fecha_vencida = queryset.filter(fecha_pago_promo__lt=fecha_actual)
-        context['promos_con_fecha_vencida'] = promo_con_fecha_vencida
+        context['promos_con_fecha_vencida'] = self.get_promos_con_fecha_vencida()
         return context
+    
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     queryset = self.get_queryset()
+    #     fecha_actual = timezone.now().date()
+    #     promo_con_fecha_vencida = queryset.filter(fecha_pago_promo__lt=fecha_actual)
+    #     context['promos_con_fecha_vencida'] = promo_con_fecha_vencida
+    #     return context
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class ListarClientesView(ListView):
@@ -59,6 +69,8 @@ class MenuClienteDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cliente = self.get_object()
+        fecha_actual = timezone.now().date()
+        estado_promo_vencida = False
         if cliente:
             promociones_del_cliente = models.PromoPorCliente.objects.filter(
                 cliente=cliente,
@@ -74,9 +86,12 @@ class MenuClienteDetailView(DetailView):
             else:
                 fecha_visita_clte = "Sin visitas"
 
-            ultima_pago = Pagos.objects.filter(cliente=cliente, venta=None).order_by('-fecha_pago').first()
+            # ultima_pago = Pagos.objects.filter(cliente=cliente, venta=None).order_by('-fecha_pago').first() # ORIOGINAL
+            ultima_pago = models.PromoPorCliente.objects.filter(cliente=cliente, estado=True).order_by('fecha_pago_promo').first()
             if ultima_pago:
-                fecha_pago_clte = ultima_pago.fecha_pago.date()
+                fecha_pago_clte = ultima_pago.fecha_pago_promo
+                if fecha_pago_clte < fecha_actual:
+                    estado_promo_vencida = True
             else:
                 fecha_pago_clte = "Sin Pagos Realizados"
             
@@ -92,6 +107,7 @@ class MenuClienteDetailView(DetailView):
             context['fecha_pago'] = fecha_pago_clte
             context['fecha_visita'] = fecha_visita_clte
             context['promociones'] = promociones_del_cliente
+            context['promo_vencida'] = estado_promo_vencida
         return context
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
@@ -133,7 +149,7 @@ class PromoPorClienteCreateView(CreateView):
 
     def get_success_url(self):
         cliente_id = self.kwargs.get('id')
-        return reverse('menu_cliente', kwargs={'id': cliente_id})
+        return reverse('crear_pago_cliente', kwargs={'id': cliente_id})
 
 @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class ServisVisitaUpdateView(UpdateView):

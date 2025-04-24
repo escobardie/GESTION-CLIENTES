@@ -124,11 +124,26 @@ class CrearVentaView(CreateView):
     model = models.Venta
     form_class = VentaForm
     template_name = 'base/forms/crear_venta.html'
-    success_url = reverse_lazy('listar_ventas')  # Cambiar por la URL real
+    # success_url = reverse_lazy('listar_ventas')  # Cambiar por la URL real
+    
+    #################################
+    def get_cliente_data(self):
+        cliente_id = self.kwargs.get('id')
+        if cliente_id is not None:
+            return get_object_or_404(models.Cliente, id=cliente_id)
+        return None 
+
+    def get_success_url(self):
+        cliente_id = self.kwargs.get('id')
+        if cliente_id is not None:
+            return reverse('menu_cliente', kwargs={'id': cliente_id})
+        return reverse('listar_ventas')
+    #################################
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['productos'] = Producto.objects.all()  # Enviar productos al template
+        context['nombre_cliente'] = self.get_cliente_data()
         return context
     
     def get_productos_data(request):
@@ -141,30 +156,90 @@ class CrearVentaView(CreateView):
             for producto in productos
         }
         return JsonResponse(data)
-
+    
     def form_valid(self, form):
-        # Guardar la venta principal
+        cliente = self.get_cliente_data()
         self.object = form.save(commit=False)
+        self.object.cliente = cliente
         self.object.total_venta = 0
         self.object.save()
 
-        # Procesar productos desde POST
         productos_data = self.request.POST.getlist('producto')
         cantidades = self.request.POST.getlist('cantidad')
         descuentos = self.request.POST.getlist('descuento')
         precios = self.request.POST.getlist('precio_unidad')
 
-        for producto_id, cantidad, descuento, precio_unidad in zip(productos_data, cantidades, descuentos, precios):
-            if int(cantidad) > 0:  # Validar que la cantidad sea válida
+        nota_venta = self.request.POST.get('nota')
+        metodo_pago = self.request.POST.get('metodo_pago')
+
+        for producto_id, cantidad_str, descuento_str, precio_unidad_str in zip(productos_data, cantidades, descuentos, precios):
+            cantidad = int(cantidad_str)
+            descuento = float(descuento_str)
+            precio_unidad = float(precio_unidad_str)
+
+            if cantidad > 0:
+                # Buscar el producto y validar stock
+                producto = get_object_or_404(models.Producto, id=producto_id)
+                if cantidad > producto.stock:
+                    form.add_error(None, f"La cantidad para '{producto.nombre_producto}' excede el stock disponible ({producto.stock}).")
+                    return self.form_invalid(form)
+
+                # Crear el detalle de venta
                 venta_producto = models.VentaProducto.objects.create(
                     venta=self.object,
-                    producto_id=producto_id,
-                    cantidad=int(cantidad),
-                    descuento=float(descuento),
-                    precio_unidad_venta=float(precio_unidad),
-                    precio_total_venta=(float(precio_unidad) * int(cantidad)) - float(descuento),
+                    producto=producto,
+                    cantidad=cantidad,
+                    descuento=descuento,
+                    precio_unidad_venta=precio_unidad,
+                    precio_total_venta=(precio_unidad * cantidad) - descuento,
                 )
+
+                # Restar del stock
+                producto.stock -= cantidad
+                producto.save()
+
+                # Sumar al total de la venta
                 self.object.total_venta += venta_producto.precio_total_venta
 
-        self.object.save()  # Actualizar el total de la venta
+        self.object.save()
+
+        # 👉 Crear automáticamente el pago
+        Pagos.objects.create(
+            venta=self.object, 
+            cliente=cliente,
+            monto=self.object.total_venta,
+            metodo_pago=metodo_pago,
+            descripcion=nota_venta
+        )
+
         return super().form_valid(form)
+
+
+    # def form_valid(self, form):
+    #     cliente = self.get_cliente_data()
+    #     # Guardar la venta principal
+    #     self.object = form.save(commit=False)
+    #     self.object.cliente = cliente
+    #     self.object.total_venta = 0
+    #     self.object.save()
+
+    #     # Procesar productos desde POST
+    #     productos_data = self.request.POST.getlist('producto')
+    #     cantidades = self.request.POST.getlist('cantidad')
+    #     descuentos = self.request.POST.getlist('descuento')
+    #     precios = self.request.POST.getlist('precio_unidad')
+
+    #     for producto_id, cantidad, descuento, precio_unidad in zip(productos_data, cantidades, descuentos, precios):
+    #         if int(cantidad) > 0:  # Validar que la cantidad sea válida
+    #             venta_producto = models.VentaProducto.objects.create(
+    #                 venta=self.object,
+    #                 producto_id=producto_id,
+    #                 cantidad=int(cantidad),
+    #                 descuento=float(descuento),
+    #                 precio_unidad_venta=float(precio_unidad),
+    #                 precio_total_venta=(float(precio_unidad) * int(cantidad)) - float(descuento),
+    #             )
+    #             self.object.total_venta += venta_producto.precio_total_venta
+
+    #     self.object.save()  # Actualizar el total de la venta
+    #     return super().form_valid(form)
