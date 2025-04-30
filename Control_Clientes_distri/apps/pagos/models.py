@@ -2,11 +2,13 @@ from django.db import models
 from apps.cliente.models import Cliente # Importamos el modelo Cliente desde la app cliente
 from apps.ventas.models import Venta # Importamos el modelo Cliente desde la app cliente
 from apps.promociones.models import Promo
+from apps.usuarios.models import Usuario
 
 #################################
 ########## Modelo PAGO ##########
 #################################
 class Pagos(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pagos_cliente', verbose_name='Usuario Asociado', null=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente Asociada')
     venta = models.ForeignKey(Venta, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Venta Asociada')
     promo = models.ForeignKey(Promo, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Promocion Asociada')

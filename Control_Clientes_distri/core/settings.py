@@ -31,8 +31,9 @@ INSTALLED_APPS = [
     'apps.pagos',
     'apps.productos',
     'apps.promociones',
+    'apps.usuarios',
     'apps.ventas',
-    'apps.visitas',
+    'apps.visitas',    
 ]
 
 MIDDLEWARE = [
@@ -58,6 +59,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.usuarios.context_processors.datos_usuario', #hacemos que estos datos esten disponibles en todos las plantillas
             ],
         },
     },
@@ -131,3 +133,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 LOGIN_REDIRECT_URL = '/'
+
+
+AUTH_USER_MODEL = 'usuarios.Usuario'
+# LOGIN_URL = '/login/' ## USAR ESTE LUEGO, RECOMENDADO
+LOGIN_URL = '/login/'

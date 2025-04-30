@@ -22,6 +22,8 @@ SELECT * FROM cliente_registropago;
 
 
 SELECT * FROM visitas_visita;
+SELECT * FROM ventas_venta;
+
 
 SELECT @@global.time_zone, @@session.time_zone;
 SET GLOBAL time_zone = 'America/Argentina/Buenos_Aires';

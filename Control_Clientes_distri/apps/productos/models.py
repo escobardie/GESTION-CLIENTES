@@ -1,9 +1,11 @@
 from django.db import models
+from apps.usuarios.models import Usuario
 
 ###########################
 ##### Modelo PRODUCTO #####
 ###########################
 class Producto(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='productos', verbose_name='Usuario Asociado', null=True)
     nombre_producto = models.CharField(max_length=250, verbose_name='Nombre Producto')
     precio_producto = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio')
     alta_producto = models.DateField(auto_now_add=True, verbose_name='Fecha Alta Producto')

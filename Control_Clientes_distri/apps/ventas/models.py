@@ -1,12 +1,14 @@
 from django.db import models
 from apps.cliente.models import Cliente # Importamos el modelo Cliente desde la app cliente
 from apps.productos.models import Producto
+from apps.usuarios.models import Usuario
 
 
 ##########################
 ###### Modelo VENTA ######
 ##########################
 class Venta(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='ventas', verbose_name='Usuario Asociado', null=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente')
     fecha_venta = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Venta')
     total_venta = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name='Total Venta')
@@ -29,6 +31,7 @@ class Venta(models.Model):
 ##### Modelo VENTA PRODUCTO #####
 #################################
 class VentaProducto(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='ventas_producto', verbose_name='Usuario Asociado', null=True)
     fecha = models.DateTimeField(auto_now_add=True, verbose_name='Fecha Venta Producto')
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE, verbose_name='Venta')
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, verbose_name='Producto')

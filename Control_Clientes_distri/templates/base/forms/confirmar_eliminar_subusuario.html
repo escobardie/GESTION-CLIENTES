@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h2>Confirmar Eliminación</h2>
+  <p>¿Seguro que quieres eliminar al subusuario "{{ subusuario.username }}"?</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'listar_subusuarios' %}">Cancelar</a>
+  </form>
+{% endblock %}

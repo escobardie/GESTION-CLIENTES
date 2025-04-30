@@ -1,5 +1,6 @@
 from django.db import models
 from apps.promociones.models import Promo
+from apps.usuarios.models import Usuario
 
 
 
@@ -7,6 +8,7 @@ from apps.promociones.models import Promo
 ###### Modelo CLIENTE #####
 ###########################
 class Cliente(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='clientes', verbose_name='Usuario Asociado', null=True)
     nombre = models.CharField(max_length=150, verbose_name='Nombre')
     apellido = models.CharField(max_length=150, verbose_name='Apellido')
     telefono = models.CharField(max_length=15, verbose_name='Teléfono')
@@ -27,6 +29,7 @@ class Cliente(models.Model):
 # Modelo PROMOCION * CLTE  #
 ############################
 class PromoPorCliente(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='promos_clientes', verbose_name='Usuario Asociado', null=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Cliente', related_name='promociones')
     promo = models.ForeignKey(Promo, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Promoción')
     inicio_promo = models.DateTimeField(auto_now_add=True, verbose_name='Inicio de Promo')

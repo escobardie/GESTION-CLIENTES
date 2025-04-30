@@ -53,23 +53,23 @@
       <i class="bi bi-list toggle-sidebar-btn"></i>
     </div><!-- End Logo -->
 
-    <div class="search-bar">
+    {% comment %} <div class="search-bar">
       <form class="search-form d-flex align-items-center" method="POST" action="#">
         <input type="text" name="query" placeholder="Search" title="Enter search keyword">
         <button type="submit" title="Search"><i class="bi bi-search"></i></button>
       </form>
     </div><!-- End Search Bar -->
-
-    {% comment %} <nav class="header-nav ms-auto">
+  {% endcomment %}
+    <nav class="header-nav ms-auto">
       <ul class="d-flex align-items-center">
 
-        <li class="nav-item d-block d-lg-none">
+        {% comment %} <li class="nav-item d-block d-lg-none">
           <a class="nav-link nav-icon search-bar-toggle " href="#">
             <i class="bi bi-search"></i>
           </a>
-        </li><!-- End Search Icon-->
+        </li><!-- End Search Icon--> {% endcomment %}
 
-        <li class="nav-item dropdown">
+        {% comment %} <li class="nav-item dropdown">
 
           <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">
             <i class="bi bi-bell"></i>
@@ -208,24 +208,39 @@
 
           </ul><!-- End Messages Dropdown Items -->
 
-        </li><!-- End Messages Nav -->
+        </li><!-- End Messages Nav --> {% endcomment %}
 
         <li class="nav-item dropdown pe-3">
 
           <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-            <img src="assets/img/profile-img.jpg" alt="Profile" class="rounded-circle">
-            <span class="d-none d-md-block dropdown-toggle ps-2">K. Anderson</span>
+            <img src="{% static 'assets/img/profile-img.jpg' %}" alt="Profile" class="rounded-circle">
+            <span class="d-none d-md-block dropdown-toggle ps-2">{{username}}</span>
           </a><!-- End Profile Iamge Icon -->
 
           <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
             <li class="dropdown-header">
-              <h6>Kevin Anderson</h6>
-              <span>Web Designer</span>
+              <h6>{{usuario_logeado}}</h6>
+              {% if is_empleado %}
+              {% comment %} ##TODO: AQUI VA EMPRESA. MODIFICAR {% endcomment %}
+              <h6>Patron: {{is_empleado}}</h6> 
+              {% endif %}
+              <span>{{usuario_rol}}</span>
             </li>
+
+            {% if usuario_rol == 'cliente' %}
             <li>
               <hr class="dropdown-divider">
             </li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'listado_subusuarios'%}">
+                <i class="bi bi-person"></i>
+                <span>listar Subusuario</span>
+              </a>
+            </li>
 
+            {% endif %}
+
+            {% comment %}
             <li>
               <a class="dropdown-item d-flex align-items-center" href="users-profile.html">
                 <i class="bi bi-person"></i>
@@ -242,6 +257,7 @@
                 <span>Account Settings</span>
               </a>
             </li>
+
             <li>
               <hr class="dropdown-divider">
             </li>
@@ -251,13 +267,14 @@
                 <i class="bi bi-question-circle"></i>
                 <span>Need Help?</span>
               </a>
-            </li>
+            </li> {% endcomment %}
+
             <li>
               <hr class="dropdown-divider">
             </li>
 
             <li>
-              <a class="dropdown-item d-flex align-items-center" href="#">
+              <a class="dropdown-item d-flex align-items-center" href="{% url 'logout'%}">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Sign Out</span>
               </a>
@@ -267,7 +284,7 @@
         </li><!-- End Profile Nav -->
 
       </ul>
-    </nav><!-- End Icons Navigation --> {% endcomment %}
+    </nav><!-- End Icons Navigation -->
 
   </header><!-- End Header -->
 
@@ -299,7 +316,7 @@
               <i class="bi bi-circle"></i><span>Lista Clientes</span>
             </a>
           </li>
-          <li>  
+          <li>
             <a href="{% url 'listar_vto_clte' %}">
               <i class="bi bi-circle"></i><span>Vencimientos Cliente</span>
             </a>
@@ -324,7 +341,7 @@
               <i class="bi bi-circle"></i><span>Promociones Vigentes</span>
             </a>
           </li>
-          
+
         </ul>
       </li><!-- End Promociones Nav -->
       {% endblock nav-promociones %}
@@ -345,7 +362,7 @@
               <i class="bi bi-circle"></i><span>Productos Vigentes</span>
             </a>
           </li>
-          
+
         </ul>
       </li><!-- End Productos Nav -->
       {% endblock nav-productos %}
@@ -406,7 +423,7 @@
               <i class="bi bi-circle"></i><span>Ver Visitas</span>
             </a>
           </li>
-          
+
         </ul>
       </li><!-- End Visita Nav -->
       {% endblock nav-visitas %}
@@ -419,7 +436,7 @@
           <span>Index</span>
         </a>
       </li><!-- End INDEX Page Nav -->
-      
+
 
     </ul>
 
@@ -427,10 +444,10 @@
 
 
   {% block contenedor %}
-    
+
   {% endblock contenedor %}
 
-  
+
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="copyright">

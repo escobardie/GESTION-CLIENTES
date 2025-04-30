@@ -1,10 +1,12 @@
 from django.db import models
+from apps.usuarios.models import Usuario
 
 ###########################
 #### Modelo PROMOCIONES ###
 ###########################
 
 class Promo(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='promociones', verbose_name='Usuario', null=True)
     nombre_promo = models.CharField(max_length=250, verbose_name='Nombre Promo')
     valor_promo = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Precio Promo')
     cant_bidones = models.PositiveIntegerField(verbose_name='Cantidad Bidones')  # Se cambia a PositiveIntegerField para garantizar valores positivos

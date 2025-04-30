@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario Empleado</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        
+    <h2>Mis Subusuarios</h2>
+
+    <a href="{% url 'crear_subusuario' %}">Crear Nuevo Subusuario</a>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for subusuario in subusuarios %}
+          <tr>
+            <td>{{ subusuario.username }}</td>
+            <td>{{ subusuario.email }}</td>
+            <td>
+              <a href="{% url 'editar_subusuario' subusuario.id %}">Editar</a> |
+              <a href="{% url 'eliminar_subusuario' subusuario.id %}">Eliminar</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="3">No tienes subusuarios aún.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    </div>
+</body>
+</html>

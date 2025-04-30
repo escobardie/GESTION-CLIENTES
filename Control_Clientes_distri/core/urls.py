@@ -31,6 +31,8 @@ urlpatterns = [
 ############################
     path('', include('apps.visitas.urls')),
 ############################
+    path('', include('apps.usuarios.urls')),
+############################
     path('admin/', admin.site.urls),
 ]
 if settings.DEBUG:

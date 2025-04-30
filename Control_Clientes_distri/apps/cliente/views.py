@@ -11,23 +11,27 @@ from apps.pagos.models import Pagos
 from apps.ventas.models import Venta
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin,TemplateView):
     template_name = "base/index.html"
     context_object_name = 'index'
 
 def usuario_es_admin(user):
     return user.groups.filter(name='admin').exists()
 
-class ListarVencimientoView(ListView):
+class ListarVencimientoView(LoginRequiredMixin,ListView):
     model = models.PromoPorCliente
     template_name = "base/listar_vencimiento_clte.html"
     context_object_name = "listar_promos"
     paginate_by = 10
 
     def get_queryset(self):
-        return models.PromoPorCliente.objects.filter(estado=True).order_by('fecha_pago_promo')
+        return models.PromoPorCliente.objects.filter(
+            estado=True,
+            usuario=self.request.user  # Solo clientes del usuario logueado
+        ).order_by('fecha_pago_promo')
     
     
     def get_promos_con_fecha_vencida(self):
@@ -47,16 +51,36 @@ class ListarVencimientoView(ListView):
     #     context['promos_con_fecha_vencida'] = promo_con_fecha_vencida
     #     return context
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
-class ListarClientesView(ListView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
+# class ListarClientesView(ListView): ## original
+#     model = models.Cliente
+#     template_name = "base/listar_clientes.html"
+#     context_object_name = 'lista_clientes'
+#     paginate_by = 5
+#     queryset = models.Cliente.objects.filter(estado=True).order_by('apellido')
+
+class ListarClientesView(LoginRequiredMixin, ListView):
     model = models.Cliente
     template_name = "base/listar_clientes.html"
     context_object_name = 'lista_clientes'
     paginate_by = 5
-    queryset = models.Cliente.objects.filter(estado=True).order_by('apellido')
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
-class MenuClienteDetailView(DetailView):
+    def get_queryset(self):
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
+
+        return models.Cliente.objects.filter(
+            estado=True,
+            usuario=usuario
+        ).order_by('apellido')
+
+
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
+class MenuClienteDetailView(LoginRequiredMixin, DetailView):
     model = models.Cliente
     template_name = "base/menu_cliente.html"
     context_object_name = 'cliente'
@@ -110,8 +134,8 @@ class MenuClienteDetailView(DetailView):
             context['promo_vencida'] = estado_promo_vencida
         return context
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
-class ClienteCreateView(CreateView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
+class ClienteCreateView(LoginRequiredMixin, CreateView):
     model = models.Cliente
     template_name = 'base/forms/crear_cliente.html'
     form_class = forms.AddClienteForm
@@ -120,11 +144,17 @@ class ClienteCreateView(CreateView):
         return reverse('menu_cliente', kwargs={'id': self.object.id})
 
     def form_valid(self, form):
-        form.save()
+        # Si es subusuario, usar su cliente asociado
+        usuario_asociado = (
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
+        form.instance.usuario = usuario_asociado
         return super().form_valid(form)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
-class PromoPorClienteCreateView(CreateView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
+class PromoPorClienteCreateView(LoginRequiredMixin,CreateView):
     template_name = 'base/forms/promo_x_cliente.html'
     form_class = forms.AddPromoPorClienteForm
 
@@ -144,6 +174,7 @@ class PromoPorClienteCreateView(CreateView):
         promocliente = form.save(commit=False)
         promocliente.inicio_promo = fecha_actual
         promocliente.bidones_disponibles = dibones_disponibles_promo
+        form.instance.usuario = self.request.user  # Asociamos el cliente al usuario logueado
         promocliente.save()
         return super().form_valid(form)
 
@@ -151,8 +182,8 @@ class PromoPorClienteCreateView(CreateView):
         cliente_id = self.kwargs.get('id')
         return reverse('crear_pago_cliente', kwargs={'id': cliente_id})
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
-class ServisVisitaUpdateView(UpdateView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
+class ServisVisitaUpdateView(LoginRequiredMixin,UpdateView):
     model = models.PromoPorCliente
     template_name = 'base/forms/servis_visita_cliente.html'
     form_class = forms.ServisVisitaClienteForm
@@ -182,6 +213,7 @@ class ServisVisitaUpdateView(UpdateView):
         PromoPorCliente.save()
         promo = get_object_or_404(models.PromoPorCliente, id=promo_id)
         visita = Visita.objects.create(
+            usuario=self.request.user,  # Asociamos el cliente al usuario logueado
             cliente=cliente,
             # nota="<ul>"+
             #      f"<li>PROMOCION:  {promo.promo.nombre_promo}</li>"+
