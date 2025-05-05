@@ -11,6 +11,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 
 from django.contrib.auth.views import LogoutView as DjangoLogoutView
+from django.views.generic import TemplateView
+
 
 
 Usuario = get_user_model()
@@ -19,7 +21,6 @@ Usuario = get_user_model()
 class LoginPersonalizadoView(LoginView):
     template_name = 'User/login.html'  # template personalizado
     redirect_authenticated_user = True  # Si ya está logueado, redirige automáticamente
-      
 
     def get_success_url(self):
         user = self.request.user
@@ -35,6 +36,8 @@ class LoginPersonalizadoView(LoginView):
 class LogoutView(DjangoLogoutView):
     next_page = reverse_lazy('login')  # Redirige al login después de cerrar sesión
 
+class AccesoDenegadoView(TemplateView):
+    template_name = 'errors/acceso_denegado.html'
 
 
 # @login_required
