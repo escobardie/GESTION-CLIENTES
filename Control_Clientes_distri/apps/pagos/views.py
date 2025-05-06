@@ -9,13 +9,14 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from apps.cliente.models import PromoPorCliente
 from django.utils import timezone
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-def usuario_es_admin(user):
-    return user.groups.filter(name='admin').exists()
+# def usuario_es_admin(user):
+#     return user.groups.filter(name='admin').exists()
 
 ################# GESTION DE PAGOS ####################
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class PagoCreateView(CreateView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class PagoCreateView(LoginRequiredMixin, CreateView):
     ''' pago para no clientes '''
     model = models.Pagos
     template_name = 'base/forms/crear_pago.html'
@@ -23,13 +24,20 @@ class PagoCreateView(CreateView):
     success_url = reverse_lazy('listar_pagos')
 
     def form_valid(self, form):
+        # Si es subusuario, usar su cliente asociado
+        usuario_asociado = (
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
         pago = form.save(commit=False)
+        pago.usuario = usuario_asociado
         pago.cliente = None
         pago.save()
         return super().form_valid(form)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ListarPagoClienteView(ListView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarPagoClienteView(LoginRequiredMixin, ListView):
     model = models.Pagos
     template_name = "base/listar_pagos_cliente.html"
     paginate_by = 10
@@ -46,18 +54,29 @@ class ListarPagoClienteView(ListView):
         return models.Pagos.objects.filter(cliente=cliente)
         
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ListarPagosView(ListView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarPagosView(LoginRequiredMixin, ListView):
     model = models.Pagos
     template_name = "base/listar_pagos.html"
     paginate_by = 10
     context_object_name = 'lista_pagos'
    
-    def get_queryset(self):
-        return models.Pagos.objects.all()
+    # def get_queryset(self):
+    #     return models.Pagos.objects.all()
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class PagoClienteCreateView(CreateView):
+    def get_queryset(self):
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
+        return models.Pagos.objects.filter(
+            usuario=usuario
+        ).all()
+    
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class PagoClienteCreateView(LoginRequiredMixin, CreateView):
     model = models.Pagos
     template_name = 'base/forms/crear_pago_cliente.html'
     form_class = forms.PagoForm
@@ -72,28 +91,21 @@ class PagoClienteCreateView(CreateView):
             return get_object_or_404(models.Cliente, id=cliente_id)
         return None
 
-    # def get_context_data(self, **kwargs): ## ORIGINAL
-    #     context = super().get_context_data(**kwargs)
-    #     cliente = self.get_cliente_data()
-
-    #     if cliente:
-    #         promociones_del_cliente = PromoPorCliente.objects.filter(
-    #             cliente=cliente,
-    #             estado=True
-    #         ).values('promo__id', 'promo__nombre_promo', 'promo__valor_promo', 'promo__vencimiento_promo')
-    #         context['promociones'] = promociones_del_cliente
-    #     return context
-    from django.utils import timezone
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cliente = self.get_cliente_data()
-
         fecha_actual = timezone.now().date()
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
 
         if cliente:
             # Obtener las promociones del cliente, incluyendo los datos de Promo relacionados
             promociones_del_cliente = PromoPorCliente.objects.filter(
+                usuario=usuario,
                 cliente=cliente,
                 estado=True
             ).select_related('promo')  # Traemos la relación con Promo
@@ -135,8 +147,14 @@ class PagoClienteCreateView(CreateView):
         cliente = self.get_cliente_data()
         promo_pago_id = self.request.POST.get('promo_id')
         promo_instance = get_object_or_404(models.Promo, id=promo_pago_id)
-
         fecha_actual = timezone.now().date()
+
+        # Si es subusuario, usar su cliente asociado
+        usuario_asociado = (
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
 
         promo_por_cliente = get_object_or_404(PromoPorCliente, cliente=cliente, promo=promo_instance)
 
@@ -149,6 +167,7 @@ class PagoClienteCreateView(CreateView):
         promo_por_cliente.save()
 
         pago = form.save(commit=False)
+        pago.usuario = usuario_asociado
         pago.cliente = cliente
         pago.promo = promo_instance
         pago.save()

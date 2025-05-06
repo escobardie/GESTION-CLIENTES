@@ -11,13 +11,14 @@ from .forms import VentaForm, VentaProductoFormSet
 from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-def usuario_es_admin(user):
-    return user.groups.filter(name='admin').exists()
+# def usuario_es_admin(user):
+#     return user.groups.filter(name='admin').exists()
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ListarVentaClienteView(ListView):
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarVentaClienteView(LoginRequiredMixin, ListView):
     model = models.Venta
     template_name = "base/listar_venta_cliente.html"
     paginate_by = 10
@@ -33,18 +34,30 @@ class ListarVentaClienteView(ListView):
         cliente = self.get_cliente_data()
         return models.Venta.objects.filter(cliente=cliente)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ListarVentasView(ListView): 
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class ListarVentasView(LoginRequiredMixin, ListView): 
     model = models.Venta
     template_name = "base/listar_ventas.html"
     paginate_by = 10
     context_object_name = 'lista_ventas'
     
+    # def get_queryset(self):
+    #     return models.Venta.objects.all()
     def get_queryset(self):
-        return models.Venta.objects.all()
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
+        return models.Venta.objects.filter(
+            usuario=usuario
+        # ).order_by('fecha_venta')
+        ).all()
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class DetalleVentaListView(ListView):
+
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+class DetalleVentaListView(LoginRequiredMixin, ListView):
     model = models.VentaProducto
     template_name = "base/detalle_venta.html"
     context_object_name = 'detalle_venta'
@@ -58,69 +71,8 @@ class DetalleVentaListView(ListView):
         venta = self.get_venta_data()
         return models.VentaProducto.objects.filter(venta=venta)
 
-@method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class VentaProductoCreateView(FormView):
-    model = models.VentaProducto
-    template_name = 'base/forms/gestion_venta2_fucion.html'
-    # template_name = 'base/forms/cargar_venta_v1.html'
-    form_class = formset_factory(forms.VentaProductoForm)
 
-    def get_cliente_data(self):
-        cliente_id = self.kwargs.get('id')
-        if cliente_id is not None:
-            return get_object_or_404(models.Cliente, id=cliente_id)
-        return None  
-
-    def get_success_url(self):
-        cliente_id = self.kwargs.get('id')
-        if cliente_id is not None:
-            return reverse('menu_cliente', kwargs={'id': cliente_id})
-        return reverse('listar_ventas')
-
-    #################################
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        productos = Producto.objects.filter(
-            estado=True
-        ).values('id', 'nombre_producto', 'precio_producto', 'stock')
-        context['productos'] = productos
-        return context
-    #################################
-
-    def form_valid(self, form):
-        cliente = self.get_cliente_data()
-        precio_total_todas_venta = self.request.POST.get('precio_total_todas_venta')
-        nota_venta = self.request.POST.get('nota_venta')
-        metodo_pago = self.request.POST.get('metodo_pago')
-        control_stock = self.request.POST.get('descontar_producto')
-        
-        if nota_venta == "" and cliente is None:
-            nota_venta = "Venta a No Cliente"      
-
-        venta = models.Venta.objects.create(
-            cliente=cliente,
-            nota=nota_venta,
-            metodo_pago=metodo_pago,
-            total_venta=precio_total_todas_venta
-        )
-
-        pago = Pagos.objects.create(
-            cliente=cliente,
-            venta=venta,
-            metodo_pago=metodo_pago,
-            monto=precio_total_todas_venta,
-            descripcion=nota_venta
-        )
-
-        for f in form:
-            f = f.save(commit=False)
-            f.venta = venta
-            f.save()
-        return super().form_valid(form)
-
-
-
-class CrearVentaView(CreateView):
+class CrearVentaView(LoginRequiredMixin, CreateView):
     model = models.Venta
     form_class = VentaForm
     template_name = 'base/forms/crear_venta.html'
@@ -142,12 +94,26 @@ class CrearVentaView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['productos'] = Producto.objects.all()  # Enviar productos al template
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
+        # context['productos'] = Producto.objects.all() # ORIGINAL
+        context['productos'] = Producto.objects.filter(usuario=usuario).all()
         context['nombre_cliente'] = self.get_cliente_data()
         return context
     
-    def get_productos_data(request):
-        productos = Producto.objects.all()
+    def get_productos_data(self,request):
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
+        # productos = Producto.objects.all() # ORIGINAL
+        productos = Producto.objects.filter(usuario=usuario).all()
         data = {
             producto.id: {
                 "precio": str(producto.precio_producto),
@@ -159,7 +125,14 @@ class CrearVentaView(CreateView):
     
     def form_valid(self, form):
         cliente = self.get_cliente_data()
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
         self.object = form.save(commit=False)
+        self.object.usuario = usuario
         self.object.cliente = cliente
         self.object.total_venta = 0
         self.object.save()
@@ -186,6 +159,7 @@ class CrearVentaView(CreateView):
 
                 # Crear el detalle de venta
                 venta_producto = models.VentaProducto.objects.create(
+                    usuario= usuario,
                     venta=self.object,
                     producto=producto,
                     cantidad=cantidad,
@@ -205,6 +179,7 @@ class CrearVentaView(CreateView):
 
         # 👉 Crear automáticamente el pago
         Pagos.objects.create(
+            usuario=usuario,
             venta=self.object, 
             cliente=cliente,
             monto=self.object.total_venta,
@@ -243,3 +218,65 @@ class CrearVentaView(CreateView):
 
     #     self.object.save()  # Actualizar el total de la venta
     #     return super().form_valid(form)
+
+
+# @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
+## NO ESTA EN USO
+# class VentaProductoCreateView(LoginRequiredMixin, FormView):
+#     model = models.VentaProducto
+#     template_name = 'base/forms/gestion_venta2_fucion.html'
+#     # template_name = 'base/forms/cargar_venta_v1.html'
+#     form_class = formset_factory(forms.VentaProductoForm)
+
+#     def get_cliente_data(self):
+#         cliente_id = self.kwargs.get('id')
+#         if cliente_id is not None:
+#             return get_object_or_404(models.Cliente, id=cliente_id)
+#         return None  
+
+#     def get_success_url(self):
+#         cliente_id = self.kwargs.get('id')
+#         if cliente_id is not None:
+#             return reverse('menu_cliente', kwargs={'id': cliente_id})
+#         return reverse('listar_ventas')
+
+#     #################################
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         productos = Producto.objects.filter(
+#             estado=True
+#         ).values('id', 'nombre_producto', 'precio_producto', 'stock')
+#         context['productos'] = productos
+#         return context
+#     #################################
+
+#     def form_valid(self, form):
+#         cliente = self.get_cliente_data()
+#         precio_total_todas_venta = self.request.POST.get('precio_total_todas_venta')
+#         nota_venta = self.request.POST.get('nota_venta')
+#         metodo_pago = self.request.POST.get('metodo_pago')
+#         control_stock = self.request.POST.get('descontar_producto')
+        
+#         if nota_venta == "" and cliente is None:
+#             nota_venta = "Venta a No Cliente"      
+
+#         venta = models.Venta.objects.create(
+#             cliente=cliente,
+#             nota=nota_venta,
+#             metodo_pago=metodo_pago,
+#             total_venta=precio_total_todas_venta
+#         )
+
+#         pago = Pagos.objects.create(
+#             cliente=cliente,
+#             venta=venta,
+#             metodo_pago=metodo_pago,
+#             monto=precio_total_todas_venta,
+#             descripcion=nota_venta
+#         )
+
+#         for f in form:
+#             f = f.save(commit=False)
+#             f.venta = venta
+#             f.save()
+#         return super().form_valid(form)

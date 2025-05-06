@@ -228,6 +228,12 @@ class PromoPorClienteCreateView(LoginRequiredMixin,CreateView):
         return {'cliente': cliente, 'fin_promo': un_año_default, 'fecha_pago_promo': un_mes_default}
 
     def form_valid(self, form):
+        # Si es subusuario, usar su cliente asociado
+        usuario_asociado = (
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
         promo_id = form.cleaned_data['promo'].id
         promo_instance = get_object_or_404(models.Promo, id=promo_id)
         fecha_actual = datetime.now().date().isoformat()
@@ -235,7 +241,7 @@ class PromoPorClienteCreateView(LoginRequiredMixin,CreateView):
         promocliente = form.save(commit=False)
         promocliente.inicio_promo = fecha_actual
         promocliente.bidones_disponibles = dibones_disponibles_promo
-        form.instance.usuario = self.request.user  # Asociamos el cliente al usuario logueado
+        form.instance.usuario = usuario_asociado
         promocliente.save()
         return super().form_valid(form)
 
@@ -262,6 +268,12 @@ class ServisVisitaUpdateView(LoginRequiredMixin,UpdateView):
         return cliente
 
     def form_valid(self, form):
+        # Si es subusuario, usar su cliente asociado
+        usuario_asociado = (
+            self.request.user.cliente
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
         cliente = self.get_cliente_data()
         promo_id = self.request.GET.get('id_promo')
         bidones_disponibles = self.request.POST.get('bidones_disponibles')
@@ -274,7 +286,7 @@ class ServisVisitaUpdateView(LoginRequiredMixin,UpdateView):
         PromoPorCliente.save()
         promo = get_object_or_404(models.PromoPorCliente, id=promo_id)
         visita = Visita.objects.create(
-            usuario=self.request.user,  # Asociamos el cliente al usuario logueado
+            usuario=usuario_asociado,
             cliente=cliente,
             # nota="<ul>"+
             #      f"<li>PROMOCION:  {promo.promo.nombre_promo}</li>"+
