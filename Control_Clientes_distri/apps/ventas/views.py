@@ -12,13 +12,15 @@ from django.views.generic.edit import CreateView
 from django.http import HttpResponseRedirect
 from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.usuarios.mixins import ClienteAutorizacionMixin
+
 
 
 # def usuario_es_admin(user):
 #     return user.groups.filter(name='admin').exists()
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ListarVentaClienteView(LoginRequiredMixin, ListView):
+class ListarVentaClienteView(LoginRequiredMixin, ClienteAutorizacionMixin, ListView):
     model = models.Venta
     template_name = "base/listar_venta_cliente.html"
     paginate_by = 10
@@ -57,7 +59,7 @@ class ListarVentasView(LoginRequiredMixin, ListView):
 
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class DetalleVentaListView(LoginRequiredMixin, ListView):
+class DetalleVentaListView(LoginRequiredMixin, ClienteAutorizacionMixin, ListView):
     model = models.VentaProducto
     template_name = "base/detalle_venta.html"
     context_object_name = 'detalle_venta'
@@ -72,7 +74,7 @@ class DetalleVentaListView(LoginRequiredMixin, ListView):
         return models.VentaProducto.objects.filter(venta=venta)
 
 
-class CrearVentaView(LoginRequiredMixin, CreateView):
+class CrearVentaView(LoginRequiredMixin, ClienteAutorizacionMixin, CreateView):
     model = models.Venta
     form_class = VentaForm
     template_name = 'base/forms/crear_venta.html'

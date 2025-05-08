@@ -33,8 +33,9 @@ class LoginPersonalizadoView(LoginView):
         else:
             return reverse_lazy('index')  # fallback por si acaso
         
-class LogoutView(DjangoLogoutView):
-    next_page = reverse_lazy('login')  # Redirige al login después de cerrar sesión
+# class LogoutView(DjangoLogoutView):
+#     def get_next_page(self):
+#         return reverse_lazy('login')
 
 class AccesoDenegadoView(TemplateView):
     template_name = 'errors/acceso_denegado.html'

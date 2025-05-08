@@ -6,6 +6,7 @@ from django.views.generic import ListView
 from django.urls import reverse, reverse_lazy
 from . import models, forms
 from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.usuarios.mixins import ClienteAutorizacionMixin
 
 
 # def usuario_es_admin(user):
@@ -13,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ListarVisitasClienteView(LoginRequiredMixin, ListView):
+class ListarVisitasClienteView(LoginRequiredMixin, ClienteAutorizacionMixin, ListView):
     model = models.Visita
     template_name = "base/listar_vistas_cliente.html"
     context_object_name = 'lista_vista_cliente'
@@ -74,7 +75,7 @@ class VisitaCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class VisitaClienteCreateView(LoginRequiredMixin, CreateView): 
+class VisitaClienteCreateView(LoginRequiredMixin, ClienteAutorizacionMixin, CreateView): 
     template_name = 'base/forms/crear_visita_cliente.html'
     form_class = forms.AddVisitaForm
     

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'apps.pagos',
     'apps.productos',
     'apps.promociones',
+    'apps.suscripcion',
     'apps.usuarios',
     'apps.ventas',
     'apps.visitas',    

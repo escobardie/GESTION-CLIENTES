@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 from apps.cliente.models import PromoPorCliente
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
+from apps.usuarios.mixins import ClienteAutorizacionMixin
 
 # def usuario_es_admin(user):
 #     return user.groups.filter(name='admin').exists()
@@ -37,7 +38,7 @@ class PagoCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class ListarPagoClienteView(LoginRequiredMixin, ListView):
+class ListarPagoClienteView(LoginRequiredMixin,ClienteAutorizacionMixin, ListView):
     model = models.Pagos
     template_name = "base/listar_pagos_cliente.html"
     paginate_by = 10
@@ -76,7 +77,7 @@ class ListarPagosView(LoginRequiredMixin, ListView):
         ).all()
     
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class PagoClienteCreateView(LoginRequiredMixin, CreateView):
+class PagoClienteCreateView(LoginRequiredMixin,ClienteAutorizacionMixin, CreateView):
     model = models.Pagos
     template_name = 'base/forms/crear_pago_cliente.html'
     form_class = forms.PagoForm
