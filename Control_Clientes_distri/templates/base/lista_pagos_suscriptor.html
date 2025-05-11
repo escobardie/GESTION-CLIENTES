@@ -44,6 +44,7 @@
                             <th>Monto</th>
                             <th>Método</th>
                             <th>Fecha de Pago</th>
+                            <th>Recibo</th>  <!-- 🔔 Nueva columna -->
                         </tr>
                     </thead>
                     <tbody>
@@ -54,6 +55,11 @@
                                 <td>${{ pago.monto }}</td>
                                 <td>{{ pago.get_metodo_pago_display }}</td>
                                 <td>{{ pago.fecha_pago|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'recibo_pago' pago.pk %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        Imprimir
+                                    </a>
+                                </td>
                             </tr>
                         {% empty %}
                             <tr><td colspan="5" class="text-center">No hay pagos registrados.</td></tr>

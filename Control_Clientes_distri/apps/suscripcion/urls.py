@@ -8,7 +8,8 @@ urlpatterns = [
     path('registrar_pago/', views.RegistrarPagoSuscriptorView.as_view(), name='registrar_pago'), 
     path('lista_pagos/', views.ListaPagosView.as_view(), name='lista_pagos'),
 
-     path('api/obtener-suscripcion/', views.ObtenerSuscripcionDeUsuarioView.as_view(), name='obtener_suscripcion_usuario'),
+    path('pagos/<int:pk>/recibo/', views.ReciboPagoImprimibleView.as_view(), name='recibo_pago'),
+    path('api/obtener-suscripcion/', views.ObtenerSuscripcionDeUsuarioView.as_view(), name='obtener_suscripcion_usuario'),
 
     
 ]

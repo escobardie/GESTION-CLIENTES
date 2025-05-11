@@ -162,3 +162,13 @@ class ListaPagosView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     #     return HttpResponseForbidden("No tienes permiso para registrar pagos.")
     def handle_no_permission(self):
         return redirect('acceso_denegado')
+
+
+
+class ReciboPagoImprimibleView(DetailView):
+    model = models.PagoSuscriptor
+    template_name = 'pago/recibo_pago.html'
+    context_object_name = 'pago'
+
+    def get_queryset(self):
+        return models.PagoSuscriptor.objects.select_related('usuario', 'suscripcion')
