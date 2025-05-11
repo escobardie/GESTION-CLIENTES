@@ -11,6 +11,13 @@ from django.utils.timezone import now
 from apps.usuarios.models import Usuario
 from apps.suscripcion.models import SuscripcionPorUsuario
 
+import qrcode
+import base64
+from io import BytesIO
+from django.utils.html import mark_safe
+from django.urls import reverse
+from django.shortcuts import get_object_or_404
+
 # LoginRequiredMixin
 # Propósito: Asegura que el usuario esté autenticado (logueado).
 
@@ -24,6 +31,13 @@ from apps.suscripcion.models import SuscripcionPorUsuario
 # Se usa junto con test_func(), que tú defines en la vista.
 
 # También redirige si el usuario no pasa la prueba (incluso si está logueado).
+def generar_qr_base64(url):
+    qr = qrcode.make(url)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode()
+
+
 
 class ObtenerSuscripcionDeUsuarioView(View): ##TODO: ESTE ENFOQUE GENERADO CON CHAT ES MEJOR QUE EL MIO :(
     def get(self, request, *args, **kwargs):
@@ -170,5 +184,38 @@ class ReciboPagoImprimibleView(DetailView):
     template_name = 'pago/recibo_pago.html'
     context_object_name = 'pago'
 
-    def get_queryset(self):
-        return models.PagoSuscriptor.objects.select_related('usuario', 'suscripcion')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pago = self.object
+
+        # Construir URL absoluta del recibo
+        recibo_url = self.request.build_absolute_uri(
+            reverse('recibo_pago', kwargs={'pk': pago.pk})
+        )
+
+        # Generar QR con la URL
+        qr_b64 = generar_qr_base64(recibo_url)
+
+        context['qr_base64'] = mark_safe(f"data:image/png;base64,{qr_b64}")
+        context['recibo_url'] = recibo_url
+        return context
+
+class ReciboPagoConTokenView(DetailView):
+    model = models.PagoSuscriptor
+    template_name = 'pago/recibo_pago.html'
+    context_object_name = 'pago'
+
+    def get_object(self, queryset=None):
+        token = self.kwargs.get('token')
+        return get_object_or_404(models.PagoSuscriptor, token=token)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pago = self.object
+
+        recibo_url = self.request.build_absolute_uri(self.request.path)
+        qr_b64 = generar_qr_base64(recibo_url)
+
+        context['qr_base64'] = mark_safe(f"data:image/png;base64,{qr_b64}")
+        context['recibo_url'] = recibo_url
+        return context

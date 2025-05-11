@@ -1,5 +1,11 @@
 from django.db import models
+import uuid
 from apps.usuarios.models import Usuario
+
+def generar_token():
+    import uuid
+    return uuid.uuid4().hex
+
 
 
 class Suscripcion(models.Model):
@@ -80,6 +86,28 @@ class PagoSuscriptor(models.Model):
         verbose_name='Estado del Pago'
     )
     descripcion = models.TextField(null=True, blank=True, verbose_name='Nota') # Para detalles adicionales
+    referencia = models.CharField(
+        max_length=100,
+        unique=True,
+        editable=False,
+        default=uuid.uuid4,  
+        verbose_name="Referencia de Pago"
+    )
+    token = models.CharField(
+        max_length=64,
+        unique=True,
+        null=False,  
+        editable=False,
+        verbose_name="Token de acceso seguro"
+    )
+
+
+
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            self.token = uuid.uuid4().hex
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Pago Suscripción'

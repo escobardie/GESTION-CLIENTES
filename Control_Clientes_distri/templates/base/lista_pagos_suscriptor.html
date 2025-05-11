@@ -56,7 +56,7 @@
                                 <td>{{ pago.get_metodo_pago_display }}</td>
                                 <td>{{ pago.fecha_pago|date:"Y-m-d H:i" }}</td>
                                 <td>
-                                    <a href="{% url 'recibo_pago' pago.pk %}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <a href="{% url 'recibo_pago_token' pago.token %}" class="btn btn-sm btn-outline-primary" target="_blank">
                                         Imprimir
                                     </a>
                                 </td>
