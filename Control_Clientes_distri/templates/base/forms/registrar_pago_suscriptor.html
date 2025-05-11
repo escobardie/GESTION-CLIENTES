@@ -3,56 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario</title>
+    <title>Registrar Pago</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container mt-5">
-        <div class="container mt-4">
-            <h2>Registrar Pago de Suscripción</h2>
+        <h2>Registrar Pago de Suscripción</h2>
 
-            <form method="post" novalidate>
-                {% csrf_token %}
-                {{ form.non_field_errors }}
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
 
-                {% for field in form %}
-                    <div class="mb-3">
-                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.errors %}
-                            <div class="text-danger">{{ field.errors|striptags }}</div>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger">{{ field.errors|striptags }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
 
-                <!-- 🔔 Aquí va la alerta -->
-                <div id="alerta-suscripcion" class="alert alert-warning d-none" role="alert"></div>
+            <div id="alerta-suscripcion" class="alert alert-warning d-none" role="alert"></div>
 
-                <button type="submit" class="btn btn-primary">Registrar Pago</button>
-                <a href="{% url 'lista_pagos' %}" class="btn btn-secondary">Cancelar</a>
-            </form>
-
-        </div>
+            <button type="submit" class="btn btn-primary" id="btn-registrar-pago">Registrar Pago</button>
+            <a href="{% url 'lista_pagos' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
     </div>
 
-    <!-- ✅ Script AJAX para actualizar suscripción al cambiar usuario -->
+    <!-- Script AJAX para cargar suscripción, monto y estado -->
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         const usuarioSelect = document.getElementById('id_usuario');
         const suscripcionSelect = document.getElementById('id_suscripcion');
         const montoInput = document.getElementById('id_monto');
         const alertaDiv = document.getElementById('alerta-suscripcion');
+        const submitBtn = document.getElementById('btn-registrar-pago');
 
-        if (usuarioSelect && suscripcionSelect && montoInput) {
+        function bloquearEnvio(mensaje) {
+            submitBtn.disabled = true;
+            alertaDiv.textContent = mensaje;
+            alertaDiv.classList.remove('d-none');
+        }
+
+        function permitirEnvio() {
+            submitBtn.disabled = false;
+            alertaDiv.classList.add('d-none');
+            alertaDiv.textContent = '';
+        }
+
+        if (usuarioSelect && suscripcionSelect && montoInput && submitBtn) {
             usuarioSelect.addEventListener('change', function () {
                 const usuarioId = this.value;
 
                 suscripcionSelect.innerHTML = '<option value="">---------</option>';
-                alertaDiv.classList.add('d-none');
-                alertaDiv.textContent = '';
-                montoInput.value = '';  // limpiar monto
+                montoInput.value = '';
+                permitirEnvio();
 
-                if (!usuarioId) return;
+                if (!usuarioId) {
+                    bloquearEnvio("Selecciona un usuario válido.");
+                    return;
+                }
 
                 fetch(`/api/obtener-suscripcion/?usuario_id=${usuarioId}`)
                     .then(response => {
@@ -66,20 +77,16 @@
                         montoInput.value = data.monto;
 
                         if (data.estado === 'expirada') {
-                            alertaDiv.textContent = `⚠ La suscripción del usuario ha expirado el ${data.fecha_fin}.`;
-                            alertaDiv.classList.remove('d-none');
+                            bloquearEnvio(`⚠ La suscripción del usuario ha expirado el ${data.fecha_fin}.`);
                         }
                     })
                     .catch(error => {
                         suscripcionSelect.innerHTML = '<option value="">Sin suscripción disponible</option>';
-                        alertaDiv.textContent = "Este usuario no tiene una suscripción asociada.";
-                        alertaDiv.classList.remove('d-none');
+                        bloquearEnvio("Este usuario no tiene una suscripción asociada.");
                     });
             });
         }
     });
     </script>
-
-
 </body>
 </html>

@@ -81,22 +81,50 @@ class CrearSuscripcionPorUsuarioView(LoginRequiredMixin, UserPassesTestMixin, Cr
         return redirect('acceso_denegado')
     
 
+# class RegistrarPagoSuscriptorView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+#     model = models.PagoSuscriptor
+#     form_class = forms.PagoSuscriptorForm
+#     template_name = 'base/forms/registrar_pago_suscriptor.html'
+#     success_url = reverse_lazy('lista_pagos')  # Cámbialo a la URL que desees redireccionar
+
+#     def test_func(self):
+#         # Solo usuarios staff/superuser pueden registrar pagos
+#         return self.request.user.is_staff or self.request.user.is_superuser
+
+#     # def handle_no_permission(self):
+#     #     from django.http import HttpResponseForbidden
+#     #     return HttpResponseForbidden("No tienes permiso para registrar pagos.")
+#     def handle_no_permission(self):
+#         return redirect('acceso_denegado')
+
 class RegistrarPagoSuscriptorView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     model = models.PagoSuscriptor
     form_class = forms.PagoSuscriptorForm
     template_name = 'base/forms/registrar_pago_suscriptor.html'
-    success_url = reverse_lazy('lista_pagos')  # Cámbialo a la URL que desees redireccionar
+    success_url = reverse_lazy('lista_pagos')
 
     def test_func(self):
-        # Solo usuarios staff/superuser pueden registrar pagos
         return self.request.user.is_staff or self.request.user.is_superuser
 
-    # def handle_no_permission(self):
-    #     from django.http import HttpResponseForbidden
-    #     return HttpResponseForbidden("No tienes permiso para registrar pagos.")
     def handle_no_permission(self):
         return redirect('acceso_denegado')
 
+    def form_valid(self, form):
+        usuario = form.cleaned_data['usuario']
+        try:
+            relacion = usuario.suscripcion_asociada
+            if not relacion.estado or relacion.fecha_fin_suscrip < now().date():
+                form.add_error(None, "El usuario no tiene una suscripción activa.")
+                return self.form_invalid(form)
+
+            form.instance.suscripcion = relacion.suscripcion
+            form.instance.monto = relacion.suscripcion.valor_suscripcion
+
+        except SuscripcionPorUsuario.DoesNotExist:
+            form.add_error(None, "El usuario no tiene una suscripción asignada.")
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
 
 
 

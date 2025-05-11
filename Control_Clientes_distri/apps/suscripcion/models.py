@@ -31,7 +31,7 @@ class Suscripcion(models.Model):
 
 
 class SuscripcionPorUsuario(models.Model):
-    usuario = models.ForeignKey(
+    usuario = models.OneToOneField(
         Usuario,
         on_delete=models.CASCADE,
         related_name='suscripcion_asociada',

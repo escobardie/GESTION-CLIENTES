@@ -79,13 +79,9 @@ class PagoSuscriptorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # Mostrar solo usuarios con rol 'cliente'
         self.fields['usuario'].queryset = Usuario.objects.filter(rol='cliente')
-        # self.fields['monto'].disabled = True  # Desactiva también a nivel de servidor (evita cambios maliciosos)
+        self.fields['monto'].disabled = True  # protege también del POST
 
     def clean_monto(self):
-        monto = self.cleaned_data.get('monto')
-        if monto <= 0:
-            raise forms.ValidationError("El monto debe ser mayor a 0.")
-        return monto
+        # Asegura que no se pierda el valor si es desactivado
+        return self.cleaned_data.get('monto') or 0
