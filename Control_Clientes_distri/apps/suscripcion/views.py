@@ -198,6 +198,13 @@ class ReciboPagoImprimibleView(DetailView):
 
         context['qr_base64'] = mark_safe(f"data:image/png;base64,{qr_b64}")
         context['recibo_url'] = recibo_url
+
+        context['mensaje'] = (
+            f"Hola {pago.usuario.username}, "
+            f"gracias por tu pago de ${pago.monto} correspondiente a tu suscripción "
+            f"'{pago.suscripcion.nombre_suscripcion}'. "
+            f"Aquí tienes tu recibo: {self.request.build_absolute_uri(self.request.path)}"
+        )
         return context
 
 class ReciboPagoConTokenView(DetailView):
@@ -218,4 +225,12 @@ class ReciboPagoConTokenView(DetailView):
 
         context['qr_base64'] = mark_safe(f"data:image/png;base64,{qr_b64}")
         context['recibo_url'] = recibo_url
+
+        context['mensaje'] = (
+            f"Hola {pago.usuario.username}, "
+            f"gracias por tu pago de ${pago.monto} correspondiente a tu suscripción "
+            f"'{pago.suscripcion.nombre_suscripcion}'. "
+            f"Aquí tienes tu recibo: {self.request.build_absolute_uri(self.request.path)}"
+        )
+
         return context

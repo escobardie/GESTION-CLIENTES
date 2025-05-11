@@ -9,4 +9,4 @@ class SubusuarioForm(forms.ModelForm):
 
     class Meta:
         model = Usuario
-        fields = ('username', 'email', 'password')
+        fields = ('username', 'email', 'password','telefono','empresa_nombre')

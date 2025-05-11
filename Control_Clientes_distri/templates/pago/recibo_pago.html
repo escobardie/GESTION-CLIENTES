@@ -61,6 +61,16 @@
         <div class="line"></div>
         <p>¡Gracias por tu pago!</p>
     </div>
+    {% if pago.usuario.telefono %}
+        <div class="center" style="margin-top: 10px;">
+            <a href="https://wa.me/{{ pago.usuario.telefono|urlencode }}?text={{ mensaje|urlencode }}"
+            target="_blank"
+            style="text-decoration: none; color: green; font-weight: bold;">
+            Enviar por WhatsApp al cliente 📱
+            </a>
+        </div>
+    {% endif %}
+
 
     <script>
         window.onload = function () {

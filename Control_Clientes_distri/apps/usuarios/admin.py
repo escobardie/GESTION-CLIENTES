@@ -7,10 +7,17 @@ from .models import Usuario
 class UsuarioAdmin(UserAdmin):
     fieldsets = UserAdmin.fieldsets + (
         ('Rol y Cliente', {
-            'fields': ('rol', 'cliente')
+            'fields': ('rol', 'cliente', 'telefono', 'empresa_nombre')
         }),
     )
-    list_display = ('username', 'email', 'rol', 'cliente', 'cantidad_subusuarios', 'is_staff')
+
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ('Rol y Cliente', {
+            'fields': ('rol', 'cliente', 'telefono', 'empresa_nombre')
+        }),
+    )
+
+    list_display = ('username', 'email', 'rol', 'cliente', 'telefono', 'cantidad_subusuarios', 'is_staff')
     list_filter = ('rol',)
 
     def cantidad_subusuarios(self, obj):
