@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="container mt-4">
+            <h2>Registrar Pago de Suscripción</h2>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                            <div class="text-danger">{{ field.errors|striptags }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+
+                <!-- 🔔 Aquí va la alerta -->
+                <div id="alerta-suscripcion" class="alert alert-warning d-none" role="alert"></div>
+
+                <button type="submit" class="btn btn-primary">Registrar Pago</button>
+                <a href="{% url 'lista_pagos' %}" class="btn btn-secondary">Cancelar</a>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ✅ Script AJAX para actualizar suscripción al cambiar usuario -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const usuarioSelect = document.getElementById('id_usuario');
+        const suscripcionSelect = document.getElementById('id_suscripcion');
+        const montoInput = document.getElementById('id_monto');
+        const alertaDiv = document.getElementById('alerta-suscripcion');
+
+        if (usuarioSelect && suscripcionSelect && montoInput) {
+            usuarioSelect.addEventListener('change', function () {
+                const usuarioId = this.value;
+
+                suscripcionSelect.innerHTML = '<option value="">---------</option>';
+                alertaDiv.classList.add('d-none');
+                alertaDiv.textContent = '';
+                montoInput.value = '';  // limpiar monto
+
+                if (!usuarioId) return;
+
+                fetch(`/api/obtener-suscripcion/?usuario_id=${usuarioId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error();
+                        return response.json();
+                    })
+                    .then(data => {
+                        suscripcionSelect.innerHTML = `
+                            <option value="${data.id}" selected>${data.nombre}</option>
+                        `;
+                        montoInput.value = data.monto;
+
+                        if (data.estado === 'expirada') {
+                            alertaDiv.textContent = `⚠ La suscripción del usuario ha expirado el ${data.fecha_fin}.`;
+                            alertaDiv.classList.remove('d-none');
+                        }
+                    })
+                    .catch(error => {
+                        suscripcionSelect.innerHTML = '<option value="">Sin suscripción disponible</option>';
+                        alertaDiv.textContent = "Este usuario no tiene una suscripción asociada.";
+                        alertaDiv.classList.remove('d-none');
+                    });
+            });
+        }
+    });
+    </script>
+
+
+</body>
+</html>

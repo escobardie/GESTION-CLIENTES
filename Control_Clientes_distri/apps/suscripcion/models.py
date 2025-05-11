@@ -56,3 +56,35 @@ class SuscripcionPorUsuario(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} → {self.suscripcion.nombre_suscripcion}"
+
+class PagoSuscriptor(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='pagos_suscrip_usuario', verbose_name='Usuario Asociado', null=True)
+    suscripcion = models.ForeignKey(Suscripcion, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Suscripcion Asociada')
+    monto = models.DecimalField(default=0, max_digits=10, decimal_places=2, verbose_name='Monto')
+    fecha_pago = models.DateTimeField(auto_now_add=True, verbose_name='Fecha y Hora de Pago')
+    metodo_pago = models.CharField(
+        max_length=50,
+        choices=[
+            ('tarjeta', 'Tarjeta de Crédito/Débito'),
+            ('efectivo', 'Efectivo'),
+            ('transferencia', 'Transferencia Bancaria'),
+        ],
+        null=True,
+        blank=True,
+        verbose_name='Método de Pago'
+    )
+    estado_pago = models.CharField(
+        max_length=20,
+        choices=[('completado', 'Completado'), ('pendiente', 'Pendiente'), ('fallido', 'Fallido')],
+        default='completado',
+        verbose_name='Estado del Pago'
+    )
+    descripcion = models.TextField(null=True, blank=True, verbose_name='Nota') # Para detalles adicionales
+
+    class Meta:
+        verbose_name = 'Pago Suscripción'
+        verbose_name_plural = 'Pagos Suscripciones'
+        ordering = ['-fecha_pago']
+
+    def __str__(self):
+        return f"Pago de {self.monto} el {self.fecha_pago.strftime('%Y-%m-%d')}"

@@ -1,8 +1,15 @@
 from django.shortcuts import redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView 
 from . import models, forms
 from django.urls import reverse_lazy
+from django.views.generic import TemplateView, ListView, DetailView
+
+from django.http import JsonResponse
+from django.views import View
+from django.utils.timezone import now
+from apps.usuarios.models import Usuario
+from apps.suscripcion.models import SuscripcionPorUsuario
 
 # LoginRequiredMixin
 # Propósito: Asegura que el usuario esté autenticado (logueado).
@@ -17,6 +24,28 @@ from django.urls import reverse_lazy
 # Se usa junto con test_func(), que tú defines en la vista.
 
 # También redirige si el usuario no pasa la prueba (incluso si está logueado).
+
+class ObtenerSuscripcionDeUsuarioView(View): ##TODO: ESTE ENFOQUE GENERADO CON CHAT ES MEJOR QUE EL MIO :(
+    def get(self, request, *args, **kwargs):
+        usuario_id = request.GET.get('usuario_id')
+
+        try:
+            usuario = Usuario.objects.get(id=usuario_id, rol='cliente')
+            relacion = SuscripcionPorUsuario.objects.get(usuario=usuario)
+
+            suscripcion = relacion.suscripcion
+            activa = relacion.estado and relacion.fecha_fin_suscrip >= now().date()
+
+            return JsonResponse({
+                'id': suscripcion.id,
+                'nombre': suscripcion.nombre_suscripcion,
+                'estado': 'activa' if activa else 'expirada',
+                'fecha_fin': relacion.fecha_fin_suscrip.strftime('%Y-%m-%d'),
+                'monto': str(suscripcion.valor_suscripcion),  # como string para evitar problemas de formato
+            })
+
+        except (Usuario.DoesNotExist, SuscripcionPorUsuario.DoesNotExist):
+            return JsonResponse({}, status=404)
 
 
 class SuscripcionCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -48,5 +77,60 @@ class CrearSuscripcionPorUsuarioView(LoginRequiredMixin, UserPassesTestMixin, Cr
     # def handle_no_permission(self):
     #     from django.http import HttpResponseForbidden
     #     return HttpResponseForbidden("No tienes permiso para asignar suscripciones.")
+    def handle_no_permission(self):
+        return redirect('acceso_denegado')
+    
+
+class RegistrarPagoSuscriptorView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = models.PagoSuscriptor
+    form_class = forms.PagoSuscriptorForm
+    template_name = 'base/forms/registrar_pago_suscriptor.html'
+    success_url = reverse_lazy('lista_pagos')  # Cámbialo a la URL que desees redireccionar
+
+    def test_func(self):
+        # Solo usuarios staff/superuser pueden registrar pagos
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    # def handle_no_permission(self):
+    #     from django.http import HttpResponseForbidden
+    #     return HttpResponseForbidden("No tienes permiso para registrar pagos.")
+    def handle_no_permission(self):
+        return redirect('acceso_denegado')
+
+
+
+
+class ListaPagosView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = models.PagoSuscriptor
+    template_name = 'base/lista_pagos_suscriptor.html'
+    context_object_name = 'pagos'
+    paginate_by = 10
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        usuario = self.request.GET.get('usuario')
+        metodo_pago = self.request.GET.get('metodo_pago')
+        fecha_desde = self.request.GET.get('fecha_desde')
+        fecha_hasta = self.request.GET.get('fecha_hasta')
+
+        if usuario:
+            queryset = queryset.filter(usuario__username__icontains=usuario)
+        if metodo_pago:
+            queryset = queryset.filter(metodo_pago=metodo_pago)
+        if fecha_desde:
+            queryset = queryset.filter(fecha_pago__date__gte=fecha_desde)
+        if fecha_hasta:
+            queryset = queryset.filter(fecha_pago__date__lte=fecha_hasta)
+
+        return queryset
+    
+    def test_func(self):
+        # Solo usuarios staff/superuser pueden registrar pagos
+        return self.request.user.is_staff or self.request.user.is_superuser
+
+    # def handle_no_permission(self):
+    #     from django.http import HttpResponseForbidden
+    #     return HttpResponseForbidden("No tienes permiso para registrar pagos.")
     def handle_no_permission(self):
         return redirect('acceso_denegado')

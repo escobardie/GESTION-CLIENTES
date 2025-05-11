@@ -1,5 +1,5 @@
 from django import forms
-from .models import Suscripcion, SuscripcionPorUsuario
+from .models import Suscripcion, SuscripcionPorUsuario, PagoSuscriptor
 from apps.usuarios.models import Usuario
 
 class SuscripcionForm(forms.ModelForm):
@@ -59,3 +59,33 @@ class SuscripcionPorUsuarioForm(forms.ModelForm):
         if self.instance.pk is None and SuscripcionPorUsuario.objects.filter(usuario=usuario).exists():
             raise forms.ValidationError("Este usuario ya tiene una suscripción asignada.")
         return usuario
+
+
+
+class PagoSuscriptorForm(forms.ModelForm):
+    class Meta:
+        model = PagoSuscriptor
+        fields = [
+            'usuario',
+            'suscripcion',
+            'monto',
+            'metodo_pago',
+            'descripcion',
+        ]
+        widgets = {
+            'descripcion': forms.Textarea(attrs={'rows': 3}),
+            'monto': forms.NumberInput(attrs={'readonly': 'readonly'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Mostrar solo usuarios con rol 'cliente'
+        self.fields['usuario'].queryset = Usuario.objects.filter(rol='cliente')
+        # self.fields['monto'].disabled = True  # Desactiva también a nivel de servidor (evita cambios maliciosos)
+
+    def clean_monto(self):
+        monto = self.cleaned_data.get('monto')
+        if monto <= 0:
+            raise forms.ValidationError("El monto debe ser mayor a 0.")
+        return monto

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Suscripcion, SuscripcionPorUsuario
+from .models import Suscripcion, SuscripcionPorUsuario, PagoSuscriptor
 
 @admin.register(Suscripcion)
 class SuscripcionAdmin(admin.ModelAdmin):
@@ -30,6 +30,7 @@ class SuscripcionAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return request.user.is_superuser
 
+
 @admin.register(SuscripcionPorUsuario)
 class SuscripcionPorUsuarioAdmin(admin.ModelAdmin):
     list_display = (
@@ -55,6 +56,34 @@ class SuscripcionPorUsuarioAdmin(admin.ModelAdmin):
                 'estado',
                 'nota',
                 'fecha_asignacion',
+            )
+        }),
+    )
+
+
+@admin.register(PagoSuscriptor)
+class PagoSuscriptorAdmin(admin.ModelAdmin):
+    list_display = (
+        'usuario',
+        'suscripcion',
+        'monto',
+        'metodo_pago',
+        'fecha_pago',
+    )
+    list_filter = ('metodo_pago', 'fecha_pago')
+    search_fields = ('usuario__username', 'suscripcion__nombre_suscripcion')
+    ordering = ('-fecha_pago',)
+    readonly_fields = ('fecha_pago',)
+
+    fieldsets = (
+        (None, {
+            'fields': (
+                'usuario',
+                'suscripcion',
+                'monto',
+                'metodo_pago',
+                'descripcion',
+                'fecha_pago',
             )
         }),
     )
