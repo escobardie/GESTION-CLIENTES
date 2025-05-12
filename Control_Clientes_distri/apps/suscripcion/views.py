@@ -8,7 +8,6 @@ from django.views.generic import TemplateView, ListView, DetailView
 from django.http import JsonResponse
 from django.views import View
 from django.utils.timezone import now
-from apps.usuarios.models import Usuario
 from apps.suscripcion.models import SuscripcionPorUsuario
 
 import qrcode
@@ -17,6 +16,11 @@ from io import BytesIO
 from django.utils.html import mark_safe
 from django.urls import reverse
 from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from apps.usuarios.models import Usuario
+from apps.usuarios.forms import UsuarioForm
 
 # LoginRequiredMixin
 # Propósito: Asegura que el usuario esté autenticado (logueado).
@@ -37,6 +41,40 @@ def generar_qr_base64(url):
     qr.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue()).decode()
 
+def recibo_pdf_view(request, token):
+    pago = get_object_or_404(models.PagoSuscriptor, token=token)
+    template = get_template('tickets/pago/suscripcion/recibo_pago_pdf.html')
+    html = template.render({'pago': pago})
+
+    result = BytesIO()
+    pisa_status = pisa.CreatePDF(html, dest=result)
+
+    if pisa_status.err:
+        return HttpResponse("Error al generar el PDF", status=500)
+
+    response = HttpResponse(result.getvalue(), content_type='application/pdf')
+    response['Content-Disposition'] = f'inline; filename=recibo_{pago.token}.pdf'
+    return response
+
+
+class CrearSuscriptorView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Usuario
+    form_class = UsuarioForm
+    template_name = 'base/forms/crear_usuario_suscriptor.html'
+    success_url = reverse_lazy('index')
+
+    def test_func(self):
+        return self.request.user.is_staff or self.request.user.is_superuser 
+
+    def handle_no_permission(self):
+        return redirect('acceso_denegado')
+    
+    def form_valid(self, form):
+        usuario = form.save(commit=False)
+        usuario.rol = 'cliente'
+        usuario.save()  # Guardar el formulario
+        return super().form_valid(form)
+    
 
 
 class ObtenerSuscripcionDeUsuarioView(View): ##TODO: ESTE ENFOQUE GENERADO CON CHAT ES MEJOR QUE EL MIO :(
@@ -181,7 +219,7 @@ class ListaPagosView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class ReciboPagoImprimibleView(DetailView):
     model = models.PagoSuscriptor
-    template_name = 'pago/recibo_pago.html'
+    template_name = 'tickets/pago/suscripcion/recibo_pago.html'
     context_object_name = 'pago'
 
     def get_context_data(self, **kwargs):
@@ -209,7 +247,7 @@ class ReciboPagoImprimibleView(DetailView):
 
 class ReciboPagoConTokenView(DetailView):
     model = models.PagoSuscriptor
-    template_name = 'pago/recibo_pago.html'
+    template_name = 'tickets/pago/suscripcion/recibo_pago.html'
     context_object_name = 'pago'
 
     def get_object(self, queryset=None):
@@ -226,11 +264,22 @@ class ReciboPagoConTokenView(DetailView):
         context['qr_base64'] = mark_safe(f"data:image/png;base64,{qr_b64}")
         context['recibo_url'] = recibo_url
 
-        context['mensaje'] = (
-            f"Hola {pago.usuario.username}, "
-            f"gracias por tu pago de ${pago.monto} correspondiente a tu suscripción "
-            f"'{pago.suscripcion.nombre_suscripcion}'. "
-            f"Aquí tienes tu recibo: {self.request.build_absolute_uri(self.request.path)}"
+        recibo_url = self.request.build_absolute_uri(
+            reverse('recibo_pago_token', kwargs={'token': pago.token})
+        )
+        pdf_url = self.request.build_absolute_uri(
+            reverse('recibo_pago_pdf', kwargs={'token': pago.token})
         )
 
+        context['recibo_url'] = recibo_url
+        context['pdf_url'] = pdf_url
+
+        context['mensaje'] = (
+            f"Hola {pago.usuario.username}, gracias por tu pago de ${pago.monto}. "
+            f"Puedes ver tu recibo aquí: {recibo_url} o descargarlo en PDF: {pdf_url}"
+        )
+
+
         return context
+
+

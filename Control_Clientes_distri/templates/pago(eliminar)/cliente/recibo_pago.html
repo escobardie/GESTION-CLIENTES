@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Recibo de Pago</title>
+    <style>
+        body {
+            font-family: monospace;
+            font-size: 12px;
+            width: 58mm;
+            padding: 10px;
+            color: #000;
+        }
+        .center {
+            text-align: center;
+        }
+        .line {
+            border-top: 1px dashed #000;
+            margin: 5px 0;
+        }
+        .title {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        img {
+            display: block;
+            margin: 0 auto;
+        }
+        small {
+            word-break: break-all;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <div class="title">RECIBO DE PAGO</div>
+        <div>{{ pago.fecha_pago|date:"Y-m-d H:i" }}</div>
+        <div class="line"></div>
+    </div>
+
+    <p><strong>Cliente:</strong> {{ pago.usuario.username }}</p>
+    <p><strong>Suscripción:</strong> {{ pago.suscripcion.nombre_suscripcion }}</p>
+    <p><strong>Monto:</strong> ${{ pago.monto }}</p>
+    <p><strong>Método:</strong> {{ pago.get_metodo_pago_display }}</p>
+
+    {% if pago.descripcion %}
+        <p><strong>Nota:</strong> {{ pago.descripcion }}</p>
+    {% endif %}
+
+    <div class="line"></div>
+    <p><strong>Referencia:</strong> {{ pago.referencia }}</p>
+
+    <div class="center">
+        <p><strong>Escanea para ver en línea:</strong></p>
+        <img src="{{ qr_base64 }}" alt="Código QR" width="120" height="120">
+        <small>{{ recibo_url }}</small>
+    </div>
+
+    <div class="center">
+        <div class="line"></div>
+        <p>¡Gracias por tu pago!</p>
+    </div>
+    {% if pago.usuario.telefono %}
+        <div class="center" style="margin-top: 10px;">
+            <a href="https://wa.me/{{ pago.usuario.telefono|urlencode }}?text={{ mensaje|urlencode }}"
+            target="_blank"
+            style="text-decoration: none; color: green; font-weight: bold;">
+            Enviar por WhatsApp al cliente 📱
+            </a>
+        </div>
+    {% endif %}
+
+
+
+    <script>
+        window.onload = function () {
+            window.print();
+        };
+    </script>
+</body>
+</html>

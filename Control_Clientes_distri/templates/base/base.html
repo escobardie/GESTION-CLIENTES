@@ -228,16 +228,54 @@
             </li>
 
             {% if usuario_rol == 'cliente' %}
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="{% url 'listado_subusuarios'%}">
-                <i class="bi bi-person"></i>
-                <span>listar Subusuario</span>
-              </a>
-            </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'listado_subusuarios'%}">
+                  <i class="bi bi-person"></i>
+                  <span>listar Subusuario</span>
+                </a>
+              </li>
+            {% endif %}
 
+            {% if usuario_rol == 'superusuario' %}
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'crear_suscripcion'%}">
+                  <i class="bi bi-person"></i>
+                  <span>Crear Suscripción</span>
+                </a>
+              </li>
+               <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'crear_suscrip_clte'%}">
+                  <i class="bi bi-person"></i>
+                  <span>Asignar Suscripción</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'registrar_pago'%}">
+                  <i class="bi bi-person"></i>
+                  <span>Registrar Pago</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="{% url 'lista_pagos'%}">
+                  <i class="bi bi-person"></i>
+                  <span>listar Pagos</span>
+                </a>
+              </li>
             {% endif %}
 
             {% comment %}

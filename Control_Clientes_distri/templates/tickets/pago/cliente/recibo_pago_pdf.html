@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: monospace;
+            font-size: 12px;
+            width: 58mm;
+            padding: 10px;
+            color: #000;
+        }
+        .center {
+            text-align: center;
+        }
+        .line {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+        }
+        .title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .field {
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <div class="title">RECIBO DE PAGO</div>
+        <div>{{ pago.fecha_pago|date:"Y-m-d H:i" }}</div>
+        <div class="line"></div>
+    </div>
+
+    <div class="field"><strong>Cliente:</strong> {{ pago.usuario.username }}</div>
+    <div class="field"><strong>Teléfono:</strong> {{ pago.usuario.telefono }}</div>
+    <div class="field"><strong>Suscripción:</strong> {{ pago.suscripcion.nombre_suscripcion }}</div>
+    <div class="field"><strong>Monto:</strong> ${{ pago.monto }}</div>
+    <div class="field"><strong>Método:</strong> {{ pago.get_metodo_pago_display }}</div>
+
+    {% if pago.descripcion %}
+        <div class="field"><strong>Nota:</strong> {{ pago.descripcion }}</div>
+    {% endif %}
+
+    <div class="line"></div>
+    <div class="field"><strong>Referencia:</strong> {{ pago.referencia }}</div>
+
+    <div class="center" style="margin-top: 10px;">
+        <p>¡Gracias por tu pago!</p>
+    </div>
+</body>
+</html>
