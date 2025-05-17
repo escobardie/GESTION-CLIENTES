@@ -1,0 +1,101 @@
+si al agregar campuos nuevos en tu modelos, y al realizar la migracion se genera
+un mensaje de este tipo:
+"Callable default on unique field visita.referencia will not generate unique values upon migrating.
+Please choose how to proceed:
+ 1) Continue making this migration as the first step in writing a manual migration to generate unique values described here: https://docs.djangoproject.com/en/5.1/howto/writing-migrations/#migrations-that-add-unique-fields.
+ 2) Quit and edit field options in models.py.
+Select an option:"
+
+PASO A SEGUIR:
+SELECIONES OPCION 2.
+1. Cambia los campos en models.py a esto (temporalmente):
+referencia = models.CharField(
+    max_length=100,
+    unique=True,
+    editable=False,
+    null=True,  # <-- temporal
+    verbose_name="Referencia de Visita"
+)
+
+token = models.CharField(
+    max_length=64,
+    unique=True,
+    editable=False,
+    null=True,  # <-- temporal
+    verbose_name="Token de acceso seguro"
+)
+
+2. Corre la migración:
+    python manage.py makemigrations
+    python manage.py migrate
+
+3. Crea una migración vacía para llenar esos campos:
+    python manage.py makemigrations --empty visitas
+    Edita el archivo generado así:
+from django.db import migrations
+import uuid
+
+def generar_token_y_referencia(apps, schema_editor):
+    Visita = apps.get_model('visitas', 'Visita')
+    for visita in Visita.objects.filter(token__isnull=True):
+        visita.token = uuid.uuid4().hex
+        visita.referencia = str(uuid.uuid4())
+        visita.save()
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('visitas', 'XXXX_anterior'),  # Reemplaza con la migración anterior
+    ]
+
+    operations = [
+        migrations.RunPython(generar_token_y_referencia),
+    ]
+
+4. Luego cambia el modelo a la versión final:
+referencia = models.CharField(
+    max_length=100,
+    unique=True,
+    editable=False,
+    null=False,
+    default=uuid.uuid4,
+    verbose_name="Referencia de Visita"
+)
+
+token = models.CharField(
+    max_length=64,
+    unique=True,
+    editable=False,
+    null=False,
+    default=uuid.uuid4().hex,
+    verbose_name="Token de acceso seguro"
+)
+
+5. Crea y aplica la migración final:
+python manage.py makemigrations
+python manage.py migrate
+
+NUEVO MENSAJE:
+It is impossible to change a nullable field 'token' on visita to non-nullable without providing a default. This is because the database needs something to populate existing rows.
+Please select a fix:
+ 1) Provide a one-off default now (will be set on all existing rows with a null value for this column)
+ 2) Ignore for now. Existing rows that contain NULL values will have to be handled manually, for example with a RunPython or RunSQL operation.
+ 3) Quit and manually define a default value in models.py.
+Select an option:
+
+PASO A SEGUIR:
+Selecciona la opción 2 – Ignore for now.
+Esto le dice a Django: “Tranquilo, ya me encargué de que no haya valores nulos”.
+
+¿Cómo confirmar que no hay NULL antes?
+En el shell de Django:
+python manage.py shell
+PEGAR EN LA CONSOLA:
+from apps.visitas.models import Visita
+Visita.objects.filter(token__isnull=True).count()
+Si devuelve 0, puedes avanzar sin problemas.
+
+Luego de seleccionar la opción 2:
+Django generará la migración para establecer null=False
+Ejecuta:
+python manage.py migrate

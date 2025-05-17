@@ -52,11 +52,15 @@
                 <form method="POST">
                       {% csrf_token %}
                       {{ form.as_p }}
+                      <p>
+                        <label for="id_observacion_visita">Observacion:</label>
+                        <textarea name="observacion_visita" cols="40" rows="10" class="form-control" id="observacion_visita"></textarea>
+                      </p>
                     <div class="col-sm-10">
                       <button type="submit" class="btn btn-primary">Cargar</button>
                     </div>
                   </div>
-  
+
                 </form><!-- End Form  -->
   
               </div>
@@ -76,14 +80,14 @@
         const retornoBidonesInput = document.getElementById('id_retorno_bidones');
         const bidonesAcumuladosInput = document.getElementById('id_bidones_acumulados');
 
-        let previousEntregaBidones = parseFloat(entregaBidonesInput.value) || 0;
-        let previousRetornoBidones = parseFloat(retornoBidonesInput.value) || 0;
+        let previousEntregaBidones = parseInt(entregaBidonesInput.value) || 0;
+        let previousRetornoBidones = parseInt(retornoBidonesInput.value) || 0;
 
         function updateBidones() {
-            const bidonesDisponibles = parseFloat(bidonesDisponiblesInput.value) || 0;
-            const entregaBidones = parseFloat(entregaBidonesInput.value) || 0;
-            const retornoBidones = parseFloat(retornoBidonesInput.value) || 0;
-            const bidonesAcumulados = parseFloat(bidonesAcumuladosInput.value) || 0;
+            const bidonesDisponibles = parseInt(bidonesDisponiblesInput.value) || 0;
+            const entregaBidones = parseInt(entregaBidonesInput.value) || 0;
+            const retornoBidones = parseInt(retornoBidonesInput.value) || 0;
+            const bidonesAcumulados = parseInt(bidonesAcumuladosInput.value) || 0;
 
             // Calcula la diferencia en entrega_bidones
             const entregaDifference = entregaBidones - previousEntregaBidones;
@@ -91,10 +95,10 @@
             const retornoDifference = retornoBidones - previousRetornoBidones;
 
             // Actualiza bidones_disponibles
-            bidonesDisponiblesInput.value = (bidonesDisponibles - entregaDifference).toFixed(2);
+            bidonesDisponiblesInput.value = (bidonesDisponibles - entregaDifference);
 
             // Actualiza bidones_acumulados
-            bidonesAcumuladosInput.value = (bidonesAcumulados + entregaDifference - retornoDifference).toFixed(2);
+            bidonesAcumuladosInput.value = (bidonesAcumulados + entregaDifference - retornoDifference);
 
             // Actualiza los valores anteriores
             previousEntregaBidones = entregaBidones;

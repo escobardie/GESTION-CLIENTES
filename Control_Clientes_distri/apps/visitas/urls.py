@@ -8,5 +8,7 @@ urlpatterns = [
     path('listar_visitas_cliente/<int:id>', views.ListarVisitasClienteView.as_view(), name='listar_visitas_cliente'),
     path('listar_visitas/', views.ListarVisitasView.as_view(), name='listar_visitas'),
     
-    
+    path('visitas/ticket/<str:token>/', views.TicketVisitaImprimibleView.as_view(), name='ticket_visita'),
+    path('visitas/ticket/token/<str:token>/', views.TicketVisitaImprimibleTokenView.as_view(), name='ticket_visita_token'),
+
 ]

@@ -1,5 +1,5 @@
 from django import forms
-from .models import Cliente, PromoPorCliente
+from .models import Cliente, PromoPorCliente, Promo
 
 class AddClienteForm(forms.ModelForm):
 
@@ -30,17 +30,20 @@ class AddPromoPorClienteForm(forms.ModelForm):
             'nota': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args,user=None, **kwargs):
         super().__init__(*args, **kwargs)
         # Deshabilitar el campo cliente para que no sea editable
         self.fields['cliente'].disabled = True
+        if user is not None:
+            # Filtrar las promos asociadas al usuario logueado
+            self.fields['promo'].queryset = Promo.objects.filter(usuario=user)
 
 class ServisVisitaClienteForm(forms.ModelForm):
     class Meta:
         model = PromoPorCliente
         fields = ['cliente', 'promo','bidones_disponibles',
-        'entrega_bidones', 'retorno_bidones', 'bidones_acumulados',
-        'codigo_dispenser', 'nota']
+        'entrega_bidones', 'retorno_bidones', 'bidones_acumulados']
+        # ,'codigo_dispenser', 'nota']
 
         widgets = {
             'cliente': forms.Select(attrs={'class': 'form-control'}),
@@ -49,14 +52,14 @@ class ServisVisitaClienteForm(forms.ModelForm):
             'entrega_bidones': forms.NumberInput(attrs={'class': 'form-control'}),
             'retorno_bidones': forms.NumberInput(attrs={'class': 'form-control'}),
             'bidones_acumulados': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
-            'codigo_dispenser': forms.TextInput(attrs={'class': 'form-control'}),
-            'nota': forms.Textarea(attrs={'class': 'form-control'}),
+            # 'codigo_dispenser': forms.TextInput(attrs={'class': 'form-control'}),
+            # 'nota': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Deshabilitar el campo cliente para que no sea editable
         self.fields['cliente'].disabled = True
-        self.fields['codigo_dispenser'].disabled = True
-        self.fields['nota'].disabled = True
+        # self.fields['codigo_dispenser'].disabled = True
+        # self.fields['nota'].disabled = True
         self.fields['promo'].disabled = True

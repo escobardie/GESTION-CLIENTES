@@ -165,11 +165,11 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                                {% for visita in visitas_cliente %}
+                                                {% for visita in visitas_combinadas %}
                                                     <tr>
                                                         <th scope="row">{{visita.fecha_visita}}</th>
                                                         <td>
-                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">VISITA</button>
+                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">Ver</button>
                                                         </td>
                                                     </tr>                                               
                                                     <!-- The Modal -->
@@ -184,9 +184,32 @@
                                                                 </div>
                                                         
                                                                 <!-- Modal body -->
-                                                                <div class="modal-body">
-                                                                    {{visita.nota|safe }}
+                                                                {% if visita.b_disponible %}
+                                                                <div class="modal-body">                                                                    
+                                                                        <p> DISPONIBLE: {{visita.b_disponible }}</p>
+                                                                        <p> ENTREGADO: {{visita.b_entregado }}</p>
+                                                                        <p> RETIRADO: {{visita.b_retirado }}</p>
+                                                                        <p> TIENE EL CLIENTE: {{visita.b_en_poder_clte }}</p>
+                                                                        <p> NOTA: {{visita.nota }}</p>
                                                                 </div>
+                                                                <!-- Botón para generar ticket -->
+                                                                <div class="mt-3 text-end">
+                                                                    <a href="{% url 'ticket_visita_token' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                                        🧾 Generar Ticket token
+                                                                    </a>
+                                                                </div>
+                                                                {% else  %}
+                                                                <div class="modal-body">                                                                    
+                                                                    <p> NOTA: {{visita.nota }}</p>
+                                                                </div>
+                                                                <!-- Botón para generar ticket -->
+                                                                <div class="mt-3 text-end">
+                                                                    <a href="{% url 'ticket_visita' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                                        🧾 Generar Ticket 
+                                                                    </a>
+                                                                </div>
+                                                                
+                                                                {% endif %} 
                                                         
                                                                 <!-- Modal footer -->
                                                                 <div class="modal-footer">
@@ -382,7 +405,7 @@
                 const today = new Date().toISOString().split('T')[0];
         
                 // Si la fecha está vencida, deshabilitar el botón
-                if (promoFechaPago && promoFechaPago < today) {
+                if  (promoFechaPago && new Date(promoFechaPago) < new Date(today))  {
                     servisVisitaButton.disabled = true;
                     servisVisitaButton.removeAttribute('onclick');
                     return;

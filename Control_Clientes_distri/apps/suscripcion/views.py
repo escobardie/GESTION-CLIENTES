@@ -233,7 +233,8 @@ class ReciboPagoImprimibleView(DetailView):
 
         # Generar QR con la URL
         qr_b64 = generar_qr_base64(recibo_url)
-
+        print("entro por aca")
+        print(pago.pk)
         context['qr_base64'] = mark_safe(f"data:image/png;base64,{qr_b64}")
         context['recibo_url'] = recibo_url
 

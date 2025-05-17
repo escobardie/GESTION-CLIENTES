@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket de Visita</title>
+    <style>
+        @page {
+            size: 58mm auto;
+            margin: 0;
+        }
+
+        body {
+            font-family: monospace;
+            font-size: 12px;
+            width: 58mm;
+            padding: 10px;
+            margin: 0 auto;
+            color: #000;
+            background: #fff;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .line {
+            border-top: 1px dashed #000;
+            margin: 6px 0;
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .field {
+            margin: 2px 0;
+        }
+
+        img {
+            display: block;
+            margin: 5px auto 0;
+        }
+
+        small {
+            word-break: break-all;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <div class="title">TICKET DE VISITA</div>
+        <div>{{ visita.fecha_visita|date:"Y-m-d H:i" }}</div>
+        <div class="line"></div>
+    </div>
+    <div class="center">
+        <p>{{ visita.usuario.empresa_nombre }}</p>
+    </div>
+    {% comment %} <div class="field"><strong>Cliente:</strong> {{ visita.cliente.apellido }} {{ visita.cliente.nombre }}</div> {% endcomment %}
+    <p>
+        <strong>Cliente:</strong>
+        {{ visita.cliente.apellido|default:"" }} {{ visita.cliente.nombre|default:"" }}
+    </p>
+    {% if visita.b_disponible %}
+    <p> <strong>DISPONIBLE:</strong> {{visita.b_disponible }}</p>
+    <p> <strong>ENTREGADO:</strong> {{visita.b_entregado }}</p>
+    <p> <strong>RETIRADO: </strong>{{visita.b_retirado }}</p>
+    <p> <strong>TIENE EL CLIENTE:</strong> {{visita.b_en_poder_clte }}</p>
+    {% endif %}
+    {% if visita.nota %}
+    <p>
+        <strong>Descripcion:</strong>
+        {{ visita.nota }}
+    </p>
+        
+    {% endif %}
+    
+    
+
+    <div class="line"></div>
+    <p><strong>Referencia:</strong> {{ visita.referencia }}</p>
+
+    <div class="center">
+        <p><strong>Escanea para ver en línea:</strong></p>
+        <img src="{{ qr_base64 }}" alt="Código QR" width="120" height="120">
+        <small>{{ ticket_url }}</small>
+    </div>
+
+    {% if visita.cliente.telefono %}
+        <div class="center" style="margin-top: 10px;">
+            <a href="https://wa.me/{{ visita.cliente.telefono|urlencode }}?text={{ mensaje|urlencode }}"
+            target="_blank"
+            style="text-decoration: none; color: green; font-weight: bold;">
+            Enviar por WhatsApp al cliente 📱
+            </a>
+        </div>
+    {% endif %}
+
+    <script>
+        window.onload = function () {
+            window.print();
+        };
+    </script>
+</body>
+</html>

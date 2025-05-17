@@ -159,9 +159,9 @@ class PagoClienteCreateView(LoginRequiredMixin,ClienteAutorizacionMixin, CreateV
 
         promo_por_cliente = get_object_or_404(PromoPorCliente, cliente=cliente, promo=promo_instance)
 
-        #print(fecha_actual)
+        print(fecha_actual)
         nueva_fecha_pago = fecha_actual + relativedelta(months=1)
-        #print(nueva_fecha_pago)
+        print(nueva_fecha_pago)
         promo_por_cliente.fecha_pago_promo = nueva_fecha_pago
         promo_por_cliente.bidones_disponibles = promo_instance.cant_bidones
 

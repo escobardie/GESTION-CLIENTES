@@ -33,8 +33,6 @@ class Suscripcion(models.Model):
     
     def __str__(self):
         return f"{self.nombre_suscripcion} - ${self.valor_suscripcion}"
-    
-
 
 class SuscripcionPorUsuario(models.Model):
     usuario = models.OneToOneField(

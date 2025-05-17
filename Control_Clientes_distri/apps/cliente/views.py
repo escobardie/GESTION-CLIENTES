@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
 from datetime import datetime
-from apps.visitas.models import Visita
+from apps.visitas.models import Visita, VisitaServis
 from apps.pagos.models import Pagos
 from apps.ventas.models import Venta
 from dateutil.relativedelta import relativedelta
@@ -14,6 +14,7 @@ from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from apps.usuarios.mixins import ClienteAutorizacionMixin
+from itertools import chain
 
 
 class IndexView(LoginRequiredMixin,TemplateView):
@@ -112,11 +113,21 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
         if ultima_pago and ultima_pago.fecha_pago_promo < fecha_actual:
             estado_promo_vencida = True
         fecha_pago_clte = ultima_pago.fecha_pago_promo if ultima_pago else "Sin Pagos Realizados"
-
+        
+        visitas_combinadas = sorted(
+            chain(
+                Visita.objects.filter(cliente=cliente),
+                VisitaServis.objects.filter(cliente=cliente)
+            ),
+            key=lambda x: x.fecha_visita,
+            reverse=True
+        )[:10]
         context.update({
             'pagos_cliente': Pagos.objects.filter(cliente=cliente).order_by('-fecha_pago')[:10],
             'ventas_cliente': Venta.objects.filter(cliente=cliente).order_by('-fecha_venta')[:10],
-            'visitas_cliente': Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')[:10],
+            # 'visitas_cliente': Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')[:10],
+            # 'visitas_servis': VisitaServis.objects.filter(cliente=cliente).order_by('-fecha_visita')[:10],
+            'visitas_combinadas': visitas_combinadas,
             'fecha_pago': fecha_pago_clte,
             'fecha_visita': fecha_visita_clte,
             'promociones': promociones_del_cliente,
@@ -155,6 +166,12 @@ class PromoPorClienteCreateView(LoginRequiredMixin, ClienteAutorizacionMixin, Cr
         un_año_default = ( fecha_actual + relativedelta(years=1)).isoformat()
         un_mes_default = ( fecha_actual + relativedelta(months=1)).isoformat()
         return {'cliente': cliente, 'fin_promo': un_año_default, 'fecha_pago_promo': un_mes_default}
+    
+    def get_form_kwargs(self):
+        ## usamos esto para enviar el usuario al form y asi filtrar sus propias promociones.
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user  # Aquí pasamos el usuario al formulario
+        return kwargs
 
     def form_valid(self, form):
         # Si es subusuario, usar su cliente asociado
@@ -216,30 +233,27 @@ class ServisVisitaUpdateView(LoginRequiredMixin, UpdateView):
         )
         cliente = self.get_cliente_data()
         promo_id = self.request.GET.get('id_promo')
-        bidones_disponibles = self.request.POST.get('bidones_disponibles')
+        bidones_disponibles = int(self.request.POST.get('bidones_disponibles'))
         entrega_bidones = int(self.request.POST.get('entrega_bidones'))
         retorno_bidones = int(self.request.POST.get('retorno_bidones'))
-        bidones_acumulados = self.request.POST.get('bidones_acumulados')
+        bidones_acumulados = int(self.request.POST.get('bidones_acumulados'))
+        observacion_visita = self.request.POST.get('observacion_visita')
+
         PromoPorCliente = form.save(commit=False)
         PromoPorCliente.entrega_bidones = 0
         PromoPorCliente.retorno_bidones = 0
         PromoPorCliente.save()
+
         promo = get_object_or_404(models.PromoPorCliente, id=promo_id)
-        visita = Visita.objects.create(
+        visitaservis = VisitaServis.objects.create(
             usuario=usuario_asociado,
             cliente=cliente,
-            # nota="<ul>"+
-            #      f"<li>PROMOCION:  {promo.promo.nombre_promo}</li>"+
-            #      f"<li>BIDONES DISPONIBLES:  {bidones_disponibles}</li>"+
-            #      f"<li>BIDONES ENTREGADOS AL CLIENTE: {entrega_bidones} </li>"+
-            #      f"<li>BIDONES RETIRADOS DEL DOMICILIO:{retorno_bidones}</li>"+
-            #      f"<li>BIDONES EN PODER DEL CLIENTE: {bidones_acumulados}</li>"+
-            #      "</ul>"
-            nota =  f"<p><strong>Promoción:</strong> {promo.promo.nombre_promo}</p>"+
-                    f"<p><strong>Bidones Disponibles:</strong> {bidones_disponibles}</p>"+
-                    f"<p><strong>Bidones Entregados al cliente:</strong> {entrega_bidones}</p>"+
-                    f"<p><strong>Bidones Retirados del domicilio:</strong> {retorno_bidones}</p>"+
-                    f"<p><strong>Bidones en poder del cliente:</strong> {bidones_acumulados}</p>"
+            nombre_promocion=promo.promo.nombre_promo,
+            b_disponible=bidones_disponibles,
+            b_entregado=entrega_bidones,
+            b_retirado=retorno_bidones,
+            b_en_poder_clte=bidones_acumulados,
+            nota=observacion_visita
         )
         return super().form_valid(form)
 

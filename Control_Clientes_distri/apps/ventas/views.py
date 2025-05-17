@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import ListView, FormView
@@ -59,10 +59,24 @@ class ListarVentasView(LoginRequiredMixin, ListView):
 
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
-class DetalleVentaListView(LoginRequiredMixin, ClienteAutorizacionMixin, ListView):
+class DetalleVentaListView(LoginRequiredMixin, ListView):
     model = models.VentaProducto
     template_name = "base/detalle_venta.html"
     context_object_name = 'detalle_venta'
+
+    def dispatch(self, request, *args, **kwargs):
+        ## obtenemos el id de la venta
+        self.venta_obj = get_object_or_404(models.Venta, id=self.kwargs['id'])
+        ## obtenemos el usuario (dueño) del empleado o subusuario
+        usuario_actual = (
+            request.user.cliente
+            if request.user.rol == 'subusuario'
+            else request.user
+        )
+        ## comparamos el usuario de la venta con el usuario actual (logeado)
+        if self.venta_obj.usuario != usuario_actual:
+            return redirect('acceso_denegado')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_venta_data(self):
         id_venta = self.kwargs['id']
@@ -74,7 +88,7 @@ class DetalleVentaListView(LoginRequiredMixin, ClienteAutorizacionMixin, ListVie
         return models.VentaProducto.objects.filter(venta=venta)
 
 
-class CrearVentaView(LoginRequiredMixin, ClienteAutorizacionMixin, CreateView):
+class CrearVentaView(LoginRequiredMixin, CreateView):
     model = models.Venta
     form_class = VentaForm
     template_name = 'base/forms/crear_venta.html'

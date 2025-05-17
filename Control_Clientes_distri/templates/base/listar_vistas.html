@@ -57,12 +57,38 @@
                                             {% endif %}
                                     </h5>
                                     <ul class="list-group">
+                                        {% if visita.b_disponible %}
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">DISPONIBLE:</div>
+                                                <div class="col-lg-9 col-md-8">{{ visita.b_disponible }}</div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">ENTREGADO:</div>
+                                                <div class="col-lg-9 col-md-8">{{ visita.b_entregado }}</div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">RETIRADO:</div>
+                                                <div class="col-lg-9 col-md-8">{{ visita.b_retirado }}</div>
+                                            </div>
+                                        </li>
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label ">TIENE EL CLIENTE:</div>
+                                                <div class="col-lg-9 col-md-8">{{ visita.b_en_poder_clte }}</div>
+                                            </div>
+                                        </li>
+                                        {% endif %}
                                         <li class="list-group-item">
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">Nota:</div>
                                                 <div class="col-lg-9 col-md-8">
                                                     {% if visita.nota %}
-                                                        {{ visita.nota|safe }}
+                                                        {{ visita.nota }}
                                                     {% else %}
                                                         Sin Nota
                                                     {% endif %}
@@ -72,6 +98,20 @@
 
                                         
                                     </ul><!-- End Default List group -->
+                                    <!-- Botón para generar ticket -->
+                                    {% if visita.cliente%}
+                                    <div class="mt-3 text-end">
+                                        {% if visita.b_disponible %}
+                                        <a href="{% url 'ticket_visita_token' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            🧾 Generar Ticket Token
+                                        </a>
+                                        {% else %}
+                                        <a href="{% url 'ticket_visita' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            🧾 Generar Ticket
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
 
                                 </div>
                             </div>

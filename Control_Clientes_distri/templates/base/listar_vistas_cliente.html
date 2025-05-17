@@ -47,8 +47,37 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">Lista</h5>
-
                         {% for visita in lista_vista_cliente %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ visita.fecha_visita|date:"Y-m-d H:i" }}</h5>
+                                    <ul class="list-group">
+                                        <li class="list-group-item">
+                                            <div class="row">
+                                                <div class="col-lg-3 col-md-4 label">Nota:</div>
+                                                <div class="col-lg-9 col-md-8">
+                                                    {% if visita.nota %}
+                                                        {{ visita.nota|safe }}
+                                                    {% else %}
+                                                        Sin Nota
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+
+                                    <!-- Botón para generar ticket -->
+                                    <div class="mt-3 text-end">
+                                        <a href="{% url 'ticket_visita' visita.id %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            🧾 Generar Ticket
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+
+
+                        {% comment %} {% for visita in lista_vista_cliente %}
                             <div class="card">
                                 <div class="card-body">
 
@@ -74,7 +103,7 @@
 
                                 </div>
                             </div>
-                        {% endfor %}
+                        {% endfor %} {% endcomment %}
 
                         <!-- Centered Pagination -->
                         <nav aria-label="Page navigation example">
