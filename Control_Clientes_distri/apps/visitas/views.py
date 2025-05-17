@@ -189,7 +189,7 @@ class TicketVisitaImprimibleTokenView(DetailView):
         context['mensaje'] = (
             f"Hola {visita.cliente}, "
             f"Promocion: {visita.nombre_promocion}, "
-            f"FFuiste visitado el {visita.fecha_visita.strftime('%d/%m/%Y a las %H:%M')}."
+            f"Fuiste visitado el {visita.fecha_visita.strftime('%d/%m/%Y a las %H:%M')}."
             f"Aquí tienes tu ticket Visita: {self.request.build_absolute_uri(self.request.path)}"
         )
 

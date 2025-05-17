@@ -76,7 +76,7 @@
                                                         <a href="{% url 'info_venta' pago.venta.id %}"> N° {{pago.venta.id}} </a>
                                                     </div>
                                                 {% elif pago.promo %}
-                                                    <div class="col-lg-3 col-md-4 label ">Promocion3:</div>
+                                                    <div class="col-lg-3 col-md-4 label ">Promocion:</div>
                                                     <div class="col-lg-9 col-md-8"> {{ pago.promo.nombre_promo }}</div>
                                                 {% else %}
                                                     <div class="col-lg-3 col-md-4 label ">No cliente</div>
@@ -117,6 +117,13 @@
                                             </div>
                                         </li>
                                     </ul><!-- End Default List group -->
+                                    
+                                    <div class="mt-3 text-end">
+                                        <a href="{% url 'pago_cliente_recibo_token' pago.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            🧾 Generar
+                                        </a>
+                                    </div>
+                                    
 
                                 </div>
                             </div>

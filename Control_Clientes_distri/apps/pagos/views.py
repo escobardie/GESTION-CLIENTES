@@ -1,4 +1,4 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView
 from . import models, forms
 from django.urls import reverse_lazy, reverse
@@ -11,9 +11,18 @@ from apps.cliente.models import PromoPorCliente
 from django.utils import timezone
 from django.contrib.auth.mixins import LoginRequiredMixin
 from apps.usuarios.mixins import ClienteAutorizacionMixin
+from apps.ventas.models import VentaProducto
 
-# def usuario_es_admin(user):
-#     return user.groups.filter(name='admin').exists()
+import qrcode
+import base64
+from io import BytesIO
+from django.utils.html import mark_safe
+
+def generar_qr_base64(url):
+    qr = qrcode.make(url)
+    buffer = BytesIO()
+    qr.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode()
 
 ################# GESTION DE PAGOS ####################
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
@@ -173,3 +182,45 @@ class PagoClienteCreateView(LoginRequiredMixin,ClienteAutorizacionMixin, CreateV
         pago.promo = promo_instance
         pago.save()
         return super().form_valid(form)
+
+
+class TicketPagosImprimibleTokenView(DetailView):
+    model = models.Pagos
+    template_name = 'tickets/pago/cliente/recibo_pago.html'
+    context_object_name = 'pago'
+
+    def get_object(self, queryset=None):
+        token = self.kwargs.get('token')
+        return get_object_or_404(models.Pagos, token=token)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        pago = self.object
+        
+        # obtenido el pago, se busca la venta y luego su id
+        if pago.venta:
+            ventas = pago.venta.id
+            context['lista_ventas'] = VentaProducto.objects.filter(venta=ventas)
+
+        ticket_url = self.request.build_absolute_uri(self.request.path)
+        qr_b64 = generar_qr_base64(ticket_url)
+
+        context['qr_base64'] = mark_safe(f"data:image/png;base64,{qr_b64}")
+        context['ticket_url'] = ticket_url
+
+        ticket_url = self.request.build_absolute_uri(
+            reverse('pago_cliente_recibo_token', kwargs={'token': pago.token})
+        )
+
+        context['ticket_url'] = ticket_url
+
+
+        context['mensaje'] = (
+            f"Hola {pago.cliente}, "
+            f"Realizaste un pago de: $ {pago.monto}, "
+            f"Fuiste visitado el {pago.fecha_pago.strftime('%d/%m/%Y a las %H:%M')}."
+            f"Aquí tienes tu Recibo oline: {self.request.build_absolute_uri(self.request.path)}"
+        )
+
+
+        return context

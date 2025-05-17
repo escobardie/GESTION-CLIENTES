@@ -3,6 +3,8 @@ from apps.cliente.models import Cliente # Importamos el modelo Cliente desde la 
 from apps.ventas.models import Venta # Importamos el modelo Cliente desde la app cliente
 from apps.promociones.models import Promo
 from apps.usuarios.models import Usuario
+import uuid
+
 
 #################################
 ########## Modelo PAGO ##########
@@ -20,6 +22,31 @@ class Pagos(models.Model):
         ('transferencia', 'Transferencia Bancaria'),
     ])
     descripcion = models.TextField(null=True, blank=True, verbose_name='Nota') # Para detalles adicionales
+    referencia = models.CharField(
+        max_length=100,
+        unique=True,
+        null=False,
+        default=uuid.uuid4,
+        editable=False,
+        verbose_name="Referencia de Pago"
+    )
+
+    token = models.CharField(
+        max_length=64,
+        unique=True,
+        null=False,
+        default=uuid.uuid4().hex,
+        editable=False,
+        verbose_name="Token de acceso seguro"
+    )
+
+
+    def save(self, *args, **kwargs):
+        if not self.referencia:
+            self.referencia = str(uuid.uuid4())
+        if not self.token:
+            self.token = uuid.uuid4().hex
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Pago'
@@ -27,6 +54,7 @@ class Pagos(models.Model):
         ordering = ['-fecha_pago']
 
     def __str__(self):
-        return f"Pago de {self.monto} el {self.fecha_pago.strftime('%Y-%m-%d')}"
+        return f"Pago de ${self.monto} por {self.usuario.username if self.usuario else '---'} el {self.fecha_pago.strftime('%Y-%m-%d')}"
+
 
     

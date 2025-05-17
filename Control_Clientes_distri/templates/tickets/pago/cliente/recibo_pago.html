@@ -4,28 +4,45 @@
     <meta charset="UTF-8">
     <title>Recibo de Pago</title>
     <style>
+        @page {
+            size: 58mm auto;
+            margin: 0;
+        }
+
         body {
             font-family: monospace;
             font-size: 12px;
             width: 58mm;
             padding: 10px;
+            margin: 0 auto;
             color: #000;
+            background: #fff;
         }
+
         .center {
             text-align: center;
         }
+
         .line {
             border-top: 1px dashed #000;
-            margin: 5px 0;
+            margin: 6px 0;
         }
+
         .title {
             font-weight: bold;
             font-size: 14px;
+            margin-bottom: 5px;
         }
+
+        .field {
+            margin: 2px 0;
+        }
+
         img {
             display: block;
-            margin: 0 auto;
+            margin: 5px auto 0;
         }
+
         small {
             word-break: break-all;
             font-size: 10px;
@@ -38,10 +55,32 @@
         <div>{{ pago.fecha_pago|date:"Y-m-d H:i" }}</div>
         <div class="line"></div>
     </div>
+    <div class="center">
+        <p>{{ pago.usuario.empresa_nombre }}</p>
+    </div>
+    {% if pago.cliente %}
+    <p><strong>cliente:</strong> {{ pago.cliente.nombre }}</p>
+    {% endif %}
+    {% if pago.venta %}    
+    {% for item in lista_ventas %}
+    <p><strong>{{ item.producto.nombre_producto }}</strong></p>
+    <p>* {{ item.cantidad }} - (%{{ item.descuento }}) =
+       $ {{item.precio_total_venta}}
+    </p>
+    {% comment %} <p><strong>nombre produ:</strong> {{ item.producto.nombre_producto }}</p>
+    <p><strong>Cant:</strong> {{ item.cantidad }}</p>
+    <p><strong>% %:</strong> {{ item.descuento }}</p>
+    <p><strong>Pcio unidad:</strong> {{ item.precio_unidad_venta }}</p> {% endcomment %}
+    
 
-    <p><strong>Cliente:</strong> {{ pago.usuario.username }}</p>
-    <p><strong>Suscripción:</strong> {{ pago.suscripcion.nombre_suscripcion }}</p>
-    <p><strong>Monto:</strong> ${{ pago.monto }}</p>
+    {% empty %}
+    <p>NO HAY VENTAS</p>
+    {% endfor %}
+    {% elif pago.promo  %}
+    <p><strong>Promocion:</strong> {{ pago.promo.nombre_promo }}</p>
+    {% endif %}
+    
+    <p><strong>Total:</strong> ${{ pago.monto }}</p>
     <p><strong>Método:</strong> {{ pago.get_metodo_pago_display }}</p>
 
     {% if pago.descripcion %}
@@ -54,7 +93,7 @@
     <div class="center">
         <p><strong>Escanea para ver en línea:</strong></p>
         <img src="{{ qr_base64 }}" alt="Código QR" width="120" height="120">
-        <small>{{ recibo_url }}</small>
+        <small>{{ ticket_url }}</small>
     </div>
 
     <div class="center">
