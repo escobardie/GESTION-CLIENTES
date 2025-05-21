@@ -35,6 +35,8 @@ urlpatterns = [
 ############################
     path('', include('apps.suscripcion.urls')),
 ############################
+    path('analytics/', include('apps.analytics.urls')),  # 👈 Muy importante
+############################
     path('admin/', admin.site.urls),
 ]
 if settings.DEBUG:

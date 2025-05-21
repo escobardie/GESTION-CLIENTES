@@ -35,15 +35,12 @@ class Pagos(models.Model):
         max_length=64,
         unique=True,
         null=False,
-        default=uuid.uuid4().hex,
         editable=False,
         verbose_name="Token de acceso seguro"
     )
 
 
     def save(self, *args, **kwargs):
-        if not self.referencia:
-            self.referencia = str(uuid.uuid4())
         if not self.token:
             self.token = uuid.uuid4().hex
         super().save(*args, **kwargs)

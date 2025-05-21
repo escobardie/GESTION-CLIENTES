@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'apps.analytics',
     'apps.cliente',
     'apps.pagos',
     'apps.productos',
@@ -34,8 +35,10 @@ INSTALLED_APPS = [
     'apps.suscripcion',
     'apps.usuarios',
     'apps.ventas',
-    'apps.visitas',    
+    'apps.visitas',
+    'channels',
 ]
+# INSTALLED_APPS += ['channels']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -67,6 +70,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'core.wsgi.application'
+ASGI_APPLICATION = 'core.asgi.application'
 
 
 # Database
@@ -139,3 +143,13 @@ LOGIN_REDIRECT_URL = '/'
 AUTH_USER_MODEL = 'usuarios.Usuario'
 # LOGIN_URL = '/login/' ## USAR ESTE LUEGO, RECOMENDADO
 LOGIN_URL = '/login/'
+
+
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+
