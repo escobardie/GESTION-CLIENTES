@@ -205,7 +205,7 @@
               </div>
             </div><!-- End Recent Sales --> {% endcomment %}
 
-            <!-- Pagos Recientes Selling -->
+            <!-- Pagos Recientes  -->
             <div class="col-12">
               <div class="card top-selling overflow-auto">
 
@@ -225,7 +225,7 @@
                 <div class="card-body pb-0">
                   <h5 class="card-title">Pagos Recientes<span>| Top 10</span></h5>
 
-                  <table class="table table-borderless">
+                  <table class="table table-borderless" id="tablaPagos">
                     <thead>
                       <tr>
                         <th scope="col">Usuario(borrar)</th>
@@ -251,22 +251,34 @@
               </div>
             </div><!-- End Pagos Recientes -->
 
-            <!-- Metrica Semanal -->
+            
+            <!-- Metrica Pagos de la Semana -->
             <div class="col-12">
               <div class="card top-selling overflow-auto">
                 <div class="card-body pb-0">
-                  <h5 class="card-title">Metrica Semanal</h5>
+                  <h5 class="card-title">Metrica Pagos de la Semana</h5>
+                  <div id="pagosSemanasChart" style="min-height: 400px;" class="echart"></div>
+                </div>
+              </div>
+            </div>
+            <!-- End Metrica Pagos de la Semana -->
+
+            <!-- Metrica Ventas de la Semana -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Metrica Ventas de la Semana</h5>
                   <div id="ventasChart" style="min-height: 400px;" class="echart"></div>
                 </div>
               </div>
             </div>
-            <!-- End Metrica Semanal -->
+            <!-- End Metrica Ventas de la Semana -->
              
             <!-- Metrica Mensual -->
             <div class="col-12">
               <div class="card top-selling overflow-auto">
                 <div class="card-body pb-0">
-                  <h5 class="card-title">Metrica Mensual</h5> 
+                  <h5 class="card-title">Metrica Pagos Mensual</h5> 
                   <div id="ultimosPagosChart" style="min-height: 400px;" class="echart"></div>
                   {% comment %} <canvas id="barChart" style="max-height: 400px;"></canvas>
                   <script>
@@ -338,7 +350,7 @@
 
             <div class="card-body">
               <h5 class="card-title">Productos Vendidos<span>| Total</span></h5>
-              <table class="table table-borderless">
+              <table class="table table-borderless" id="productosTop">
                     <thead>
                       <tr>
                         <th>Producto</th>
@@ -366,9 +378,6 @@
       </div>
     </section>
     <script>
-        const ventasLabels = {{ ventas_labels|safe }};
-        const ventasData = {{ ventas_totales|safe }};
-        
         // 1. Valor inicial desde Django
         const valorInicial = Number({{ pagos_total_mes|floatformat:2 }});
 
@@ -382,97 +391,46 @@
         // 3. Mostrar el valor inicial
         document.getElementById('pagosTotal').textContent = formateador.format(valorInicial);
 
-        // Inicializar el gráfico de ventas // original
-        {% comment %} const ventasChart = new Chart(document.getElementById('ventasChart'), {
-            type: 'bar',
-            data: {
-                labels: ventasLabels,
-                datasets: [{
-                    label: 'Ventas por Día',
-                    data: ventasData,
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Total Ventas ($)' }
-                    },
-                    x: {
-                        title: { display: true, text: 'Fecha' }
-                    }
-                }
-            }
-        }); {% endcomment %}
-        document.addEventListener("DOMContentLoaded", () => {
-          // Datos desde Django
-          const ventasLabels = {{ ventas_labels|safe }};
-          const ventasData = {{ ventas_totales|safe }};
-
-          // Inicializar ECharts
-          const chart = echarts.init(document.querySelector("#ventasChart"));
-          chart.setOption({
-            xAxis: {
-              type: 'category',
-              data: ventasLabels
-            },
-            yAxis: {
-              type: 'value',
-              name: 'Total Ventas ($)'
-            },
-            series: [{
-              data: ventasData,
-              type: 'bar',
-              itemStyle: {
-                color: 'rgba(75, 192, 192, 0.6)'
-              }
-            }],
-            tooltip: {
-              trigger: 'axis'
-            },
-            title: {
-              text: 'Ventas por Día',
-              left: 'center'
-            }
-          });
-        });
+        let ventasChart, ultimosPagosChart, pagosSemanasChart;
 
         document.addEventListener("DOMContentLoaded", () => {
-          // Datos desde Django
-          const pagoMesesLabels = {{ pago_ultimos_6_meses_labels|safe }};
-          const pagoMesesData = {{ pago_ultimos_6_meses_totales|safe }};
+            // --- VENTAS POR DIA EN LA SEMANA ---
+            const ventasLabels = {{ ventas_labels|safe }};
+            const ventasData = {{ ventas_totales|safe }};
+            ventasChart = echarts.init(document.querySelector("#ventasChart"));
+            ventasChart.setOption({
+                xAxis: { type: 'category', data: ventasLabels },
+                yAxis: { type: 'value', name: 'Total Ventas ($)' },
+                series: [{ data: ventasData, type: 'bar', itemStyle: { color: 'rgba(75, 192, 192, 0.6)' } }],
+                tooltip: { trigger: 'axis' },
+                title: { text: 'Ventas de la Semana', left: 'center' }
+            });
 
-          // Inicializar ECharts
-          const chart = echarts.init(document.querySelector("#ultimosPagosChart"));
-          chart.setOption({
-            xAxis: {
-              type: 'category',
-              data: pagoMesesLabels
-            },
-            yAxis: {
-              type: 'value',
-              name: 'Total Ventas ($)'
-            },
-            series: [{
-              data: pagoMesesData,
-              type: 'bar',
-              itemStyle: {
-                color: 'rgba(75, 192, 192, 0.6)'
-              }
-            }],
-            tooltip: {
-              trigger: 'axis'
-            },
-            title: {
-              text: 'Pagos por Mes',
-              left: 'center'
-            }
-          });
+            // --- PAGOS TOTALES ULTIMOS 6 MESES ---
+            const pagoMesesLabels = {{ pago_ultimos_6_meses_labels|safe }};
+            const pagoMesesData = {{ pago_ultimos_6_meses_totales|safe }};
+            ultimosPagosChart = echarts.init(document.querySelector("#ultimosPagosChart"));
+            ultimosPagosChart.setOption({
+                xAxis: { type: 'category', data: pagoMesesLabels },
+                yAxis: { type: 'value', name: 'Total Pagos ($)' },
+                series: [{ data: pagoMesesData, type: 'bar', itemStyle: { color: 'rgba(75, 192, 192, 0.6)' } }],
+                tooltip: { trigger: 'axis' },
+                title: { text: 'Pagos por Mes', left: 'center' }
+            });
+
+            // --- PAGOS POR DIA EN LA SEMANA ---
+            const pagoSemanasLabels = {{ pagos_semana_labels|safe }};
+            const pagoSemanasData = {{ pagos_semana_totales|safe }};
+            pagosSemanasChart = echarts.init(document.querySelector("#pagosSemanasChart"));
+            pagosSemanasChart.setOption({
+                xAxis: { type: 'category', data: pagoSemanasLabels },
+                yAxis: { type: 'value', name: 'Total Pagos ($)' },
+                series: [{ data: pagoSemanasData, type: 'bar', itemStyle: { color: 'rgba(75, 192, 192, 0.6)' } }],
+                tooltip: { trigger: 'axis' },
+                title: { text: 'Pagos de la Semana', left: 'center' }
+            });
         });
+
 
         // Conexión WebSocket
         const socket = new WebSocket("ws://" + window.location.host + "/ws/dashboard/");
@@ -486,7 +444,8 @@
                 .then(response => response.json())
                 .then(data => {
                     document.getElementById('countCltesActual').textContent = data.count_clientes;
-                });
+                })
+                .catch(error => console.error("Error al obtener Cantidad de clientes:", error));
             
             // Cargar Top ventas de productos
             fetch('/analytics/api/productos/')
@@ -500,7 +459,8 @@
                         row.innerHTML = `<td>${p.nombre}</td><td>${p.cantidad}</td>`;
                         tabla.appendChild(row);
                     });
-                });
+                })
+                .catch(error => console.error("Error al obtener Top Productos:", error));
             
             // Cargar pagos recientes dinámicamente
             fetch('/analytics/api/pagos_recientes/')
@@ -514,7 +474,8 @@
                         row.innerHTML = `<td>${p.cliente}</td><td>$${p.monto}</td><td>${p.fecha}</td>`;
                         tabla.appendChild(row);
                     });
-                });
+                })
+                .catch(error => console.error("Error al obtener Pagos Recientes:", error));
 
             // Actualiza gráfico de ventas
             fetch('/analytics/api/ventas/')
@@ -523,15 +484,26 @@
                     ventasChart.data.labels = update.labels;
                     ventasChart.data.datasets[0].data = update.totales;
                     ventasChart.update();
-                });
-            // Actualiza gráfico de ventas
+                })
+                .catch(error => console.error("Error al obtener Ventas:", error));
+            // Actualiza gráfico de pagos semana
+            fetch('/analytics/api/pagos_semana/')
+                .then(response => response.json())
+                .then(update => {
+                    pagosSemanasChart.data.labels = update.labels;
+                    pagosSemanasChart.data.datasets[0].data = update.totales;
+                    pagosSemanasChart.update();
+                })
+                .catch(error => console.error("Error al obtener Pagos de la Semana:", error));
+            // Actualiza gráfico de pagos Meses
             fetch('/analytics/api/ultimos_meses/')
                 .then(response => response.json())
                 .then(update => {
                     ultimosPagosChart.data.labels = update.labels;
                     ultimosPagosChart.data.datasets[0].data = update.totales;
                     ultimosPagosChart.update();
-                });
+                })
+                .catch(error => console.error("Error al obtener Pagos Meses:", error));
 
             // Actualiza total de pagos
             fetch('/analytics/api/pagos/')
@@ -539,7 +511,8 @@
                 .then(data => {
                   const total = Number(data.total);
                   document.getElementById('pagosTotal').textContent = formateador.format(total);
-                });
+                })
+                .catch(error => console.error("Error al obtener Total Pagos:", error));
         };
     </script>
 </main><!-- End #main -->

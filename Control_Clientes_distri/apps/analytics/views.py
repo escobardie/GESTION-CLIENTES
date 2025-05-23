@@ -1,5 +1,5 @@
 # from django.shortcuts import render, redirect
-from .services import ventas_ultimos_7_dias, pagos_por_mes_actual, pagos_recientes, productos_mas_vendidos, cant_cliente_actuales, pago_ultimos_6_meses
+from .services import ventas_ultimos_7_dias, pagos_por_mes_actual, pagos_recientes, productos_mas_vendidos, cant_cliente_actuales, pago_ultimos_6_meses, pagos_ultimos_7_dias
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.views import View
@@ -14,6 +14,7 @@ class DashboardEstadisticasView(LoginRequiredMixin, ClienteOnlyMixin, TemplateVi
         context = super().get_context_data(**kwargs)
         usuario = self.request.user
         ventas_data = ventas_ultimos_7_dias(usuario)
+        pagos_semana_data = pagos_ultimos_7_dias(usuario)
         pagos_total_mese_actual = pagos_por_mes_actual(usuario)
         pago_ultimos_6meses = pago_ultimos_6_meses(usuario)
         pagos_list = pagos_recientes(usuario)
@@ -23,6 +24,8 @@ class DashboardEstadisticasView(LoginRequiredMixin, ClienteOnlyMixin, TemplateVi
         context.update({
             'ventas_labels': [v['fecha'] for v in ventas_data],
             'ventas_totales': [v['total'] for v in ventas_data],
+            'pagos_semana_labels': [v['fecha'] for v in pagos_semana_data],
+            'pagos_semana_totales': [v['total'] for v in pagos_semana_data],
             'pago_ultimos_6_meses_labels': [v['mes'] for v in pago_ultimos_6meses],
             'pago_ultimos_6_meses_totales': [v['total'] for v in pago_ultimos_6meses],
             'pagos_total_mes': pagos_total_mese_actual,
@@ -32,6 +35,15 @@ class DashboardEstadisticasView(LoginRequiredMixin, ClienteOnlyMixin, TemplateVi
             'cant_clientes': cant_clientes
         })
         return context
+
+class PagosSemanaAPI(LoginRequiredMixin, ClienteOnlyMixin, View):
+    def get(self, request):
+        usuario = request.user
+        pagos = pagos_ultimos_7_dias(usuario)
+        return JsonResponse({
+            'labels': [v['fecha'] for v in pagos],
+            'totales': [v['total'] for v in pagos]
+        })
 
 class VentasAPI(LoginRequiredMixin, ClienteOnlyMixin, View):
     def get(self, request):

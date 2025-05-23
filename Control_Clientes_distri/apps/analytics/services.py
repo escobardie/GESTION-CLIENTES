@@ -35,6 +35,28 @@ def ventas_ultimos_7_dias(usuario):
         datos.append({'fecha': dia.strftime('%d/%m'), 'total': float(total)})
     return datos
 
+def pagos_ultimos_7_dias(usuario):
+    # .annotate(fecha_solo=TruncDate('fecha_venta'))
+    # Agrega un nuevo campo fecha_solo a cada objeto, conteniendo solo la fecha (sin la hora) de fecha_venta.
+
+    # .filter(usuario=usuario, fecha_solo=dia)
+    # Filtra las ventas hechas por ese usuario en esa fecha específica (dia).
+
+    # .aggregate(suma=Sum('total_venta'))['suma'] or 0
+    # Suma el total de ventas para ese día. Si no hay resultados, devuelve 0.
+
+    # .append(...)
+    # Agrega esa información (fecha y total) a la lista datos.
+    hoy = now().date()
+    datos = []
+    for i in range(6, -1, -1):  # Últimos 7 días
+        dia = hoy - timedelta(days=i)
+        total = Pagos.objects \
+        .annotate(fecha_solo=TruncDate('fecha_pago')) \
+        .filter(usuario=usuario,fecha_solo=dia) \
+        .aggregate(suma=Sum('monto'))['suma'] or 0
+        datos.append({'fecha': dia.strftime('%d/%m'), 'total': float(total)})
+    return datos
 
 def pagos_por_mes_actual(usuario):
     print("Entro una services.py pagos_por_mes_actual")
