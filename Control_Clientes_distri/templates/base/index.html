@@ -131,7 +131,7 @@
             </div><!-- End Customers Card -->
 
 
-            <!-- Recent Sales -->
+            {% comment %} <!-- Recent Sales -->
             <div class="col-12">
               <div class="card recent-sales overflow-auto">
 
@@ -203,7 +203,7 @@
                 </div>
 
               </div>
-            </div><!-- End Recent Sales -->
+            </div><!-- End Recent Sales --> {% endcomment %}
 
             <!-- Top Selling -->
             <div class="col-12">
@@ -278,6 +278,86 @@
 
               </div>
             </div><!-- End Top Selling -->
+
+            <!-- Bar Chart -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Bar CHart</h5>
+                  <div id="barChart2" style="min-height: 400px;" class="echart"></div>
+                  <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                      echarts.init(document.querySelector("#barChart2")).setOption({
+                        xAxis: {
+                          type: 'category',
+                          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                        },
+                        yAxis: {
+                          type: 'value'
+                        },
+                        series: [{
+                          data: [120, 200, 150, 80, 70, 110, 130],
+                          type: 'bar'
+                        }]
+                      });
+                    });
+                  </script>
+                </div>
+              </div>
+            </div>
+            <!-- End Bar CHart -->
+             
+            <!-- Bar Chart -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Bar CHart</h5>
+                  <canvas id="barChart" style="max-height: 400px;"></canvas>
+                  <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                      new Chart(document.querySelector('#barChart'), {
+                        type: 'bar',
+                        data: {
+                          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                          datasets: [{
+                            label: 'Bar Chart',
+                            data: [65, 59, 80, 81, 56, 55, 40],
+                            backgroundColor: [
+                              'rgba(255, 99, 132, 0.2)',
+                              'rgba(255, 159, 64, 0.2)',
+                              'rgba(255, 205, 86, 0.2)',
+                              'rgba(75, 192, 192, 0.2)',
+                              'rgba(54, 162, 235, 0.2)',
+                              'rgba(153, 102, 255, 0.2)',
+                              'rgba(201, 203, 207, 0.2)'
+                            ],
+                            borderColor: [
+                              'rgb(255, 99, 132)',
+                              'rgb(255, 159, 64)',
+                              'rgb(255, 205, 86)',
+                              'rgb(75, 192, 192)',
+                              'rgb(54, 162, 235)',
+                              'rgb(153, 102, 255)',
+                              'rgb(201, 203, 207)'
+                            ],
+                            borderWidth: 1
+                          }]
+                        },
+                        options: {
+                          scales: {
+                            y: {
+                              beginAtZero: true
+                            }
+                          }
+                        }
+                      });
+                    });
+                  </script>
+                </div>
+              </div>
+            </div>
+            <!-- End Bar CHart -->
+
 
           </div>
         </div><!-- End Left side columns -->
@@ -358,8 +438,8 @@
             </div>
           </div><!-- End Recent Activity -->
 
-
-          <!-- Website Traffic -->
+          
+          {% comment %} <!-- Website Traffic -->
           <div class="card">
             <div class="filter">
               <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
@@ -435,7 +515,7 @@
               </script>
 
             </div>
-          </div><!-- End Website Traffic -->
+          </div><!-- End Website Traffic --> {% endcomment %}
 
         </div><!-- End Right side columns -->
 

@@ -1,81 +1,389 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard - Estadísticas</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        canvas { max-width: 100%; height: auto; margin-top: 20px; }
-        h2 { margin-top: 40px; }
-    </style>
-</head>
-<body>
-    <h1>HOLA USUARIO: {{usuario_login}}</h1>
-    <h1>📈 Dashboard de Ventas y Pagos</h1>
+{% extends 'base/base.html' %}
+{% load static %}
 
-    <h2>Ventas (últimos 7 días)</h2>
-    <canvas id="ventasChart" width="400" height="150"></canvas>
 
-    <h2>Total Pagos del Mes: $<span id="pagosTotal">{{ pagos_total_mes }}</span></h2>
-    
 
-    {% comment %} Productos {% endcomment %}
-    <h2>Top 5 Productos Más Vendidos</h2>
-    {% comment %} <ul id="productosTop"> ORIGINAL
-        {% for producto in productos_top %}
-            <li>{{ producto.nombre }} — {{ producto.cantidad }}</li>
-        {% endfor %}
-    </ul> {% endcomment %}
-    <table border="1" cellpadding="5" id="productosTop">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Cantidad</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for producto in productos_top %}
-            <tr>
-                <td>{{ producto.nombre }}</td>
-                <td>{{ producto.cantidad }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% comment %} Productos {% endcomment %}
-    {% comment %} Pagos Recientes {% endcomment %}
-    <h2>Pagos Recientes</h2>
-    <table border="1" cellpadding="5" id="tablaPagos">
-        <thead>
-            <tr>
-                <th>Usuario(borrar)</th>
-                <th>Cliente</th>
-                <th>Monto</th>
-                <th>Fecha</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for pago in pagos_list %}
-            <tr>
-                <td>{{ pago.usuario }}</td>
-                <td>{{ pago.cliente }}</td>
-                <td>${{ pago.monto }}</td>
-                <td>{{ pago.fecha }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% block contenedor %}
+<main id="main" class="main">
 
-    {% comment %} Pagos Recientes {% endcomment %}
+    <div class="pagetitle">
+      <h1>{{usuario_login}}</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href={% url 'dashboard_estadisticas' %}>Home</a></li>
+          <li class="breadcrumb-item active">{{usuario_login}}</li>
+        </ol>
+      </nav>
+    </div><!-- End Page Title -->
 
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-8">
+          <div class="row">
+
+            <!-- Ventas Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card sales-card">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Sales <span>| Today</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-cart"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6>145</h6>
+                      <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Ventas Card -->
+
+            <!-- Ganancia Card -->
+            <div class="col-xxl-4 col-md-6">
+              <div class="card info-card revenue-card">
+
+                {% comment %} <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+                </div> {% endcomment %}
+
+                <div class="card-body">
+                  <h5 class="card-title">Ganancia <span>| Este Mes</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6><span id="pagosTotal"></span></h6>
+                      <span class="text-success small pt-1 fw-bold">8%</span> <span class="text-muted small pt-2 ps-1">increase</span>
+
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div><!-- End Ganancia Card -->
+
+            <!-- Clientes  Card -->
+            <div class="col-xxl-4 col-xl-12">
+
+              <div class="card info-card customers-card">
+
+                {% comment %} <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+                </div> {% endcomment %}
+
+                <div class="card-body">
+                  <h5 class="card-title">Clientes <span>| Este Año</span></h5>
+
+                  <div class="d-flex align-items-center">
+                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="bi bi-people"></i>
+                    </div>
+                    <div class="ps-3">
+                      <h6><span id="countCltesActual">{{ cant_clientes }}</span></h6>
+                      <span class="text-danger small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">decrease</span>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div><!-- End Clientes  Card -->
+
+
+            {% comment %} <!-- Recent Sales -->
+            <div class="col-12">
+              <div class="card recent-sales overflow-auto">
+
+                <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+                </div>
+
+                <div class="card-body">
+                  <h5 class="card-title">Recent Sales <span>| Today</span></h5>
+
+                  <table class="table table-borderless datatable">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Product</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row"><a href="#">#2457</a></th>
+                        <td>Brandon Jacob</td>
+                        <td><a href="#" class="text-primary">At praesentium minu</a></td>
+                        <td>$64</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2147</a></th>
+                        <td>Bridie Kessler</td>
+                        <td><a href="#" class="text-primary">Blanditiis dolor omnis similique</a></td>
+                        <td>$47</td>
+                        <td><span class="badge bg-warning">Pending</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2049</a></th>
+                        <td>Ashleigh Langosh</td>
+                        <td><a href="#" class="text-primary">At recusandae consectetur</a></td>
+                        <td>$147</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2644</a></th>
+                        <td>Angus Grady</td>
+                        <td><a href="#" class="text-primar">Ut voluptatem id earum et</a></td>
+                        <td>$67</td>
+                        <td><span class="badge bg-danger">Rejected</span></td>
+                      </tr>
+                      <tr>
+                        <th scope="row"><a href="#">#2644</a></th>
+                        <td>Raheem Lehner</td>
+                        <td><a href="#" class="text-primary">Sunt similique distinctio</a></td>
+                        <td>$165</td>
+                        <td><span class="badge bg-success">Approved</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Recent Sales --> {% endcomment %}
+
+            <!-- Pagos Recientes Selling -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+
+                {% comment %} <div class="filter">
+                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                    <li class="dropdown-header text-start">
+                      <h6>Filter</h6>
+                    </li>
+
+                    <li><a class="dropdown-item" href="#">Today</a></li>
+                    <li><a class="dropdown-item" href="#">This Month</a></li>
+                    <li><a class="dropdown-item" href="#">This Year</a></li>
+                  </ul>
+                </div> {% endcomment %}
+
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Pagos Recientes<span>| Top 10</span></h5>
+
+                  <table class="table table-borderless">
+                    <thead>
+                      <tr>
+                        <th scope="col">Usuario(borrar)</th>
+                        <th scope="col">Cliente</th>
+                        <th scope="col">Monto</th>
+                        <th scope="col">Fecha</th>                        
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for pago in pagos_list %}
+                      <tr>
+                          <td>{{ pago.usuario }}</td>
+                          <td>{{ pago.cliente }}</td>
+                          <td class="fw-bold">${{ pago.monto }}</td>
+                          <td>{{ pago.fecha }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+
+                </div>
+
+              </div>
+            </div><!-- End Pagos Recientes -->
+
+            <!-- Metrica Semanal -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Metrica Semanal</h5>
+                  <div id="ventasChart" style="min-height: 400px;" class="echart"></div>
+                </div>
+              </div>
+            </div>
+            <!-- End Metrica Semanal -->
+             
+            <!-- Metrica Mensual -->
+            <div class="col-12">
+              <div class="card top-selling overflow-auto">
+                <div class="card-body pb-0">
+                  <h5 class="card-title">Metrica Mensual</h5> 
+                  <div id="ultimosPagosChart" style="min-height: 400px;" class="echart"></div>
+                  {% comment %} <canvas id="barChart" style="max-height: 400px;"></canvas>
+                  <script>
+                    document.addEventListener("DOMContentLoaded", () => {
+                      new Chart(document.querySelector('#barChart'), {
+                        type: 'bar',
+                        data: {
+                          labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                          datasets: [{
+                            label: 'Bar Chart',
+                            data: [65, 59, 80, 81, 56, 55, 40],
+                            backgroundColor: [
+                              'rgba(255, 99, 132, 0.2)',
+                              'rgba(255, 159, 64, 0.2)',
+                              'rgba(255, 205, 86, 0.2)',
+                              'rgba(75, 192, 192, 0.2)',
+                              'rgba(54, 162, 235, 0.2)',
+                              'rgba(153, 102, 255, 0.2)',
+                              'rgba(201, 203, 207, 0.2)'
+                            ],
+                            borderColor: [
+                              'rgb(255, 99, 132)',
+                              'rgb(255, 159, 64)',
+                              'rgb(255, 205, 86)',
+                              'rgb(75, 192, 192)',
+                              'rgb(54, 162, 235)',
+                              'rgb(153, 102, 255)',
+                              'rgb(201, 203, 207)'
+                            ],
+                            borderWidth: 1
+                          }]
+                        },
+                        options: {
+                          scales: {
+                            y: {
+                              beginAtZero: true
+                            }
+                          }
+                        }
+                      });
+                    });
+                  </script> {% endcomment %}
+                </div>
+              </div>
+            </div>
+            <!-- End Metrica Mensual -->
+
+
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+        <div class="col-lg-4">
+
+          <!-- Productos Vendidos -->
+          <div class="card">
+            {% comment %} <div class="filter">
+              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                  <h6>Filter</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">Today</a></li>
+                <li><a class="dropdown-item" href="#">This Month</a></li>
+                <li><a class="dropdown-item" href="#">This Year</a></li>
+              </ul>
+            </div> {% endcomment %}
+
+            <div class="card-body">
+              <h5 class="card-title">Productos Vendidos<span>| Total</span></h5>
+              <table class="table table-borderless">
+                    <thead>
+                      <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>                      
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for producto in productos_top %}
+                      <tr>
+                          <td>{{ producto.nombre }}</td>
+                          <td>{{ producto.cantidad }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+
+            
+            </div>
+          </div><!-- End Productos Vendidos -->
+
+          
+
+        </div><!-- End Right side columns -->
+
+      </div>
+    </section>
     <script>
-        // Datos iniciales desde Django
         const ventasLabels = {{ ventas_labels|safe }};
         const ventasData = {{ ventas_totales|safe }};
+        
+        // 1. Valor inicial desde Django
+        const valorInicial = Number({{ pagos_total_mes|floatformat:2 }});
 
-        // Inicializar el gráfico de ventas
-        const ventasChart = new Chart(document.getElementById('ventasChart'), {
+        // 2. Formateador con estilo 
+        const formateador = new Intl.NumberFormat('es-AR', {
+            style: 'currency',
+            currency: 'ARS',
+            minimumFractionDigits: 2
+        });
+
+        // 3. Mostrar el valor inicial
+        document.getElementById('pagosTotal').textContent = formateador.format(valorInicial);
+
+        // Inicializar el gráfico de ventas // original
+        {% comment %} const ventasChart = new Chart(document.getElementById('ventasChart'), {
             type: 'bar',
             data: {
                 labels: ventasLabels,
@@ -99,6 +407,71 @@
                     }
                 }
             }
+        }); {% endcomment %}
+        document.addEventListener("DOMContentLoaded", () => {
+          // Datos desde Django
+          const ventasLabels = {{ ventas_labels|safe }};
+          const ventasData = {{ ventas_totales|safe }};
+
+          // Inicializar ECharts
+          const chart = echarts.init(document.querySelector("#ventasChart"));
+          chart.setOption({
+            xAxis: {
+              type: 'category',
+              data: ventasLabels
+            },
+            yAxis: {
+              type: 'value',
+              name: 'Total Ventas ($)'
+            },
+            series: [{
+              data: ventasData,
+              type: 'bar',
+              itemStyle: {
+                color: 'rgba(75, 192, 192, 0.6)'
+              }
+            }],
+            tooltip: {
+              trigger: 'axis'
+            },
+            title: {
+              text: 'Ventas por Día',
+              left: 'center'
+            }
+          });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+          // Datos desde Django
+          const pagoMesesLabels = {{ pago_ultimos_6_meses_labels|safe }};
+          const pagoMesesData = {{ pago_ultimos_6_meses_totales|safe }};
+
+          // Inicializar ECharts
+          const chart = echarts.init(document.querySelector("#ultimosPagosChart"));
+          chart.setOption({
+            xAxis: {
+              type: 'category',
+              data: pagoMesesLabels
+            },
+            yAxis: {
+              type: 'value',
+              name: 'Total Ventas ($)'
+            },
+            series: [{
+              data: pagoMesesData,
+              type: 'bar',
+              itemStyle: {
+                color: 'rgba(75, 192, 192, 0.6)'
+              }
+            }],
+            tooltip: {
+              trigger: 'axis'
+            },
+            title: {
+              text: 'Pagos por Mes',
+              left: 'center'
+            }
+          });
         });
 
         // Conexión WebSocket
@@ -107,7 +480,15 @@
         socket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             console.log("Actualización recibida del servidor:", data);
+
+            // carga cantidad de clientes actuales
+            fetch('/analytics/api/count_clientes/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('countCltesActual').textContent = data.count_clientes;
+                });
             
+            // Cargar Top ventas de productos
             fetch('/analytics/api/productos/')
                 .then(res => res.json())
                 .then(data => {
@@ -143,15 +524,25 @@
                     ventasChart.data.datasets[0].data = update.totales;
                     ventasChart.update();
                 });
+            // Actualiza gráfico de ventas
+            fetch('/analytics/api/ultimos_meses/')
+                .then(response => response.json())
+                .then(update => {
+                    ultimosPagosChart.data.labels = update.labels;
+                    ultimosPagosChart.data.datasets[0].data = update.totales;
+                    ultimosPagosChart.update();
+                });
 
             // Actualiza total de pagos
             fetch('/analytics/api/pagos/')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('pagosTotal').textContent = data.total;
+                  const total = Number(data.total);
+                  document.getElementById('pagosTotal').textContent = formateador.format(total);
                 });
         };
     </script>
+</main><!-- End #main -->
 
-</body>
-</html>
+
+{% endblock contenedor %}

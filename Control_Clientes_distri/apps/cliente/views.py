@@ -18,11 +18,8 @@ from itertools import chain
 
 
 class IndexView(LoginRequiredMixin,TemplateView):
-    template_name = "base/index.html"
-    context_object_name = 'index'
+    template_name = "base/listar_clientes.html"
 
-# def usuario_es_admin(user):
-#     return user.groups.filter(name='admin').exists()
 
 class ListarVencimientoView(LoginRequiredMixin,ListView):
     model = models.PromoPorCliente

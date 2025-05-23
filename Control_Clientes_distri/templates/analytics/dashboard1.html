@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Estadísticas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        canvas { max-width: 100%; height: auto; margin-top: 20px; }
+        h2 { margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <h1>HOLA USUARIO: {{usuario_login}}</h1>
+    <h1>Clientes actualues N° <span id="countCltesActual">{{ cant_clientes }}</span></h1>
+    <h1>📈 Dashboard de Ventas y Pagos</h1>
+
+    <h2>Ventas (últimos 7 días)</h2>
+    <canvas id="ventasChart" width="400" height="150"></canvas>
+
+    <h2>Total Pagos del Mes: $<span id="pagosTotal">{{ pagos_total_mes }}</span></h2>
+    
+
+    {% comment %} Productos {% endcomment %}
+    <h2>Top 5 Productos Más Vendidos</h2>
+    {% comment %} <ul id="productosTop"> ORIGINAL
+        {% for producto in productos_top %}
+            <li>{{ producto.nombre }} — {{ producto.cantidad }}</li>
+        {% endfor %}
+    </ul> {% endcomment %}
+    <table border="1" cellpadding="5" id="productosTop">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in productos_top %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.cantidad }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% comment %} Productos {% endcomment %}
+    {% comment %} Pagos Recientes {% endcomment %}
+    <h2>Pagos Recientes</h2>
+    <table border="1" cellpadding="5" id="tablaPagos">
+        <thead>
+            <tr>
+                <th>Usuario(borrar)</th>
+                <th>Cliente</th>
+                <th>Monto</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pago in pagos_list %}
+            <tr>
+                <td>{{ pago.usuario }}</td>
+                <td>{{ pago.cliente }}</td>
+                <td>${{ pago.monto }}</td>
+                <td>{{ pago.fecha }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% comment %} Pagos Recientes {% endcomment %}
+
+    <script>
+        // Datos iniciales desde Django
+        const ventasLabels = {{ ventas_labels|safe }};
+        const ventasData = {{ ventas_totales|safe }};
+
+        // Inicializar el gráfico de ventas
+        const ventasChart = new Chart(document.getElementById('ventasChart'), {
+            type: 'bar',
+            data: {
+                labels: ventasLabels,
+                datasets: [{
+                    label: 'Ventas por Día',
+                    data: ventasData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Total Ventas ($)' }
+                    },
+                    x: {
+                        title: { display: true, text: 'Fecha' }
+                    }
+                }
+            }
+        });
+
+        // Conexión WebSocket
+        const socket = new WebSocket("ws://" + window.location.host + "/ws/dashboard/");
+
+        socket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log("Actualización recibida del servidor:", data);
+
+            // carga cantidad de clientes actuales
+            fetch('/analytics/api/count_clientes/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('countCltesActual').textContent = data.count_clientes;
+                });
+            
+            // Cargar Top ventas de productos
+            fetch('/analytics/api/productos/')
+                .then(res => res.json())
+                .then(data => {
+                    const tabla = document.querySelector("#productosTop tbody");
+                    tabla.innerHTML = '';  // limpiar
+
+                    data.productos.forEach(p => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td>${p.nombre}</td><td>${p.cantidad}</td>`;
+                        tabla.appendChild(row);
+                    });
+                });
+            
+            // Cargar pagos recientes dinámicamente
+            fetch('/analytics/api/pagos_recientes/')
+                .then(res => res.json())
+                .then(data => {
+                    const tabla = document.querySelector("#tablaPagos tbody");
+                    tabla.innerHTML = '';  // limpiar
+
+                    data.pagos.forEach(p => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `<td>${p.cliente}</td><td>$${p.monto}</td><td>${p.fecha}</td>`;
+                        tabla.appendChild(row);
+                    });
+                });
+
+            // Actualiza gráfico de ventas
+            fetch('/analytics/api/ventas/')
+                .then(response => response.json())
+                .then(update => {
+                    ventasChart.data.labels = update.labels;
+                    ventasChart.data.datasets[0].data = update.totales;
+                    ventasChart.update();
+                });
+
+            // Actualiza total de pagos
+            fetch('/analytics/api/pagos/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('pagosTotal').textContent = data.total;
+                });
+        };
+    </script>
+
+</body>
+</html>

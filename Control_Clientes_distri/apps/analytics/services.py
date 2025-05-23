@@ -2,10 +2,12 @@
 from . import models
 from apps.ventas.models import Venta, VentaProducto
 from apps.pagos.models import Pagos
+from apps.cliente.models import Cliente
 from django.utils.timezone import now
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Sum
-from django.db.models.functions import TruncDate
+from django.db.models.functions import TruncDate, TruncMonth
+from decimal import Decimal
 
 
 
@@ -33,12 +35,39 @@ def ventas_ultimos_7_dias(usuario):
         datos.append({'fecha': dia.strftime('%d/%m'), 'total': float(total)})
     return datos
 
+
 def pagos_por_mes_actual(usuario):
     print("Entro una services.py pagos_por_mes_actual")
     hoy = now()
     pagos = Pagos.objects.filter(usuario=usuario, fecha_pago__year=hoy.year, fecha_pago__month=hoy.month)
-    total = pagos.aggregate(suma=Sum('monto'))['suma'] or 0
-    return float(total)
+    # total = pagos.aggregate(suma=Sum('monto'))['suma'] or 0 ## original
+    # return float(total) ## original
+    total = pagos.aggregate(suma=Sum('monto'))['suma'] or Decimal('0.00')
+    return total
+
+def pago_ultimos_6_meses(usuario):
+    """
+    Devuelve el total de pagos por mes en los últimos 6 meses para el usuario.
+    """
+    hoy = now().date()
+    datos = []
+
+    for i in range(5, -1, -1):  # últimos 6 meses
+        primer_dia_mes = (hoy.replace(day=1) - timedelta(days=30 * i)).replace(day=1)
+        siguiente_mes = (primer_dia_mes.replace(day=28) + timedelta(days=4)).replace(day=1)
+
+        total = (
+            Pagos.objects
+            .filter(usuario=usuario, fecha_pago__gte=primer_dia_mes, fecha_pago__lt=siguiente_mes)
+            .aggregate(suma=Sum('monto'))['suma'] or 0
+        )
+
+        datos.append({
+            'mes': primer_dia_mes.strftime('%b %Y'),  # ejemplo: 'May 2025'
+            'total': float(total)
+        })
+
+    return datos
 
 def pagos_recientes(usuario, limit=10): ## TODO: OJO POR ACA
     # .filter(usuario=usuario)
@@ -92,5 +121,6 @@ def productos_mas_vendidos(usuario, limit=5):
     return [{'nombre': p['producto__nombre_producto'], 'cantidad': p['cantidad']} for p in productos]
 
 
-
-## TODO: QUEDA PENDIENTE NIVEL DE SEGURIDAD
+def cant_cliente_actuales(usuario):
+    cantidad_clientes = Cliente.objects.filter(usuario=usuario).count()
+    return cantidad_clientes
