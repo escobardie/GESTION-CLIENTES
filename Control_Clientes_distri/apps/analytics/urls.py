@@ -11,4 +11,7 @@ urlpatterns = [
     path('api/productos/', views.ProductosMasVendidosAPI.as_view(), name='api_productos'),
     path('api/count_clientes/', views.CountClientesAPI.as_view(), name='api_count_clientes'),
 
+    path('api/b_entregados_hoy/', views.CantBEntregadosHoyAPI.as_view(), name='api_cant_b_entregados_hoy'),
+    path('api/visitas_servis_clte/', views.VisitaServisClteAPI.as_view(), name='api_visitas_servis_clte'),
+
 ]

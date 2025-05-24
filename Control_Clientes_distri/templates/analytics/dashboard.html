@@ -23,10 +23,10 @@
         <div class="col-lg-8">
           <div class="row">
 
-            <!-- Ventas Card -->
+            <!-- Bidones Entregados hoy -->
             <div class="col-xxl-4 col-md-6">
               <div class="card info-card sales-card">
-
+                {% comment %} 
                 <div class="filter">
                   <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
                   <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -38,17 +38,17 @@
                     <li><a class="dropdown-item" href="#">This Month</a></li>
                     <li><a class="dropdown-item" href="#">This Year</a></li>
                   </ul>
-                </div>
+                </div> {% endcomment %}
 
                 <div class="card-body">
-                  <h5 class="card-title">Sales <span>| Today</span></h5>
+                  <h5 class="card-title">Bidones Entregados <span>| Hoy</span></h5>
 
                   <div class="d-flex align-items-center">
                     <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
-                      <i class="bi bi-cart"></i>
+                      <i class="bi bi-arrow-bar-down"></i>
                     </div>
                     <div class="ps-3">
-                      <h6>145</h6>
+                      <h6><span id="cantBEntregadosHoy">{{ cant_b_entregados_hoy }}</span></h6>
                       <span class="text-success small pt-1 fw-bold">12%</span> <span class="text-muted small pt-2 ps-1">increase</span>
 
                     </div>
@@ -56,7 +56,7 @@
                 </div>
 
               </div>
-            </div><!-- End Ventas Card -->
+            </div><!-- End Bidones Entregados hoy  -->
 
             <!-- Ganancia Card -->
             <div class="col-xxl-4 col-md-6">
@@ -130,81 +130,6 @@
 
             </div><!-- End Clientes  Card -->
 
-
-            {% comment %} <!-- Recent Sales -->
-            <div class="col-12">
-              <div class="card recent-sales overflow-auto">
-
-                <div class="filter">
-                  <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                    <li class="dropdown-header text-start">
-                      <h6>Filter</h6>
-                    </li>
-
-                    <li><a class="dropdown-item" href="#">Today</a></li>
-                    <li><a class="dropdown-item" href="#">This Month</a></li>
-                    <li><a class="dropdown-item" href="#">This Year</a></li>
-                  </ul>
-                </div>
-
-                <div class="card-body">
-                  <h5 class="card-title">Recent Sales <span>| Today</span></h5>
-
-                  <table class="table table-borderless datatable">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Customer</th>
-                        <th scope="col">Product</th>
-                        <th scope="col">Price</th>
-                        <th scope="col">Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <th scope="row"><a href="#">#2457</a></th>
-                        <td>Brandon Jacob</td>
-                        <td><a href="#" class="text-primary">At praesentium minu</a></td>
-                        <td>$64</td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2147</a></th>
-                        <td>Bridie Kessler</td>
-                        <td><a href="#" class="text-primary">Blanditiis dolor omnis similique</a></td>
-                        <td>$47</td>
-                        <td><span class="badge bg-warning">Pending</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2049</a></th>
-                        <td>Ashleigh Langosh</td>
-                        <td><a href="#" class="text-primary">At recusandae consectetur</a></td>
-                        <td>$147</td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2644</a></th>
-                        <td>Angus Grady</td>
-                        <td><a href="#" class="text-primar">Ut voluptatem id earum et</a></td>
-                        <td>$67</td>
-                        <td><span class="badge bg-danger">Rejected</span></td>
-                      </tr>
-                      <tr>
-                        <th scope="row"><a href="#">#2644</a></th>
-                        <td>Raheem Lehner</td>
-                        <td><a href="#" class="text-primary">Sunt similique distinctio</a></td>
-                        <td>$165</td>
-                        <td><span class="badge bg-success">Approved</span></td>
-                      </tr>
-                    </tbody>
-                  </table>
-
-                </div>
-
-              </div>
-            </div><!-- End Recent Sales --> {% endcomment %}
-
             <!-- Pagos Recientes  -->
             <div class="col-12">
               <div class="card top-selling overflow-auto">
@@ -228,7 +153,6 @@
                   <table class="table table-borderless" id="tablaPagos">
                     <thead>
                       <tr>
-                        <th scope="col">Usuario(borrar)</th>
                         <th scope="col">Cliente</th>
                         <th scope="col">Monto</th>
                         <th scope="col">Fecha</th>                        
@@ -237,7 +161,6 @@
                     <tbody>
                       {% for pago in pagos_list %}
                       <tr>
-                          <td>{{ pago.usuario }}</td>
                           <td>{{ pago.cliente }}</td>
                           <td class="fw-bold">${{ pago.monto }}</td>
                           <td>{{ pago.fecha }}</td>
@@ -371,7 +294,43 @@
             </div>
           </div><!-- End Productos Vendidos -->
 
-          
+          <!-- Lista Visita servis Recientes  -->
+          <div class="card">
+            {% comment %} <div class="filter">
+              <a class="icon" href="#" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></a>
+              <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                <li class="dropdown-header text-start">
+                  <h6>Filter</h6>
+                </li>
+
+                <li><a class="dropdown-item" href="#">Today</a></li>
+                <li><a class="dropdown-item" href="#">This Month</a></li>
+                <li><a class="dropdown-item" href="#">This Year</a></li>
+              </ul>
+            </div> {% endcomment %}
+
+            <div class="card-body">
+              <h5 class="card-title">Visita Servis<span>| Recientes</span></h5>
+              <table class="table table-borderless" id="productosTop">
+                    <thead>
+                      <tr>
+                        <th>Cliente</th>
+                        <th>Fecha | Hora</th>                      
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for servisVisita in visitas_servis_list %}
+                      <tr>
+                          <td>{{ servisVisita.cliente }}</td>
+                          <td>{{ servisVisita.fecha }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                </table>
+
+            
+            </div>
+          </div><!-- End Lista Visita servis Recientes -->
 
         </div><!-- End Right side columns -->
 
@@ -446,7 +405,13 @@
                     document.getElementById('countCltesActual').textContent = data.count_clientes;
                 })
                 .catch(error => console.error("Error al obtener Cantidad de clientes:", error));
-            
+            // carga cantidad de Bidondes entregados hoy
+            fetch('/analytics/api/b_entregados_hoy/')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cantBEntregadosHoy').textContent = data.cant_b_entregados_hoy;
+                })
+                .catch(error => console.error("Error al obtener Cantidad de clientes:", error));
             // Cargar Top ventas de productos
             fetch('/analytics/api/productos/')
                 .then(res => res.json())

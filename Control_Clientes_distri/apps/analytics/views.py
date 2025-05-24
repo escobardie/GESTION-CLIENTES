@@ -1,5 +1,5 @@
 # from django.shortcuts import render, redirect
-from .services import ventas_ultimos_7_dias, pagos_por_mes_actual, pagos_recientes, productos_mas_vendidos, cant_cliente_actuales, pago_ultimos_6_meses, pagos_ultimos_7_dias
+from .services import ventas_ultimos_7_dias, pagos_por_mes_actual, pagos_recientes, productos_mas_vendidos, cant_cliente_actuales, pago_ultimos_6_meses, pagos_ultimos_7_dias, cant_b_entregados_hoy,visitas_servisclientes_recientes
 from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.views import View
@@ -20,6 +20,8 @@ class DashboardEstadisticasView(LoginRequiredMixin, ClienteOnlyMixin, TemplateVi
         pagos_list = pagos_recientes(usuario)
         productos_top = productos_mas_vendidos(usuario)
         cant_clientes = cant_cliente_actuales(usuario)
+        cant_total_b_entregados_hoy = cant_b_entregados_hoy(usuario)
+        visitas_servis_list = visitas_servisclientes_recientes(usuario)
 
         context.update({
             'ventas_labels': [v['fecha'] for v in ventas_data],
@@ -32,7 +34,9 @@ class DashboardEstadisticasView(LoginRequiredMixin, ClienteOnlyMixin, TemplateVi
             'pagos_list': pagos_list,
             'productos_top': productos_top,
             'usuario_login': usuario,
-            'cant_clientes': cant_clientes
+            'cant_clientes': cant_clientes,
+            'cant_b_entregados_hoy': cant_total_b_entregados_hoy,
+            'visitas_servis_list': visitas_servis_list
         })
         return context
 
@@ -69,7 +73,6 @@ class Pagos6MesesAPI(LoginRequiredMixin, ClienteOnlyMixin, View):
             'labels': [v['mes'] for v in pagos_6_meses],
             'totales': [v['total'] for v in pagos_6_meses]
         })
-    
 
 
 class PagosRecientesAPI(LoginRequiredMixin, ClienteOnlyMixin, View):
@@ -89,3 +92,15 @@ class CountClientesAPI(LoginRequiredMixin, ClienteOnlyMixin, View):
         usuario = request.user
         count_clientes = cant_cliente_actuales(usuario)
         return JsonResponse({'count_clientes': count_clientes})
+
+class CantBEntregadosHoyAPI(LoginRequiredMixin, ClienteOnlyMixin, View):
+    def get(self, request):
+        usuario = request.user
+        total = cant_b_entregados_hoy(usuario)
+        return JsonResponse({'total': total})
+
+class VisitaServisClteAPI(LoginRequiredMixin, ClienteOnlyMixin, View):
+    def get(self, request):
+        usuario = request.user
+        visitas_servisCltes = visitas_servisclientes_recientes(usuario)
+        return JsonResponse({'visitas_servisCltes': visitas_servisCltes})

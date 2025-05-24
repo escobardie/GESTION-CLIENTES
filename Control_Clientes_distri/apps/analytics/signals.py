@@ -5,6 +5,7 @@ from channels.layers import get_channel_layer
 from apps.ventas.models import Venta
 from apps.pagos.models import Pagos
 from apps.cliente.models import Cliente
+from apps.visitas.models import VisitaServis
 
 
 # cuando se genera una venta o pago, se crea una notificacion
@@ -42,6 +43,21 @@ def notificar_dashboard(sender, instance, created, **kwargs):
 def notificar_dashboard(sender, instance, created, **kwargs):
     if created:
         print(f"📦 Señal: Cliente ID {instance.id} creado")
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "dashboard",
+            {
+                "type": "enviar_actualizacion",
+                "data": {"msg": "nueva cliente"},
+            },
+        )
+
+## TODO: VERIFICAR SI FALTAN GENERAR SEÑALES "VisitaServis" 
+
+@receiver(post_save, sender=VisitaServis)
+def notificar_dashboard(sender, instance, created, **kwargs):
+    if created:
+        print(f"📦 Señal: VisitaServis ID {instance.id} creado")
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             "dashboard",

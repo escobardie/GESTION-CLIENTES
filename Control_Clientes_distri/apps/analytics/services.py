@@ -3,6 +3,7 @@ from . import models
 from apps.ventas.models import Venta, VentaProducto
 from apps.pagos.models import Pagos
 from apps.cliente.models import Cliente
+from apps.visitas.models import VisitaServis
 from django.utils.timezone import now
 from datetime import timedelta, datetime
 from django.db.models import Sum
@@ -91,7 +92,7 @@ def pago_ultimos_6_meses(usuario):
 
     return datos
 
-def pagos_recientes(usuario, limit=10): ## TODO: OJO POR ACA
+def pagos_recientes(usuario, limit=10):
     # .filter(usuario=usuario)
     # Filtra los pagos para que solo devuelva los que pertenecen al usuario especificado.
 
@@ -108,7 +109,6 @@ def pagos_recientes(usuario, limit=10): ## TODO: OJO POR ACA
     # pagos = Pagos.objects.filter(usuario=usuario).order_by('-fecha_pago')[:limit]
     pagos = Pagos.objects.filter(usuario=usuario).select_related('cliente').order_by('-fecha_pago')[:limit]
     return [{
-        'usuario' : str(p.usuario), ## TODO: esto es solo de prueba, borrar luego
         'cliente': str(p.cliente) if p.cliente else 'Anónimo',
         'monto': float(p.monto),
         'fecha': p.fecha_pago.strftime('%d/%m/%Y %H:%M')
@@ -146,3 +146,18 @@ def productos_mas_vendidos(usuario, limit=5):
 def cant_cliente_actuales(usuario):
     cantidad_clientes = Cliente.objects.filter(usuario=usuario).count()
     return cantidad_clientes
+
+def cant_b_entregados_hoy(usuario):
+    hoy = now().date()
+    cantidad_bidones_hoy = VisitaServis.objects \
+        .annotate(fecha_solo=TruncDate('fecha_visita')) \
+        .filter(usuario=usuario, fecha_solo=hoy)
+    total_cant_b_entregados_hoy = cantidad_bidones_hoy.aggregate(suma=Sum('b_entregado'))['suma'] or 0
+    return total_cant_b_entregados_hoy
+
+def visitas_servisclientes_recientes(usuario, limit=10):
+    visita_servis_cliente = VisitaServis.objects.filter(usuario=usuario).select_related('cliente').order_by('-fecha_visita')[:limit]
+    return [{
+        'cliente': str(v_s_c.cliente) if v_s_c.cliente else 'Anónimo',
+        'fecha': v_s_c.fecha_visita.strftime('%d/%m/%Y %H:%M')
+    } for v_s_c in visita_servis_cliente]
