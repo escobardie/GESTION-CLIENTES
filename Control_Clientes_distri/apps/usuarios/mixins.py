@@ -1,4 +1,4 @@
-# en tu archivo mixins.py (o donde prefieras)
+## para obtener el cliente usando el ID
 
 from django.shortcuts import get_object_or_404, redirect
 from django.http import HttpResponseForbidden
@@ -8,7 +8,7 @@ class ClienteAutorizacionMixin:
     def dispatch(self, request, *args, **kwargs):
         self.cliente_obj = get_object_or_404(Cliente, id=self.kwargs['id'])
         usuario_actual = (
-            request.user.cliente
+            request.user.usuario_padre
             if request.user.rol == 'subusuario'
             else request.user
         )

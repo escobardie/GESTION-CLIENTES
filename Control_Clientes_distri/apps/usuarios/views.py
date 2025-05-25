@@ -26,7 +26,7 @@ class LoginPersonalizadoView(LoginView):
         user = self.request.user
         if user.is_superuser:
             return '/admin/'
-        elif user.rol == 'cliente':
+        elif user.rol == 'usuario':
             return reverse_lazy('listar_ventas')
         elif user.rol == 'subusuario':
             return reverse_lazy('listar_vto_clte')
@@ -64,11 +64,11 @@ class AccesoDenegadoView(TemplateView):
 
 @login_required
 def crear_subusuario(request):
-    if not request.user.es_cliente():
+    if not request.user.es_usuario:
         return redirect('index')  # o un error 403
 
     # 🔥 Límite de subusuarios (acá seteamos el límite)
-    LIMITE_SUBUSUARIOS = 2
+    LIMITE_SUBUSUARIOS = 2 ## TODO: LIMITE LO DA LA SUSCRIPCION "limite_empleados"
 
     # Contar subusuarios actuales
     cantidad_subusuarios = request.user.empleados.count()
@@ -82,7 +82,7 @@ def crear_subusuario(request):
         if form.is_valid():
             subusuario = form.save(commit=False)
             subusuario.rol = 'subusuario'
-            subusuario.cliente = request.user
+            subusuario.usuario_padre = request.user
             subusuario.set_password(form.cleaned_data['password'])
             subusuario.save()
             messages.success(request, "Subusuario creado exitosamente.")
@@ -94,7 +94,7 @@ def crear_subusuario(request):
 
 @login_required
 def listar_subusuarios(request):
-    if not request.user.es_cliente():
+    if not request.user.es_usuario:
         return redirect('index')  # o error 403
 
     subusuarios = request.user.empleados.all()  # Todos los empleados del cliente
@@ -104,7 +104,7 @@ def listar_subusuarios(request):
 
 @login_required
 def editar_subusuario(request, subusuario_id):
-    if not request.user.es_cliente():
+    if not request.user.es_usuario:
         return redirect('inicio')
 
     subusuario = get_object_or_404(request.user.empleados, id=subusuario_id)
@@ -114,7 +114,7 @@ def editar_subusuario(request, subusuario_id):
         if form.is_valid():
             subusuario = form.save(commit=False)
             subusuario.rol = 'subusuario'
-            subusuario.cliente = request.user
+            subusuario.usuario = request.user
             if 'password' in form.cleaned_data and form.cleaned_data['password']:
                 subusuario.set_password(form.cleaned_data['password'])
             subusuario.save()
@@ -127,7 +127,7 @@ def editar_subusuario(request, subusuario_id):
 
 @login_required
 def eliminar_subusuario(request, subusuario_id):
-    if not request.user.es_cliente():
+    if not request.user.es_usuario:
         return redirect('inicio')
 
     subusuario = get_object_or_404(request.user.empleados, id=subusuario_id)

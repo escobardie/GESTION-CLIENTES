@@ -48,7 +48,7 @@ class ListarVentasView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         usuario = (
             # Si es subusuario, usar su cliente asociado
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -69,7 +69,7 @@ class DetalleVentaListView(LoginRequiredMixin, ListView):
         self.venta_obj = get_object_or_404(models.Venta, id=self.kwargs['id'])
         ## obtenemos el usuario (dueño) del empleado o subusuario
         usuario_actual = (
-            request.user.cliente
+            request.user.usuario_padre
             if request.user.rol == 'subusuario'
             else request.user
         )
@@ -112,7 +112,7 @@ class CrearVentaView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         usuario = (
             # Si es subusuario, usar su cliente asociado
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -124,7 +124,7 @@ class CrearVentaView(LoginRequiredMixin, CreateView):
     def get_productos_data(self,request):
         usuario = (
             # Si es subusuario, usar su cliente asociado
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -143,7 +143,7 @@ class CrearVentaView(LoginRequiredMixin, CreateView):
         cliente = self.get_cliente_data()
         usuario = (
             # Si es subusuario, usar su cliente asociado
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )

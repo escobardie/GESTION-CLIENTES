@@ -42,7 +42,7 @@ class SuscripcionPorUsuarioForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
 
         # Solo incluir usuarios con rol 'cliente'
-        self.fields['usuario'].queryset = Usuario.objects.filter(rol='cliente')
+        self.fields['usuario'].queryset = Usuario.objects.filter(rol='usuario')
 
     def clean(self):
         cleaned_data = super().clean()
@@ -79,7 +79,7 @@ class PagoSuscriptorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['usuario'].queryset = Usuario.objects.filter(rol='cliente')
+        self.fields['usuario'].queryset = Usuario.objects.filter(rol='usuario')
         self.fields['monto'].disabled = True  # protege también del POST
 
     def clean_monto(self):

@@ -19,7 +19,7 @@ class PromoCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # Si es subusuario, usar su cliente asociado
         usuario_asociado = (
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -38,7 +38,7 @@ class ListarPromocionesView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         usuario = (
             # Si es subusuario, usar su cliente asociado
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )

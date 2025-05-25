@@ -35,8 +35,10 @@ class AddPromoPorClienteForm(forms.ModelForm):
         # Deshabilitar el campo cliente para que no sea editable
         self.fields['cliente'].disabled = True
         if user is not None:
-            # Filtrar las promos asociadas al usuario logueado
-            self.fields['promo'].queryset = Promo.objects.filter(usuario=user)
+            print("ENTRO POR ACA")
+            print(user.usuario_padre)
+            # Filtrar las promos asociadas al usuario (dueño)
+            self.fields['promo'].queryset = Promo.objects.filter(usuario=user.usuario_padre)
 
 class ServisVisitaClienteForm(forms.ModelForm):
     class Meta:

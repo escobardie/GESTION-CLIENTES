@@ -9,12 +9,27 @@ from apps.usuarios.models import Usuario
 ###########################
 class Cliente(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='clientes', verbose_name='Usuario Asociado', null=True)
+
     nombre = models.CharField(max_length=150, verbose_name='Nombre')
     apellido = models.CharField(max_length=150, verbose_name='Apellido')
+
+    codigo_area = models.CharField(max_length=5, verbose_name='Código de Área', null=True, blank=True)
     telefono = models.CharField(max_length=15, verbose_name='Teléfono')
+
     direccion = models.CharField(max_length=150, verbose_name='Dirección')
+    localidad = models.CharField(max_length=100, verbose_name='Localidad', null=True, blank=True)
+    provincia = models.CharField(max_length=100, verbose_name='Provincia', null=True, blank=True)
+    latitud = models.DecimalField(max_digits=9, decimal_places=6, verbose_name='Latitud', null=True, blank=True)
+    longitud = models.DecimalField(max_digits=9, decimal_places=6, verbose_name='Longitud', null=True, blank=True)
+
+    email = models.EmailField(verbose_name='Email', null=True, blank=True)
+    
     fecha_alta = models.DateField(auto_now_add=True, verbose_name='Fecha de Alta')
     estado = models.BooleanField(default=True, verbose_name='Estado')
+    observacion = models.TextField(verbose_name='Observación', null=True, blank=True)
+    ubicacion = models.TextField(verbose_name='Ubicación', null=True, blank=True)
+
+
 
     class Meta:
         verbose_name = 'Cliente'
@@ -41,9 +56,10 @@ class PromoPorCliente(models.Model):
     retorno_bidones = models.IntegerField(default=0, verbose_name='Retorno de Bidones')
     bidones_acumulados = models.IntegerField(default=0, verbose_name='Bidones Acumulados')
     ########## control de bidones ##########
-    codigo_dispenser = models.CharField(max_length=20, verbose_name='Código Dispenser')
+    codigo_dispenser = models.CharField(max_length=20, verbose_name='Código Dispenser', null=True, blank=True)
     estado = models.BooleanField(default=True, verbose_name='Estado')
-    nota = models.TextField(verbose_name='Nota')
+    nota = models.TextField(verbose_name='Nota', null=True, blank=True)
+
 
     class Meta:
         verbose_name = 'Promoción por Cliente'

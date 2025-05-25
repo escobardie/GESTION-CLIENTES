@@ -71,7 +71,7 @@ class CrearSuscriptorView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     
     def form_valid(self, form):
         usuario = form.save(commit=False)
-        usuario.rol = 'cliente'
+        usuario.rol = 'usuario' ## asignamos su rol de usuario
         usuario.save()  # Guardar el formulario
         return super().form_valid(form)
     
@@ -82,7 +82,7 @@ class ObtenerSuscripcionDeUsuarioView(View): ##TODO: ESTE ENFOQUE GENERADO CON C
         usuario_id = request.GET.get('usuario_id')
 
         try:
-            usuario = Usuario.objects.get(id=usuario_id, rol='cliente')
+            usuario = Usuario.objects.get(id=usuario_id, rol='usuario')
             relacion = SuscripcionPorUsuario.objects.get(usuario=usuario)
 
             suscripcion = relacion.suscripcion

@@ -27,7 +27,7 @@ def generar_qr_base64(url):
 class ListarVisitasClienteView(LoginRequiredMixin, ClienteAutorizacionMixin, ListView):
     model = models.Visita
     template_name = "base/listar_vistas_cliente.html"
-    context_object_name = 'lista_vista_cliente'
+    # context_object_name = 'lista_vista_cliente'
     paginate_by = 5
     
     def get_cliente_data(self):
@@ -36,9 +36,34 @@ class ListarVisitasClienteView(LoginRequiredMixin, ClienteAutorizacionMixin, Lis
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
         return cliente
     
-    def get_queryset(self):
+    # def get_queryset(self):
+    #     cliente = self.get_cliente_data()
+    #     visitas_combinadas = sorted(
+    #         chain(
+    #             models.Visita.objects.filter(cliente=cliente),
+    #             models.VisitaServis.objects.filter(cliente=cliente)
+    #         ),
+    #         key=lambda x: x.fecha_visita,
+    #         reverse=True
+    #     )[:10]
+        # return models.Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')
+        return visitas_combinadas
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         cliente = self.get_cliente_data()
-        return models.Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')
+        visitas_combinadas = sorted(
+            chain(
+                models.Visita.objects.filter(cliente=cliente),
+                models.VisitaServis.objects.filter(cliente=cliente)
+            ),
+            key=lambda x: x.fecha_visita,
+            reverse=True
+        )[:10]
+        context.update({
+            'visitas_combinadas':visitas_combinadas,
+        })
+        return context
+
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarVisitasView(LoginRequiredMixin, ListView):
@@ -54,7 +79,7 @@ class ListarVisitasView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         usuario = (
             # Si es subusuario, usar su cliente asociado
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -83,7 +108,7 @@ class VisitaCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # Si es subusuario, usar su cliente asociado
         usuario_asociado = (
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -112,7 +137,7 @@ class VisitaClienteCreateView(LoginRequiredMixin, ClienteAutorizacionMixin, Crea
     def form_valid(self, form): ## original
         # Si es subusuario, usar su cliente asociado
         usuario_asociado = (
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )

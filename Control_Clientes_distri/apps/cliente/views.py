@@ -61,7 +61,7 @@ class ListarClientesView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         usuario = (
             # Si es subusuario, usar su cliente asociado
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -80,7 +80,7 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
     # def dispatch(self, request, *args, **kwargs):
     #     self.cliente_obj = get_object_or_404(models.Cliente, id=self.kwargs['id'])
     #     usuario_actual = (
-    #         request.user.cliente
+    #         request.user.usuario_padre
     #         if request.user.rol == 'subusuario'
     #         else request.user
     #     )
@@ -104,7 +104,21 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
                  'fecha_pago_promo', 'bidones_disponibles', 'bidones_acumulados')
 
         ultima_visita = Visita.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
-        fecha_visita_clte = ultima_visita.fecha_visita.date() if ultima_visita else "Sin visitas"
+        ultima_visitaServis = VisitaServis.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
+        # fecha_visita_clte = ultima_visita.fecha_visita.date()  if ultima_visita else "Sin visitas" ## ORIGINAL
+        # Obtener fechas si existen
+        fecha1 = ultima_visita.fecha_visita if ultima_visita else None
+        fecha2 = ultima_visitaServis.fecha_visita if ultima_visitaServis else None
+
+        # Comparar y obtener la más reciente
+        if fecha1 and fecha2:
+            fecha_visita_clte = max(fecha1, fecha2).date()
+        elif fecha1:
+            fecha_visita_clte = fecha1.date()
+        elif fecha2:
+            fecha_visita_clte = fecha2.date()
+        else:
+            fecha_visita_clte = "Sin visitas"
 
         ultima_pago = models.PromoPorCliente.objects.filter(cliente=cliente, estado=True).order_by('fecha_pago_promo').first()
         if ultima_pago and ultima_pago.fecha_pago_promo < fecha_actual:
@@ -144,7 +158,7 @@ class ClienteCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # Si es subusuario, usar su cliente asociado
         usuario_asociado = (
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -173,7 +187,7 @@ class PromoPorClienteCreateView(LoginRequiredMixin, ClienteAutorizacionMixin, Cr
     def form_valid(self, form):
         # Si es subusuario, usar su cliente asociado
         usuario_asociado = (
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -203,7 +217,7 @@ class ServisVisitaUpdateView(LoginRequiredMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         self.cliente_obj = get_object_or_404(models.Cliente, id=self.kwargs['pk'])
         usuario_actual = (
-            request.user.cliente
+            request.user.usuario_padre
             if request.user.rol == 'subusuario'
             else request.user
         )
@@ -224,7 +238,7 @@ class ServisVisitaUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         # Si es subusuario, usar su cliente asociado
         usuario_asociado = (
-            self.request.user.cliente
+            self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
@@ -283,7 +297,7 @@ class ServisVisitaUpdateView(LoginRequiredMixin, UpdateView):
 #         cliente = get_object_or_404(models.Cliente, id=cliente_id)
 #         # Obtener el usuario dueño
 #         usuario_actual = (
-#             self.request.user.cliente
+#             self.request.user.usuario_padre
 #             if self.request.user.rol == 'subusuario'
 #             else self.request.user
 #         )
