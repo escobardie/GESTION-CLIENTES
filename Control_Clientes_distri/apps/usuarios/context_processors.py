@@ -10,8 +10,10 @@ def datos_usuario(request):
         rol = getattr(request.user, 'rol', 'superusuario')  # fallback en caso de ser superuser
         if rol == "usuario":
             empresa = request.user.empresa_nombre
-        else:
+        elif rol == "subusuario":
             empresa = request.user.usuario_padre.empresa_nombre
+        else:
+            empresa = "SUPER USUARIO"
         
         return {
             'is_empleado': is_empleado,

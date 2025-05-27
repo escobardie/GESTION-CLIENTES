@@ -1,18 +1,51 @@
 from django import forms
 from .models import Cliente, PromoPorCliente, Promo
 
-class AddClienteForm(forms.ModelForm):
+# class AddClienteForm(forms.ModelForm):
 
+#     class Meta:
+#         model = Cliente
+#         fields = ['nombre', 'apellido', 'telefono',
+#                   'direccion']
+
+#         widgets = {
+#             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+#             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
+#             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
+#             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+#         }
+
+class AddClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        fields = ['nombre', 'apellido', 'telefono',
-                  'direccion']
+        fields = [
+            'nombre',
+            'apellido',
+            'codigo_area',
+            'telefono',
+            'direccion',
+            'localidad',
+            'provincia',
+            'latitud',
+            'longitud',
+            'email',
+            'observacion',
+            'ubicacion',
+        ]
 
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'apellido': forms.TextInput(attrs={'class': 'form-control'}),
+            'codigo_area': forms.TextInput(attrs={'class': 'form-control'}),
             'telefono': forms.TextInput(attrs={'class': 'form-control'}),
             'direccion': forms.TextInput(attrs={'class': 'form-control'}),
+            'localidad': forms.TextInput(attrs={'class': 'form-control'}),
+            'provincia': forms.TextInput(attrs={'class': 'form-control'}),
+            'latitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.000001'}),
+            'longitud': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.000001'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'observacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'ubicacion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
 
 class AddPromoPorClienteForm(forms.ModelForm):
