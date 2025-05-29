@@ -220,6 +220,18 @@ class TicketPagosImprimibleTokenView(DetailView):
         )
 
         context['ticket_url'] = ticket_url
+        try:
+            cod_area = pago.cliente.codigo_area
+            telefono = pago.cliente.telefono
+            if cod_area and telefono and cod_area.isdigit() and telefono.isdigit():
+                context['tel_completo'] = "54" + cod_area + telefono
+            else:
+                context['tel_completo'] = None
+        except AttributeError:
+            context['tel_completo'] = None
+
+
+        # context['tel_completo'] = "54" +pago.cliente.codigo_area + pago.cliente.telefono
 
 
         context['mensaje'] = (

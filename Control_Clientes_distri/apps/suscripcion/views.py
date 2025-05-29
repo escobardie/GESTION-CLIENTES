@@ -275,6 +275,17 @@ class ReciboPagoConTokenView(DetailView):
         context['recibo_url'] = recibo_url
         context['pdf_url'] = pdf_url
 
+
+        # try: ## TODO: SE DEBE DE IMPLEMENTAR MAS ADELANTE # MODELO DE USUARIO NO TIENE CODIGO DE AREA
+        #     cod_area = pago.usuario.codigo_area
+        #     telefono = pago.usuario.telefono
+        #     if cod_area and telefono and cod_area.isdigit() and telefono.isdigit():
+        #         context['tel_completo'] = "54" + cod_area + telefono
+        #     else:
+        #         context['tel_completo'] = None
+        # except AttributeError:
+        #     context['tel_completo'] = None
+
         context['mensaje'] = (
             f"Hola {pago.usuario.username}, gracias por tu pago de ${pago.monto}. "
             f"Puedes ver tu recibo aquí: {recibo_url} o descargarlo en PDF: {pdf_url}"
