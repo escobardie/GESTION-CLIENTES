@@ -25,6 +25,11 @@
                                 ¡Atención! La fecha de cobro para este cliente ha vencido.
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
+                        {% elif promo_por_vencer %}
+                            <div class="alert alert-warning bg-warning border-0 alert-dismissible fade show" role="alert">
+                                ¡Atención! La fecha de cobro para este cliente VENCE HOY.
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                         {% endif %}
                         <!-- Default Tabs -->
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -53,13 +58,17 @@
                                     <div class="col-lg-9 col-md-8"> {{ cliente.apellido }} {{ cliente.nombre }}</div>
                                 </div>
                                 <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Fecha de Alta:</div>
+                                    <div class="col-lg-9 col-md-8">{{ cliente.fecha_alta }}</div>
+                                </div>
+                                <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Telefono:</div>
                                     <div class="col-lg-9 col-md-8"> {{ cliente.codigo_area }} -15- {{ cliente.telefono }}</div>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Email:</div>
                                     <div class="col-lg-9 col-md-8">{{ cliente.email }}</div>
-                                </div>                                
+                                </div>                                  
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Direccion:</div>
                                     <div class="col-lg-9 col-md-8"> {{ cliente.direccion }}</div>
@@ -84,12 +93,24 @@
                                     <div class="col-lg-9 col-md-8">{{ cliente.ubicacion }}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-3 col-md-4 label ">Fecha de Alta:</div>
-                                    <div class="col-lg-9 col-md-8">{{ cliente.fecha_alta }}</div>
+                                    <div class="col-lg-3 col-md-4 label ">Promo Asignada:</div>
+                                    {% if promocion.promo__nombre_promo %}
+                                    <div class="col-lg-9 col-md-8">{{promocion.promo__nombre_promo}}</div>
+                                    {% else %}
+                                    <div class="col-lg-9 col-md-8">Sin Promocion Asignada</div>
+                                    {% endif %}
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Ultima Visita:</div>
                                     <div class="col-lg-9 col-md-8">{{ fecha_visita }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-lg-3 col-md-4 label ">Ultimo Pago Promo:</div>
+                                    {% if ultimo_pago_promo.fecha_pago %}
+                                    <div class="col-lg-9 col-md-8">{{ultimo_pago_promo.fecha_pago}}</div>
+                                    {% else %}
+                                    <div class="col-lg-9 col-md-8">Sin pago Promociones</div>
+                                    {% endif %}
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-3 col-md-4 label ">Vencimiento Promo:</div>
@@ -99,56 +120,50 @@
                             <!-- Gestion -->
                             <div class="tab-pane fade profile-overview" id="Gestion" role="tabpanel" aria-labelledby="gestion-tab">
                                 <h5 class="card-title">Promociones Disponibles</h5>
-                                {% if promociones %}
-                                    <div class="row mb-3">
-                                        <label class="col-sm-2 col-form-label">Promoción</label>
-                                        <div class="col-sm-10">                                                
-                                            <select name="promocion" id="promocion" class="form-control">
-                                                <option value="">--Selecciona una Promoción--</option>
-                                                {% for promo in promociones %}
-                                                    <option value="{{ promo.promo__valor_promo }}"
-                                                            data-valor="{{ promo.promo__valor_promo }}"
-                                                            data-id="{{ promo.id }}"
-                                                            data-bidones-disponibles="{{ promo.bidones_disponibles }}"
-                                                            data-bidones-acumulados="{{ promo.bidones_acumulados }}"
-                                                            data-promo-valor="{{ promo.promo__valor_promo }}"
-                                                            data-promo-fecha-pago="{{promo.fecha_pago_promo}}">
-                                                        {{ promo.promo__nombre_promo }}
-                                                    </option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <input type="hidden" name="promo_id" id="promo_id" value="">
-                                {% else %}
-                                    <p>Este cliente no tiene promociones activas.</p>
-                                {% endif %}
+                                <div class="bidon-details">
+                                    
+                                    {% comment %} <p>DEBUG PROMOCIÓN: {{ promocion }}</p> {% endcomment %}
+                                    <div class="row">
+                                        {% if promocion %}
+                                            <div class="col-lg-3 col-md-4 label ">Promocion:</div>
+                                            <div class="col-lg-9 col-md-8">
+                                                <p> {{promocion.promo__nombre_promo}}</p>
+                                            </div>
+                                        {% else %}
+                                        <p>Este cliente no tiene promociones activas.</p>
+                                        {% endif %} 
+                                    </div>          
+                                </div> 
                                 <h5 class="card-title">Detalle Promocion</h5>
                                 <div class="bidon-details">
+                                    {% if promocion %}
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label ">Valor:</div>
                                         <div class="col-lg-9 col-md-8">
-                                            <p id="id_promo_valor"></p>
+                                            <p>{{promocion.promo__valor_promo}}</p>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label ">Fecha de Cobro:</div>
                                         <div class="col-lg-9 col-md-8">
-                                            <p id="id_promo_fecha_pago">0</p>
+                                            <p>{{promocion.fecha_pago_promo}}</p>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label ">Bidones Disponibles:</div>
                                         <div class="col-lg-9 col-md-8">
-                                            <p id="id_bidones_disponibles">0</p>
+                                            <p>{{promocion.bidones_disponibles}}</p>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-lg-3 col-md-4 label ">Bidones en Domicilio:</div>
                                         <div class="col-lg-9 col-md-8">
-                                            <p id="id_bidones_acumulados">0</p>
+                                            <p>{{promocion.bidones_acumulados}}</p>
                                         </div>
-                                    </div>
+                                    </div>                                    
+                                    {% else %}
+                                    <p>Este cliente no tiene promociones activas.</p>
+                                    {% endif %}
                                     <div class="card">
                                         <div class="card-body">
                                             <h5 class="card-title">Gestionar Servicios</h5>
@@ -157,24 +172,10 @@
                                             <button type="button" class="btn btn-primary" id="servis-visita-btn" disabled>Servis</button>
                                             <button type="button" class="btn btn-primary" onclick="location.href='{% url 'crear_venta_producto_cliente' id=cliente.id %}'">Vender</button>
                                             <button type="button" class="btn btn-primary" onclick="location.href='{% url 'crear_pago_cliente' id=cliente.id %}'">Pagar</button>
-                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'promo_por_cliente' id=cliente.id %}'" >Nueva Promoción</button>
+                                            <button type="button" class="btn btn-primary" onclick="location.href='{% url 'promo_por_cliente' id=cliente.id %}'" >Cargar Promoción</button>
                                             
                                         </div>
                                     </div>
-
-                                    {% comment %} <div class="container">           
-                                        <div class="client-actions">
-                                            <button id="ver-visitas-btn" onclick="location.href='{% url 'listar_visitas' id=cliente.id %}'">Ver Visitas</button>
-                                            <button id="cargar-visita-btn" onclick="location.href='{% url 'cargar_visita' id=cliente.id %}'">Cargar Visita</button>
-                                            <button id="servis-visita-btn" class="servis-visita-button" disabled>Servis Visita</button>
-                                            <button onclick="location.href='{% url 'promo_por_cliente' id=cliente.id %}'" class="servis-visita-button">Cargar Promoción</button>
-                                            <button onclick="location.href='{% url 'crear_venta_producto_cliente' id=cliente.id %}'">Venta</button>
-                                            <button onclick="location.href='{% url 'listar_venta_cliente' id=cliente.id %}'">Venta Realizadas</button>
-                                            <button onclick="location.href='{% url 'crear_pago_cliente' id=cliente.id %}'">Nuevo Pago</button>
-                                            <button onclick="location.href='{% url 'listar_pago_cliente' id=cliente.id %}'">Pagos Realizados</button>
-                                        </div>
-            
-                                    </div> {% endcomment %}
                                 </div>
                             </div>
                             <!-- Visitas -->
@@ -388,79 +389,32 @@
     </section>
 </main><!-- End #main -->
 <script>
-    function toggleMenu() {
-        const navLinks = document.querySelector('.nav-links');
-        navLinks.classList.toggle('active');
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
-        const selectPromocion = document.getElementById('promocion');
-        const idBidonesDisponibles = document.getElementById('id_bidones_disponibles');
-        const idBidonesAcumulados = document.getElementById('id_bidones_acumulados');
-        const idPromoValor = document.getElementById('id_promo_valor');
-        const idPromoFechaPago = document.getElementById('id_promo_fecha_pago');        
-        const hiddenPromoId = document.getElementById('promo_id');
         const servisVisitaButton = document.getElementById('servis-visita-btn');
-        
-        /*function updateBidones() { // ORIGINAL
-            const selectedOption = selectPromocion.options[selectPromocion.selectedIndex];
-            const bidonesDisponibles = selectedOption.getAttribute('data-bidones-disponibles') || 0;
-            const bidonesAcumulados = selectedOption.getAttribute('data-bidones-acumulados') || 0;
-            const promoValor = selectedOption.getAttribute('data-promo-valor') || 0;
-            const promoFechaPago = selectedOption.getAttribute('data-promo-fecha-pago') || 0;                
+        const cargarPromocionButton = document.querySelector("button[onclick*='promo_por_cliente']");
 
-            idBidonesDisponibles.textContent = bidonesDisponibles;
-            idBidonesAcumulados.textContent = bidonesAcumulados;
-            idPromoValor.textContent = promoValor;
-            idPromoFechaPago.textContent = promoFechaPago;
-            
-            // Captura el data-id del option seleccionado
-            hiddenPromoId.value = selectedOption.getAttribute('data-id');
-            // Habilitar el botón "Servis Visita" si se ha seleccionado una promoción válida
-            if (selectedOption.value) {
+        // Obtener fecha de pago de la promoción
+        const fechaPago = "{{ promocion.fecha_pago_promo|default_if_none:''|date:'Y-m-d' }}";
+
+        // Lógica para habilitar o deshabilitar botón "Servis"
+        if (fechaPago) {
+            const today = new Date().toISOString().split('T')[0];
+            if (new Date(fechaPago) >= new Date(today)) {
                 servisVisitaButton.disabled = false;
-                servisVisitaButton.setAttribute('onclick', `location.href='{% url 'servis_visita' pk=cliente.id %}?id_promo=${hiddenPromoId.value}'`);
-            } else {
-                servisVisitaButton.disabled = true;
-            }
-        }*/
-        function updateBidones() {
-            const selectedOption = selectPromocion.options[selectPromocion.selectedIndex];
-            const bidonesDisponibles = selectedOption.getAttribute('data-bidones-disponibles') || 0;
-            const bidonesAcumulados = selectedOption.getAttribute('data-bidones-acumulados') || 0;
-            const promoValor = selectedOption.getAttribute('data-promo-valor') || 0;
-            const promoFechaPago = selectedOption.getAttribute('data-promo-fecha-pago') || 0;
-        
-            idBidonesDisponibles.textContent = bidonesDisponibles;
-            idBidonesAcumulados.textContent = bidonesAcumulados;
-            idPromoValor.textContent = promoValor;
-            idPromoFechaPago.textContent = promoFechaPago;
-        
-            hiddenPromoId.value = selectedOption.getAttribute('data-id');
-        
-            if (selectedOption.value) {
-                // Obtener la fecha de hoy en formato YYYY-MM-DD
-                const today = new Date().toISOString().split('T')[0];
-        
-                // Si la fecha está vencida, deshabilitar el botón
-                if  (promoFechaPago && new Date(promoFechaPago) < new Date(today))  {
-                    servisVisitaButton.disabled = true;
-                    servisVisitaButton.removeAttribute('onclick');
-                    return;
-                }
-        
-                // Habilitar el botón si todo está OK
-                servisVisitaButton.disabled = false;
-                servisVisitaButton.setAttribute('onclick', `location.href='{% url 'servis_visita' pk=cliente.id %}?id_promo=${hiddenPromoId.value}'`);
-            } else {
-                servisVisitaButton.disabled = true;
-                servisVisitaButton.removeAttribute('onclick');
+                servisVisitaButton.setAttribute('onclick', `location.href='{% url 'servis_visita' pk=cliente.id %}?id_promo={{ promocion.id }}'`);
             }
         }
-        
 
-        selectPromocion.addEventListener('change', updateBidones);
-        updateBidones(); // Llama a la función para establecer el valor inicial
+        // Lógica para deshabilitar botón "Nueva Promoción" si ya tiene una promoción
+        {% if promocion %}
+            if (cargarPromocionButton) {
+                cargarPromocionButton.disabled = true;
+                cargarPromocionButton.title = "Este cliente ya tiene una promoción activa";
+            }
+        {% endif %}
     });
 </script>
+
+
+
 {% endblock contenedor %}

@@ -71,7 +71,8 @@ class AddPromoPorClienteForm(forms.ModelForm):
             print("ENTRO POR ACA")
             print(user.usuario_padre)
             # Filtrar las promos asociadas al usuario (dueño)
-            self.fields['promo'].queryset = Promo.objects.filter(usuario=user.usuario_padre)
+            # "SOLO EL USUARIO TIENE ACCERO A CARGAR PROMOS Y CLIENTES"
+            self.fields['promo'].queryset = Promo.objects.filter(usuario=user)
 
 class ServisVisitaClienteForm(forms.ModelForm):
     class Meta:

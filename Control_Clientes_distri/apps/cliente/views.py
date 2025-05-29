@@ -27,12 +27,23 @@ class ListarVencimientoView(LoginRequiredMixin,ListView):
     context_object_name = "listar_promos"
     paginate_by = 10
 
+
     def get_queryset(self):
+        usuario = (
+            # Si es subusuario, usar su cliente asociado
+            self.request.user.usuario_padre
+            if self.request.user.rol == 'subusuario'
+            else self.request.user
+        )
+
         return models.PromoPorCliente.objects.filter(
             estado=True,
-            usuario=self.request.user  # Solo clientes del usuario logueado
+            usuario=usuario
         ).order_by('fecha_pago_promo')
     
+    def get_promos_que_vencen_hoy(self):
+        fecha_actual = timezone.now().date()
+        return self.get_queryset().filter(fecha_pago_promo=fecha_actual)
     
     def get_promos_con_fecha_vencida(self):
         fecha_actual = timezone.now().date()
@@ -40,6 +51,7 @@ class ListarVencimientoView(LoginRequiredMixin,ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['promos_que_vencen_hoy'] = self.get_promos_que_vencen_hoy()
         context['promos_con_fecha_vencida'] = self.get_promos_con_fecha_vencida()
         return context
     
@@ -96,13 +108,20 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
         cliente = self.get_object()
         fecha_actual = timezone.now().date()
         estado_promo_vencida = False
+        estado_promo_por_vencer = False
 
-        promociones_del_cliente = models.PromoPorCliente.objects.filter(
-            cliente=cliente,
-            estado=True
-        ).values('id', 'promo__nombre_promo', 'promo__valor_promo',
-                 'fecha_pago_promo', 'bidones_disponibles', 'bidones_acumulados')
+        ## metodo para obtener mas datos
+        promocion_del_cliente = models.PromoPorCliente.objects \
+            .filter(cliente=cliente, estado=True) \
+            .values('id', 'promo__nombre_promo', 'promo__valor_promo', 'fecha_pago_promo', 'bidones_disponibles', 'bidones_acumulados') \
+            .first()
 
+        ## obtenemos de este modo el ultimo pago de la promocion    
+        ultimo_pago_promo = Pagos.objects \
+            .filter(cliente=cliente,promo__isnull=False) \
+            .values('id','fecha_pago') \
+            .first()
+            
         ultima_visita = Visita.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
         ultima_visitaServis = VisitaServis.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
         # fecha_visita_clte = ultima_visita.fecha_visita.date()  if ultima_visita else "Sin visitas" ## ORIGINAL
@@ -123,6 +142,9 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
         ultima_pago = models.PromoPorCliente.objects.filter(cliente=cliente, estado=True).order_by('fecha_pago_promo').first()
         if ultima_pago and ultima_pago.fecha_pago_promo < fecha_actual:
             estado_promo_vencida = True
+        if ultima_pago and ultima_pago.fecha_pago_promo == fecha_actual:
+            estado_promo_por_vencer = True
+
         fecha_pago_clte = ultima_pago.fecha_pago_promo if ultima_pago else "Sin Pagos Realizados"
         
         visitas_combinadas = sorted(
@@ -136,13 +158,14 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
         context.update({
             'pagos_cliente': Pagos.objects.filter(cliente=cliente).order_by('-fecha_pago')[:10],
             'ventas_cliente': Venta.objects.filter(cliente=cliente).order_by('-fecha_venta')[:10],
-            # 'visitas_cliente': Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')[:10],
-            # 'visitas_servis': VisitaServis.objects.filter(cliente=cliente).order_by('-fecha_visita')[:10],
             'visitas_combinadas': visitas_combinadas,
             'fecha_pago': fecha_pago_clte,
             'fecha_visita': fecha_visita_clte,
-            'promociones': promociones_del_cliente,
-            'promo_vencida': estado_promo_vencida,
+            'promocion': promocion_del_cliente,
+            'promo_vencida': estado_promo_vencida,            
+            'promo_por_vencer': estado_promo_por_vencer,
+            
+            'ultimo_pago_promo': ultimo_pago_promo,
         })
         return context
     
@@ -205,6 +228,12 @@ class PromoPorClienteCreateView(LoginRequiredMixin, ClienteAutorizacionMixin, Cr
     def get_success_url(self):
         cliente_id = self.kwargs.get('id')
         return reverse('crear_pago_cliente', kwargs={'id': cliente_id})
+    
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['cliente_id'] =  self.kwargs.get('id')
+        return context
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='index'), name='dispatch')
 class ServisVisitaUpdateView(LoginRequiredMixin, UpdateView):

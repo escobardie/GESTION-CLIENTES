@@ -103,3 +103,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'core.settings'
 ## then:
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
+
+
+######################## PYTHON UVICORN ########################
+uvicorn core.asgi:application --reload

@@ -64,6 +64,11 @@
                                                 ¡Atención! La fecha de cobro para este cliente ha vencido.
                                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
                                             </div>
+                                        {% elif promo in promos_que_vencen_hoy %}
+                                            <div class="alert alert-warning bg-warning border-0 alert-dismissible fade show" role="alert">
+                                                ¡Atención! La fecha de cobro para este cliente VENCE HOY.
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
                                         {% endif %}
 
                                         <a href="{% url 'menu_cliente' id=promo.cliente.id %}">
