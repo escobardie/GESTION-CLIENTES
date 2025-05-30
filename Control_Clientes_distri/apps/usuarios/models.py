@@ -11,8 +11,16 @@ class Usuario(AbstractUser):
 
     rol = models.CharField(max_length=20, choices=ROLES, default='usuario')
     usuario_padre = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='empleados')
+    
+    codigo_area = models.CharField(max_length=5, verbose_name='Código de Área', null=True, blank=True)
     telefono = models.CharField(max_length=20, null=True, blank=True)
+
     empresa_nombre = models.CharField(max_length=255, null=True, blank=True)
+   
+    direccion = models.CharField(max_length=150, verbose_name='Dirección', null=True, blank=True)
+    localidad = models.CharField(max_length=100, verbose_name='Localidad', null=True, blank=True)
+    provincia = models.CharField(max_length=100, verbose_name='Provincia', null=True, blank=True)
+    
 
     def __str__(self):
         return f"{self.username} ({self.rol})"
