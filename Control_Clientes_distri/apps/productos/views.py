@@ -14,7 +14,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ProductoCreateView(LoginRequiredMixin, CreateView):
     model = models.Producto
-    template_name = 'Base/forms/crear_producto.html'
+    template_name = 'base/forms/crear_producto.html'
     form_class = forms.ProductoForm
     success_url = reverse_lazy('listar_productos')
 
@@ -35,7 +35,7 @@ class ProductoCreateView(LoginRequiredMixin, CreateView):
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarProductosView(LoginRequiredMixin, ListView):
     model = models.Producto
-    template_name = "Base/listar_productos.html"
+    template_name = "base/listar_productos.html"
     context_object_name = 'lista_productos'
     paginate_by = 5
     # queryset = models.Producto.objects.filter(estado=True).order_by('nombre_producto')

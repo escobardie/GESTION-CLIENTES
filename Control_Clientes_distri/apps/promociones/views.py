@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class PromoCreateView(LoginRequiredMixin, CreateView):
     model = models.Promo
     form_class = forms.AddPromoForm
-    template_name = 'Base/forms/crear_promo.html'
+    template_name = 'base/forms/crear_promo.html'
     success_url = reverse_lazy('listar_promociones')
     
     def form_valid(self, form):
@@ -30,7 +30,7 @@ class PromoCreateView(LoginRequiredMixin, CreateView):
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarPromocionesView(LoginRequiredMixin, ListView):
     model = models.Promo
-    template_name = "Base/listar_promociones.html"
+    template_name = "base/listar_promociones.html"
     context_object_name = 'lista_promos'
     paginate_by = 5
     # queryset = models.Promo.objects.filter(estado=True).order_by('nombre_promo') # ya no se usa
