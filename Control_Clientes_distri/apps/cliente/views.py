@@ -121,10 +121,23 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
             .filter(cliente=cliente,promo__isnull=False) \
             .values('id','fecha_pago') \
             .first()
-            
-        ultima_visita = Visita.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
-        ultima_visitaServis = VisitaServis.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
-        # fecha_visita_clte = ultima_visita.fecha_visita.date()  if ultima_visita else "Sin visitas" ## ORIGINAL
+        
+        ## HACEMOS UN FILTRO GENERAL
+        visitas = Visita.objects.filter(cliente=cliente)
+        visitas_servis = VisitaServis.objects.filter(cliente=cliente)
+        # Agregar el tipo de modelo a cada instancia
+        for v in visitas:
+            v.tipo = 'visita'
+        for vs in visitas_servis:
+            vs.tipo = 'visita_servis'
+
+        ## HACEMOS UN FILTRO MAS ESPECIFICO
+        ultima_visita = visitas.order_by('-fecha_visita').first()
+        ultima_visitaServis = visitas_servis.order_by('-fecha_visita').first()
+
+        # ultima_visita = Visita.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
+        # ultima_visitaServis = VisitaServis.objects.filter(cliente=cliente).order_by('-fecha_visita').first()
+
         # Obtener fechas si existen
         fecha1 = ultima_visita.fecha_visita if ultima_visita else None
         fecha2 = ultima_visitaServis.fecha_visita if ultima_visitaServis else None
@@ -148,13 +161,11 @@ class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailV
         fecha_pago_clte = ultima_pago.fecha_pago_promo if ultima_pago else "Sin Pagos Realizados"
         
         visitas_combinadas = sorted(
-            chain(
-                Visita.objects.filter(cliente=cliente),
-                VisitaServis.objects.filter(cliente=cliente)
-            ),
+            chain(visitas, visitas_servis),
             key=lambda x: x.fecha_visita,
             reverse=True
         )[:10]
+
         context.update({
             'pagos_cliente': Pagos.objects.filter(cliente=cliente).order_by('-fecha_pago')[:10],
             'ventas_cliente': Venta.objects.filter(cliente=cliente).order_by('-fecha_venta')[:10],

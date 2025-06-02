@@ -57,7 +57,7 @@
                                             {% endif %}
                                     </h5>
                                     <ul class="list-group">
-                                        {% if visita.b_disponible %}
+                                        {% if visita.tipo == "visita_servis" %}
                                         <li class="list-group-item">
                                             <div class="row">
                                                 <div class="col-lg-3 col-md-4 label ">DISPONIBLE:</div>
@@ -101,13 +101,13 @@
                                     <!-- Botón para generar ticket -->
                                     {% if visita.cliente%}
                                     <div class="mt-3 text-end">
-                                        {% if visita.b_disponible %}
+                                        {% if visita.tipo == "visita_servis" %}
                                         <a href="{% url 'ticket_visita_token' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            🧾 Generar Ticket Token
+                                            🧾 Generar Ticket Servis token
                                         </a>
                                         {% else %}
                                         <a href="{% url 'ticket_visita' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            🧾 Generar Ticket
+                                            🧾 Generar visita Ticket
                                         </a>
                                         {% endif %}
                                     </div>

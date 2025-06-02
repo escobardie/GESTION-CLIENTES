@@ -212,7 +212,7 @@
                                                                 </div>
                                                         
                                                                 <!-- Modal body -->
-                                                                {% if visita.b_disponible %}
+                                                                {% if visita.tipo == "visita_servis" %}
                                                                 <div class="modal-body">                                                                    
                                                                         <p> DISPONIBLE: {{visita.b_disponible }}</p>
                                                                         <p> ENTREGADO: {{visita.b_entregado }}</p>

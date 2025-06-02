@@ -57,7 +57,7 @@
                                     <ul class="list-group">
                                         <li class="list-group-item">
                                             <div class="row">
-                                                {% if visita.b_disponible %}
+                                                {% if visita.tipo == "visita_servis" %}
                                                 <h5 class="card-title">Visita Servis</h5>
                                                 <div class="modal-body">                                                            
                                                     <p> DISPONIBLE: {{visita.b_disponible }}</p>

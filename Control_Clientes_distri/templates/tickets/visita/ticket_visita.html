@@ -63,7 +63,7 @@
         <strong>Cliente:</strong>
         {{ visita.cliente.apellido|default:"" }} {{ visita.cliente.nombre|default:"" }}
     </p>
-    {% if visita.b_disponible %}
+    {% if tipo == "visita_servis" %}
     <p> <strong>DISPONIBLE:</strong> {{visita.b_disponible }}</p>
     <p> <strong>ENTREGADO:</strong> {{visita.b_entregado }}</p>
     <p> <strong>RETIRADO: </strong>{{visita.b_retirado }}</p>

@@ -36,29 +36,26 @@ class ListarVisitasClienteView(LoginRequiredMixin, ClienteAutorizacionMixin, Lis
         cliente = get_object_or_404(models.Cliente, id=cliente_id)
         return cliente
     
-    # def get_queryset(self):
-    #     cliente = self.get_cliente_data()
-    #     visitas_combinadas = sorted(
-    #         chain(
-    #             models.Visita.objects.filter(cliente=cliente),
-    #             models.VisitaServis.objects.filter(cliente=cliente)
-    #         ),
-    #         key=lambda x: x.fecha_visita,
-    #         reverse=True
-    #     )[:10]
-        # return models.Visita.objects.filter(cliente=cliente).order_by('-fecha_visita')
-        return visitas_combinadas
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         cliente = self.get_cliente_data()
+
+        visitas = models.Visita.objects.filter(cliente=cliente)
+        visitas_servis = models.VisitaServis.objects.filter(cliente=cliente)
+
+
+        # Agregar el tipo de modelo a cada instancia
+        for v in visitas:
+            v.tipo = 'visita'
+        for vs in visitas_servis:
+            vs.tipo = 'visita_servis'
+
         visitas_combinadas = sorted(
-            chain(
-                models.Visita.objects.filter(cliente=cliente),
-                models.VisitaServis.objects.filter(cliente=cliente)
-            ),
+            chain(visitas, visitas_servis),
             key=lambda x: x.fecha_visita,
             reverse=True
         )[:10]
+
         context.update({
             'visitas_combinadas':visitas_combinadas,
         })
@@ -72,10 +69,6 @@ class ListarVisitasView(LoginRequiredMixin, ListView):
     context_object_name = 'lista_vistas'
     paginate_by = 5
 
-    
-    # def get_queryset(self):
-    #     return models.Visita.objects.all().order_by('-fecha_visita')
-    
     def get_queryset(self):
         usuario = (
             # Si es subusuario, usar su cliente asociado
@@ -83,18 +76,22 @@ class ListarVisitasView(LoginRequiredMixin, ListView):
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
+        visitas = models.Visita.objects.filter(usuario=usuario)
+        visitas_servis = models.VisitaServis.objects.filter(usuario=usuario)
+
+        # Agregar el tipo de modelo a cada instancia
+        for v in visitas:
+            v.tipo = 'visita'
+        for vs in visitas_servis:
+            vs.tipo = 'visita_servis'
+
         visitas_combinadas = sorted(
-            chain(
-                models.Visita.objects.filter(usuario=usuario),
-                models.VisitaServis.objects.filter(usuario=usuario)
-            ),
+            chain(visitas, visitas_servis),
             key=lambda x: x.fecha_visita,
             reverse=True
         )
+
         return visitas_combinadas
-        # return models.Visita.objects.filter(
-        #     usuario=usuario
-        # ).all().order_by('-fecha_visita')
 
 
 ## se agrega capa de seguridad para la carga de datos
@@ -151,6 +148,8 @@ class VisitaClienteCreateView(LoginRequiredMixin, ClienteAutorizacionMixin, Crea
         # Genera la URL para la vista 'menu_cliente' usando el ID del cliente
         return reverse('menu_cliente', kwargs={'id': cliente_id})
     
+
+## GENERA SOLO PARA VISITA
 class TicketVisitaImprimibleView(DetailView):
     model = models.Visita
     template_name = 'tickets/visita/ticket_visita.html'
@@ -163,6 +162,9 @@ class TicketVisitaImprimibleView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         visita = self.object
+
+        ## AGREGAMOS DE QUE MODELO SOMOS PARA MOSTRAR O NOS LOS DATOS
+        context['tipo'] = 'visita'
 
         ticket_url = self.request.build_absolute_uri(self.request.path)
         qr_b64 = generar_qr_base64(ticket_url)
@@ -180,7 +182,8 @@ class TicketVisitaImprimibleView(DetailView):
             f"Aquí tienes tu ticket Visita: {self.request.build_absolute_uri(self.request.path)}"
         )
         return context
-    
+
+## GENERA SOLO PARA VISITASERVIS
 class TicketVisitaImprimibleTokenView(DetailView):
     model = models.VisitaServis
     template_name = 'tickets/visita/ticket_visita.html'
@@ -193,6 +196,9 @@ class TicketVisitaImprimibleTokenView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         visita = self.object
+
+        ## AGREGAMOS DE QUE MODELO SOMOS PARA MOSTRAR O NOS LOS DATOS
+        context['tipo'] = 'visita_servis'
 
         ticket_url = self.request.build_absolute_uri(self.request.path)
         qr_b64 = generar_qr_base64(ticket_url)
@@ -220,3 +226,8 @@ class TicketVisitaImprimibleTokenView(DetailView):
 
 
         return context
+
+
+## TODO: CREAR UNA TicketVisitaParaClienteView, asi el cliente tiene otro diseño cuando
+# ingresa al link que le llega  al wathsapp, pero que no sea con la opcion de imprimir, solo de descargar
+# descargar como pdf si es posible pero desde un boton
