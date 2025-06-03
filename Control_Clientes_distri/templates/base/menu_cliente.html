@@ -180,85 +180,83 @@
                             </div>
                             <!-- Visitas -->
                             <div class="tab-pane fade profile-overview" id="Visitas" role="tabpanel" aria-labelledby="visitas-tab">
-                                <h5 class="card-title">Detalle del Cliente</h5>
-                                <div class="card recent-sales overflow-auto">
+                                {% comment %} <h5 class="card-title">Detalle del Cliente</h5> {% endcomment %}
+                                {% for visita in visitas_combinadas %}
+                                    <div class="card text-center">
+                                        <div class="card-body">                                            
+                                            <h5 class="card-title">
+                                                <a href="#"  data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">
+                                                    {{ visita.fecha_visita }}
+                                                </a>
+                                            </h5>
+                                            <span class="card-text">
+                                                {% if visita.tipo == "visita_servis" %}
+                                                VISITA SERVICIO A LA PROMOCION
+                                                {% else  %}
+                                                VISITA AL CLIENTE
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <!-- The Modal -->
+                                    <div class="modal" id="myModal-{{ forloop.counter }}">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                        
+                                                <!-- Modal Header -->
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">{{visita.fecha_visita}}</h4>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                        
+                                                <!-- Modal body -->
+                                                {% if visita.tipo == "visita_servis" %}
+                                                <div class="modal-body">                                                                    
+                                                        <p> DISPONIBLE: {{visita.b_disponible }}</p>
+                                                        <p> ENTREGADO: {{visita.b_entregado }}</p>
+                                                        <p> RETIRADO: {{visita.b_retirado }}</p>
+                                                        <p> TIENE EL CLIENTE: {{visita.b_en_poder_clte }}</p>
+                                                        <p> NOTA: {{visita.nota }}</p>
+                                                </div>
+                                                <!-- Botón para generar ticket -->
+                                                <div class="mt-3 text-end">
+                                                    <a href="{% url 'ticket_visita_token' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        🧾 Generar Ticket Servis token
+                                                    </a>
+                                                </div>
+                                                {% else  %}
+                                                <div class="modal-body">                                                                    
+                                                    <p> NOTA: {{visita.nota }}</p>
+                                                </div>
+                                                <!-- Botón para generar ticket -->
+                                                <div class="mt-3 text-end">
+                                                    <a href="{% url 'ticket_visita' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                                        🧾 Generar visita Ticket 
+                                                    </a>
+                                                </div>
+                                                
+                                                {% endif %} 
+                                        
+                                                <!-- Modal footer -->
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                                                </div>
+                                        
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--  Modal -->
+                                {% empty %}
+                                <div class="card text-center">
                                     <div class="card-body">
-                                        <h5 class="card-title">Ultimas 10 Visitas</h5>
-                                        <!-- Table with hoverable rows {{visitas_cliente}}-->
-                                        <table class="table table-hover">
-                                            <thead>
-                                            <tr>
-                                                <th scope="col">Fecha visita</th>
-                                                <th scope="col">Ver</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for visita in visitas_combinadas %}
-                                                    <tr>
-                                                        <th scope="row">{{visita.fecha_visita}}</th>
-                                                        <td>
-                                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal-{{ forloop.counter }}">Ver</button>
-                                                        </td>
-                                                    </tr>                                               
-                                                    <!-- The Modal -->
-                                                    <div class="modal" id="myModal-{{ forloop.counter }}">
-                                                        <div class="modal-dialog">
-                                                            <div class="modal-content">
-                                                        
-                                                                <!-- Modal Header -->
-                                                                <div class="modal-header">
-                                                                    <h4 class="modal-title">{{visita.fecha_visita}}</h4>
-                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                                </div>
-                                                        
-                                                                <!-- Modal body -->
-                                                                {% if visita.tipo == "visita_servis" %}
-                                                                <div class="modal-body">                                                                    
-                                                                        <p> DISPONIBLE: {{visita.b_disponible }}</p>
-                                                                        <p> ENTREGADO: {{visita.b_entregado }}</p>
-                                                                        <p> RETIRADO: {{visita.b_retirado }}</p>
-                                                                        <p> TIENE EL CLIENTE: {{visita.b_en_poder_clte }}</p>
-                                                                        <p> NOTA: {{visita.nota }}</p>
-                                                                </div>
-                                                                <!-- Botón para generar ticket -->
-                                                                <div class="mt-3 text-end">
-                                                                    <a href="{% url 'ticket_visita_token' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                                        🧾 Generar Ticket Servis token
-                                                                    </a>
-                                                                </div>
-                                                                {% else  %}
-                                                                <div class="modal-body">                                                                    
-                                                                    <p> NOTA: {{visita.nota }}</p>
-                                                                </div>
-                                                                <!-- Botón para generar ticket -->
-                                                                <div class="mt-3 text-end">
-                                                                    <a href="{% url 'ticket_visita' visita.token %}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                                        🧾 Generar visita Ticket 
-                                                                    </a>
-                                                                </div>
-                                                                
-                                                                {% endif %} 
-                                                        
-                                                                <!-- Modal footer -->
-                                                                <div class="modal-footer">
-                                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                                                </div>
-                                                        
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!--  Modal -->
-                                                {% empty %}
-                                                    <tr>
-                                                        <td colspan="2">No hay registros</td>
-                                                    </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                        <!-- End Table with hoverable rows -->
-                                        <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_visitas_cliente' id=cliente.id %}'">Ver Todo</button>
+                                        <div class="card-title">
+                                            <h5 class="card-title">No hay registros</h5>
+                                        </div>
                                     </div>
                                 </div>
+                                {% endfor %}
+                                <button type="button" class="btn btn-primary" onclick="location.href='{% url 'listar_visitas_cliente' id=cliente.id %}'">Ver Todo</button>
+
                                 
                             </div>
                             <!-- Ventas-->

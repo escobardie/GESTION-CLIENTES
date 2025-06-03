@@ -90,7 +90,7 @@
 
     {% if visita.cliente.telefono %}
         <div class="center" style="margin-top: 10px;">
-            <a href="https://wa.me/{{ visita.cliente.telefono|urlencode }}?text={{ mensaje|urlencode }}"
+            <a href="https://wa.me/{{ 54|urlencode }}{{ visita.cliente.codigo_area|urlencode }}{{ visita.cliente.telefono|urlencode }}?text={{ mensaje|urlencode }}"
             target="_blank"
             style="text-decoration: none; color: green; font-weight: bold;">
             Enviar por WhatsApp al cliente 📱
