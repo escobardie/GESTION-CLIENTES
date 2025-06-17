@@ -54,7 +54,8 @@ class ListarVencimientoView(LoginRequiredMixin,ListView):
         context['promos_que_vencen_hoy'] = self.get_promos_que_vencen_hoy()
         context['promos_con_fecha_vencida'] = self.get_promos_con_fecha_vencida()
         return context
-    
+    ## TODO: AGREGAR OPCION DE ENVIAR MSJ DE WAP AL CLIENTE. CON LA LEYERNDA DE "CUOTA PRONTO A VENCER"
+
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
     #     queryset = self.get_queryset()
@@ -86,7 +87,7 @@ class ListarClientesView(LoginRequiredMixin, ListView):
 
 class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailView):
     model = models.Cliente
-    template_name = "base/menu_cliente.html"
+    template_name = "base/menu_cliente2.html"
     context_object_name = 'cliente'
 
     # def dispatch(self, request, *args, **kwargs):
