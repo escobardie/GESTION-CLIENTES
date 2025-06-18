@@ -27,7 +27,8 @@ class LoginPersonalizadoView(LoginView):
         if user.is_superuser:
             return '/admin/'
         elif user.rol == 'usuario':
-            return reverse_lazy('listar_ventas')
+            # return reverse_lazy('listar_ventas')
+            return reverse_lazy('dashboard_estadisticas')
         elif user.rol == 'subusuario':
             return reverse_lazy('listar_vto_clte')
         else:

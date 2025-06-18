@@ -35,7 +35,7 @@ urlpatterns = [
 ############################
     path('', include('apps.suscripcion.urls')),
 ############################
-    path('analytics/', include('apps.analytics.urls')),  # 👈 Muy importante
+    path('analytics/', include('apps.analytics.urls')),
 ############################
     path('admin/', admin.site.urls),
 ]

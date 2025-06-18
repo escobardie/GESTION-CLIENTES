@@ -18,7 +18,7 @@ from itertools import chain
 
 
 class IndexView(LoginRequiredMixin,TemplateView):
-    template_name = "base/listar_clientes.html"
+    template_name = "base/menu_home.html"
 
 
 class ListarVencimientoView(LoginRequiredMixin,ListView):
