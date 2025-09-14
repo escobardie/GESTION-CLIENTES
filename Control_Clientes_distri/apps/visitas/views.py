@@ -13,6 +13,14 @@ import qrcode
 import base64
 from io import BytesIO
 from itertools import chain
+from django.utils.text import slugify
+from django.http import HttpResponse
+from datetime import datetime
+from django.views import View
+from django.utils.timezone import localtime
+
+
+
 
 
 # def usuario_es_admin(user):
@@ -22,6 +30,32 @@ def generar_qr_base64(url):
     buffer = BytesIO()
     qr.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue()).decode()
+
+class GenerarTicketTxtView(View):
+    def get(self, request, pk):
+        visita = models.VisitaServis.objects.get(pk=pk)
+
+        cliente = f"{visita.cliente.apellido} {visita.cliente.nombre}".strip()
+        
+
+        contenido = (
+            f"{'TICKET DE VISITA':^32}\n"
+            f"{'-'*32}\n"
+            f"Fecha: {visita.fecha_visita.strftime('%d/%m/%Y a las %H:%M')}\n"
+            f"Cliente: {cliente}\n"
+            f"{'Entregado:':<12}{str(visita.b_entregado):>20}\n"
+            f"{'Retirado:':<12}{str(visita.b_retirado):>20}\n"
+            f"{'Disponible:':<12}{str(visita.b_disponible):>20}\n"
+            f"{'-'*32}\n"
+            f"{'Gracias por su visita':^32}\n"
+        )
+
+        # filename = f"ticket_{slugify(cliente)}_{datetime.now().strftime('%Y%m%d_%H%M')}.txt"
+        # response = HttpResponse(contenido, content_type='text/plain')
+        # response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response = HttpResponse(contenido, content_type='text/plain')
+        # NOTA: no se incluye Content-Disposition
+        return response
 
 # @method_decorator(user_passes_test(usuario_es_admin, login_url='inicio'), name='dispatch')
 class ListarVisitasClienteView(LoginRequiredMixin, ClienteAutorizacionMixin, ListView):

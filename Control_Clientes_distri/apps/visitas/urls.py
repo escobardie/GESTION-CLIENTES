@@ -11,4 +11,6 @@ urlpatterns = [
     path('visitas/ticket/<str:token>/', views.TicketVisitaImprimibleView.as_view(), name='ticket_visita'),
     path('visitas/ticket/token/<str:token>/', views.TicketVisitaImprimibleTokenView.as_view(), name='ticket_visita_token'),
 
+    path('visita/ticket_txt/<int:pk>/', views.GenerarTicketTxtView.as_view(), name='generar_ticket_txt'),
+
 ]

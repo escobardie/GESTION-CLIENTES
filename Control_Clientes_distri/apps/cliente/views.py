@@ -15,6 +15,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from apps.usuarios.mixins import ClienteAutorizacionMixin
 from itertools import chain
+from django.db.models import Q
 
 
 class IndexView(LoginRequiredMixin,TemplateView):
@@ -73,16 +74,25 @@ class ListarClientesView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         usuario = (
-            # Si es subusuario, usar su cliente asociado
             self.request.user.usuario_padre
             if self.request.user.rol == 'subusuario'
             else self.request.user
         )
 
-        return models.Cliente.objects.filter(
+        queryset = models.Cliente.objects.filter(
             estado=True,
             usuario=usuario
         ).order_by('apellido')
+
+        cliente = self.request.GET.get('cliente')
+        if cliente:
+            #icontains hace la búsqueda sin distinguir mayúsculas/minúsculas.
+            queryset = queryset.filter(
+                Q(apellido__icontains=cliente) | Q(nombre__icontains=cliente)
+            )
+
+        return queryset
+
 
 
 class MenuClienteDetailView(LoginRequiredMixin,ClienteAutorizacionMixin, DetailView):

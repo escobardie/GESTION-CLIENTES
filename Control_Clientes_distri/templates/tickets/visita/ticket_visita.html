@@ -97,11 +97,13 @@
             </a>
         </div>
     {% endif %}
-
-    <script>
+    <a href="{% url 'generar_ticket_txt' visita.id %}" target="_blank" class="btn btn-secondary">
+    Descargar ticket para RawBT
+    </a>
+    {% comment %} <script>
         window.onload = function () {
             window.print();
         };
-    </script>
+    </script> {% endcomment %}
 </body>
 </html>

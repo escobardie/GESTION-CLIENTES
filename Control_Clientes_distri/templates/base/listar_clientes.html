@@ -45,6 +45,17 @@
     <section class="section">
         <div class="row">
             <div class="col-lg-6">
+                    <div class="card-body">
+                        <form method="get"class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <input type="text" name="cliente" class="form-control" placeholder="Cliente" value="{{ request.GET.cliente }}">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                            </div>
+                        </form>
+                    </div>
+            
                 
                 {% for cliente in lista_clientes %}
 
@@ -66,16 +77,89 @@
                         </a>
                     </div>
                 </div>
+
                 {% empty %}
-                 <div class="card text-center">
+
+                <div class="card text-center">
                     <div class="card-body">
                         <div class="card-title">
                             <h5 class="card-title">No hay registros</h5>
                         </div>
                     </div>
                 </div>
+
                 {% endfor %}
 
+                <div class="class="card text-center"">
+                    <h5 class="card-title">LISTADO CLIENTES A ELEGIR</h5>
+                    
+                    <table class="table table-bordered">
+                        <thead>
+                        <tr>
+                            <th scope="col">APELLIDO</th>
+                            <th scope="col">NOMBRE</th>
+                            <th scope="col"><i class="bi bi-whatsapp"></i></th>
+                        </tr>
+                        </thead>
+                        {% for cliente in lista_clientes %}
+                            <tbody>
+                            <tr>
+                                <td><a href="{% url 'menu_cliente' id=cliente.id %}">{{ cliente.apellido }}</a></td>
+                                <td>{{ cliente.nombre }}</td>
+                                <td>
+                                    <a href="https://wa.me/{{ 54|urlencode }}{{ cliente.codigo_area|urlencode }}{{ cliente.telefono|urlencode }}?text={{ mensaje|urlencode }}"
+                                    target="_blank"
+                                    style="text-decoration: none; color: green; font-weight: bold;">
+                                    <i class="bi bi-whatsapp"></i>
+                                    </a>
+                                </td>
+                            </tr>                        
+                            </tbody>
+                        {% empty %}
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <h5 class="card-title">No hay registros</h5>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </table>
+                    
+                    <table class="table table-bordered border-primary">
+                        <thead>
+                        <tr>
+                            <th scope="col">APELLIDO</th>
+                            <th scope="col">NOMBRE</th>
+                            <th scope="col"><i class="bi bi-whatsapp"></i></th>
+                        </tr>
+                        </thead>
+                        {% for cliente in lista_clientes %}
+                            <tbody>
+                            <tr>
+                                <td><a href="{% url 'menu_cliente' id=cliente.id %}">{{ cliente.apellido }}</a></td>
+                                <td>{{ cliente.nombre }}</td>
+                                <td>
+                                    <a href="https://wa.me/{{ 54|urlencode }}{{ cliente.codigo_area|urlencode }}{{ cliente.telefono|urlencode }}?text={{ mensaje|urlencode }}"
+                                    target="_blank"
+                                    style="text-decoration: none; color: green; font-weight: bold;">
+                                    <i class="bi bi-whatsapp"></i>
+                                    </a>
+                                </td>
+                            </tr>                        
+                            </tbody>
+                        {% empty %}
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <div class="card-title">
+                                    <h5 class="card-title">No hay registros</h5>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </table>
+
+                </div>
 
                 <!-- Centered Pagination -->
                         <nav aria-label="Page navigation example">
@@ -94,7 +178,8 @@
                                     </li>
                                 {% endif %}
                             </ul>
-                        </nav><!-- End Centered Pagination -->
+                        </nav>
+                <!-- End Centered Pagination -->
             </div>
         </div>
     </section>
