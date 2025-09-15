@@ -167,7 +167,7 @@ class PagoClienteCreateView(LoginRequiredMixin,ClienteAutorizacionMixin, CreateV
         )
 
         promo_por_cliente = get_object_or_404(PromoPorCliente, cliente=cliente, promo=promo_instance)
-        ## TODO: DIA CARGADA NO SE MODIFICA, SOLO EL MES.
+        ## TODO: DIA CARGADO NO SE MODIFICA, SOLO EL MES.
         ## ENFOQUE: DIA FIJA SIEMPRE, MES SE MODIFICA.
         neva_fecha_pago_promo = promo_por_cliente.fecha_pago_promo + relativedelta(months=1)
         # print("fecha actual")

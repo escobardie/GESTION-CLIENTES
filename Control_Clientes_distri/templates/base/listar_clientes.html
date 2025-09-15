@@ -93,15 +93,16 @@
                         </form>
                     </div>
                     <table class="table table-bordered">
-                        {% comment %} <thead>
+                        <thead>
                         <tr>
                             <th scope="col">CLIENTE</th>
                             <th scope="col">DIRECCIÓN</th>
                             <th scope="col"><i class="bi bi-whatsapp"></i></th>
                         </tr>
-                        </thead> {% endcomment %}
-                        {% for cliente in lista_clientes %}
+                        </thead>
                             <tbody>
+                            {% for cliente in lista_clientes %}
+                            
                             <tr>
                                 <td><a href="{% url 'menu_cliente' id=cliente.id %}">{{ cliente.apellido }} {{ cliente.nombre }}</a></td>
                                 <td>{{ cliente.direccion }}</td>
@@ -113,16 +114,18 @@
                                     </a>
                                 </td>
                             </tr>                        
-                            </tbody>
-                        {% empty %}
-                        <div class="card text-center">
-                            <div class="card-body">
-                                <div class="card-title">
-                                    <h5 class="card-title">No hay registros</h5>
+                        
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center">No hay registros.</td></tr>
+                            {% comment %} <div class="card text-center">
+                                <div class="card-body">
+                                    <div class="card-title">
+                                        <h5 class="card-title">No hay registros</h5>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+                            </div> {% endcomment %}
+                            {% endfor %}
+                            </tbody>
                     </table>
 
                 </div>
